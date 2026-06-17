@@ -1,0 +1,17 @@
+# Supabase project config. The functions below must run WITHOUT a Supabase JWT
+# because they're invoked by external services (Stripe, Google, n8n) that can't
+# send one. The user-invoked functions keep JWT verification ON (the default).
+
+project_id = "roof-ai-lead-recovery"
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.google-oauth-callback]
+verify_jwt = false
+
+[functions.check-availability]
+verify_jwt = false
+
+[functions.book-appointment]
+verify_jwt = false

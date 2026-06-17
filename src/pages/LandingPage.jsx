@@ -1,0 +1,395 @@
+import { Link } from "react-router-dom";
+import {
+  ArrowRight,
+  Play,
+  Check,
+  Phone,
+  PhoneOff,
+  Bell,
+  MessageSquare,
+  Calendar,
+  Users,
+  Clock,
+} from "lucide-react";
+import { Navbar } from "@/components/marketing/Navbar";
+import { Footer } from "@/components/marketing/Footer";
+import { PhoneMockup } from "@/components/marketing/PhoneMockup";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+
+const PROBLEMS = [
+  {
+    icon: Phone,
+    tone: "bg-brand-50 text-brand-600",
+    title: "Homeowner calls",
+    body: "A storm just damaged their roof. They're ready to book an inspection — today.",
+  },
+  {
+    icon: PhoneOff,
+    tone: "bg-red-50 text-red-500",
+    title: "No one answers",
+    body: "You're on a roof, driving, or it's after hours. The call goes to voicemail.",
+  },
+  {
+    icon: Bell,
+    tone: "bg-secondary text-slate-500",
+    title: "They call a competitor",
+    body: "Within minutes, the next roofer on Google picks up — and wins your job.",
+  },
+];
+
+const STEPS = [
+  {
+    n: 1,
+    icon: Phone,
+    tone: "bg-brand-600",
+    title: "Lead calls or submits a form",
+    body: "A missed call, web form, or after-hours inquiry triggers Roof AI automatically.",
+  },
+  {
+    n: 2,
+    icon: MessageSquare,
+    tone: "bg-brand-600",
+    title: "Roof AI responds instantly",
+    body: "A personalized SMS goes out within 30 seconds, qualifies the lead, and answers questions.",
+  },
+  {
+    n: 3,
+    icon: Calendar,
+    tone: "bg-emerald-500",
+    title: "Inspection gets scheduled",
+    body: "The appointment lands directly on your Google Calendar — and you get a notification.",
+  },
+];
+
+const DASH_STATS = [
+  { icon: Users, tone: "bg-brand-50 text-brand-600", value: "24", label: "Leads Recovered", color: "text-brand-600" },
+  { icon: Phone, tone: "bg-brand-50 text-brand-600", value: "47", label: "Missed Calls Responded", color: "text-brand-600" },
+  { icon: Calendar, tone: "bg-emerald-50 text-emerald-600", value: "12", label: "Estimates Booked", color: "text-emerald-600" },
+  { icon: Clock, tone: "bg-brand-50 text-brand-600", value: "37s", label: "Avg Response Time", color: "text-brand-600" },
+];
+
+const PLAN_FEATURES = [
+  "AI Lead Follow-Up",
+  "Missed Call Recovery",
+  "Appointment Booking",
+  "Dashboard Access",
+  "Email & SMS Support",
+  "Google Calendar Integration",
+];
+
+const FAQS = [
+  {
+    q: "How does it work?",
+    a: "When you miss a call or get a web lead, Roof AI instantly sends a personalized text, qualifies the homeowner, answers their questions, and books an inspection straight onto your Google Calendar — all automatically, usually within 30 seconds.",
+  },
+  {
+    q: "Will this replace my receptionist?",
+    a: "No — it backs them up. Roof AI catches the calls and leads that slip through when your team is busy, on a roof, or off the clock. It never sleeps and never puts a lead on hold.",
+  },
+  {
+    q: "How long does setup take?",
+    a: "About 15 minutes. You sign up, get a business phone number, and connect your Google Calendar in one click. No sales call required.",
+  },
+  {
+    q: "Can I see every conversation?",
+    a: "Yes. Your dashboard shows every recovered lead, every response, and every booked estimate in one clean view, updated in real time.",
+  },
+  {
+    q: "What happens after hours?",
+    a: "Roof AI works 24/7. Late-night and weekend inquiries get the same instant response and booking experience as calls during business hours.",
+  },
+  {
+    q: "Can I cancel anytime?",
+    a: "Absolutely. There are no contracts and no setup fees. Start with a 7-day free trial and cancel anytime from your dashboard.",
+  },
+];
+
+export default function LandingPage() {
+  return (
+    <div className="flex min-h-screen flex-col">
+      <Navbar />
+      <main className="flex-1">
+        <Hero />
+        <Problem />
+        <HowItWorks />
+        <DashboardPreview />
+        <Pricing />
+        <TheMath />
+        <Faq />
+        <FinalCta />
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="hero-gradient">
+      <div className="container grid items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
+        <div>
+          <Badge variant="success" className="mb-6 py-1.5">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            Now answering missed calls in under 30 seconds
+          </Badge>
+          <h1 className="text-4xl font-extrabold leading-[1.08] text-ink sm:text-5xl">
+            Stop Losing Roofing Leads to{" "}
+            <span className="text-brand-600">Missed Calls</span> &amp; Slow Follow-Up
+          </h1>
+          <p className="mt-5 max-w-xl text-lg text-muted-foreground">
+            Roof AI Lead Recovery instantly responds to missed calls, web leads, and
+            after-hours inquiries to help roofing companies book more estimates.
+          </p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Button variant="secondary" size="lg">
+              <Play className="fill-brand-600 text-brand-600" /> Watch 90-Second Demo
+            </Button>
+            <Button size="lg" asChild>
+              <Link to="/signup">
+                Start Free Trial <ArrowRight />
+              </Link>
+            </Button>
+          </div>
+          <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+            <Check className="h-4 w-4 text-emerald-500" /> No sales call. Setup takes 15
+            minutes.
+          </p>
+        </div>
+        <div className="py-6">
+          <PhoneMockup />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SectionHeading({ eyebrow, title, subtitle, dark }) {
+  return (
+    <div className="mx-auto mb-12 max-w-2xl text-center">
+      <p className="mb-3 text-sm font-bold uppercase tracking-widest text-brand-600">
+        {eyebrow}
+      </p>
+      <h2 className={"text-3xl font-extrabold sm:text-4xl " + (dark ? "text-white" : "text-ink")}>
+        {title}
+      </h2>
+      {subtitle && (
+        <p className={"mt-4 text-lg " + (dark ? "text-slate-400" : "text-muted-foreground")}>
+          {subtitle}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function Problem() {
+  return (
+    <section className="py-20">
+      <div className="container">
+        <SectionHeading
+          eyebrow="The Problem"
+          title="Every Missed Call Costs Money"
+          subtitle="When a homeowner reaches voicemail, they don't wait around. They dial the next roofer on the list."
+        />
+        <div className="mx-auto grid max-w-3xl gap-5">
+          {PROBLEMS.map((p) => (
+            <div
+              key={p.title}
+              className="rounded-2xl border border-border bg-white p-7 shadow-sm"
+            >
+              <span className={"mb-5 flex h-12 w-12 items-center justify-center rounded-xl " + p.tone}>
+                <p.icon className="h-6 w-6" />
+              </span>
+              <h3 className="text-xl font-bold text-ink">{p.title}</h3>
+              <p className="mt-2 text-muted-foreground">{p.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HowItWorks() {
+  return (
+    <section id="how-it-works" className="bg-secondary/40 py-20">
+      <div className="container">
+        <SectionHeading eyebrow="How It Works" title="Three steps. Zero missed leads." />
+        <div className="mx-auto grid max-w-3xl gap-5">
+          {STEPS.map((s) => (
+            <div
+              key={s.n}
+              className="rounded-2xl border border-border bg-white p-7 shadow-sm"
+            >
+              <div className="mb-4 flex items-center gap-3">
+                <span className={"flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold text-white " + s.tone}>
+                  {s.n}
+                </span>
+                <s.icon className="h-5 w-5 text-brand-600" />
+              </div>
+              <h3 className="text-xl font-bold text-ink">{s.title}</h3>
+              <p className="mt-2 text-muted-foreground">{s.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function DashboardPreview() {
+  return (
+    <section className="py-20">
+      <div className="container">
+        <SectionHeading
+          eyebrow="Your Dashboard"
+          title="What You'll See In Your Dashboard"
+          subtitle="Every recovered lead, response, and booking — tracked in one clean view."
+        />
+        <div className="mx-auto grid max-w-3xl grid-cols-1 gap-5 sm:grid-cols-2">
+          {DASH_STATS.map((s) => (
+            <div key={s.label} className="rounded-2xl border border-border bg-white p-7 shadow-sm">
+              <span className={"mb-5 flex h-12 w-12 items-center justify-center rounded-xl " + s.tone}>
+                <s.icon className="h-6 w-6" />
+              </span>
+              <p className={"text-4xl font-extrabold " + s.color}>{s.value}</p>
+              <p className="mt-1 text-muted-foreground">{s.label}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-10 text-center">
+          <Link
+            to="/signup"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-600 hover:text-brand-700"
+          >
+            See the full dashboard <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Pricing() {
+  return (
+    <section id="pricing" className="bg-secondary/40 py-20">
+      <div className="container">
+        <SectionHeading
+          eyebrow="Pricing"
+          title="Simple, Transparent Pricing"
+          subtitle="One plan. Everything included. Recover a single job and it pays for itself."
+        />
+        <div className="mx-auto max-w-lg rounded-3xl border-2 border-brand-600 bg-white p-8 shadow-xl">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xl font-bold text-ink">Roof AI Lead Recovery</h3>
+            <Badge variant="success">7-Day Free Trial</Badge>
+          </div>
+          <div className="mt-4 flex items-end gap-1">
+            <span className="text-5xl font-extrabold text-ink">$299</span>
+            <span className="mb-1.5 text-muted-foreground">/month</span>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">No setup fees. Cancel anytime.</p>
+
+          <ul className="mt-6 space-y-3">
+            {PLAN_FEATURES.map((f) => (
+              <li key={f} className="flex items-center gap-3 text-ink">
+                <Check className="h-5 w-5 shrink-0 text-emerald-500" /> {f}
+              </li>
+            ))}
+          </ul>
+
+          <Button size="lg" className="mt-7 w-full" asChild>
+            <Link to="/signup">
+              Start Free Trial <ArrowRight />
+            </Link>
+          </Button>
+          <p className="mt-3 text-center text-sm text-muted-foreground">
+            7-day free trial · Cancel anytime
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TheMath() {
+  const cards = [
+    { value: "$12,000", label: "Average Roof Job Value", color: "text-white" },
+    { value: "$3,000+", label: "Gross Profit per Job", color: "text-emerald-400" },
+    { value: "$299", label: "Monthly Platform Cost", color: "text-brand-500" },
+  ];
+  return (
+    <section className="bg-ink-900 py-20 text-white">
+      <div className="container">
+        <SectionHeading dark eyebrow="The Math" title="What One Missed Roof Job Costs You" />
+        <div className="mx-auto grid max-w-3xl gap-5">
+          {cards.map((c) => (
+            <div
+              key={c.label}
+              className="rounded-2xl border border-white/10 bg-white/[0.04] py-10 text-center"
+            >
+              <p className={"text-5xl font-extrabold " + c.color}>{c.value}</p>
+              <p className="mt-2 text-slate-400">{c.label}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mx-auto mt-10 max-w-2xl text-center">
+          <p className="text-lg text-slate-300">
+            Recovering just{" "}
+            <span className="font-bold text-emerald-400">one additional roof job</span> can
+            pay for the platform many times over.
+          </p>
+          <Button size="lg" className="mt-7 shadow-[0_0_40px_rgba(37,99,235,0.5)]" asChild>
+            <Link to="/signup">
+              Start Your Free Trial <ArrowRight />
+            </Link>
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Faq() {
+  return (
+    <section id="faq" className="py-20">
+      <div className="container">
+        <SectionHeading eyebrow="FAQ" title="Frequently Asked Questions" />
+        <div className="mx-auto max-w-3xl">
+          <Accordion type="single" collapsible className="space-y-3">
+            {FAQS.map((f, i) => (
+              <AccordionItem key={i} value={`item-${i}`}>
+                <AccordionTrigger>{f.q}</AccordionTrigger>
+                <AccordionContent>{f.a}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FinalCta() {
+  return (
+    <section className="cta-gradient py-20 text-white">
+      <div className="container text-center">
+        <h2 className="text-3xl font-extrabold sm:text-4xl">Stop Losing Roofing Leads</h2>
+        <p className="mt-4 text-lg text-white/90">
+          No sales call. No demo scheduling. Just start.
+        </p>
+        <Button variant="white" size="lg" className="mt-8" asChild>
+          <Link to="/signup">
+            Start Free Trial <ArrowRight />
+          </Link>
+        </Button>
+      </div>
+    </section>
+  );
+}
