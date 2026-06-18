@@ -7,7 +7,6 @@ import { useAuth } from "@/context/AuthContext";
 import { SetupLayout } from "@/components/setup/SetupLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -19,7 +18,15 @@ import {
 } from "@/components/ui/select";
 import { formatPhone } from "@/lib/utils";
 
-const AREA_CODES = ["704", "980", "212", "214", "305", "404", "512", "602", "713", "832"];
+// Supported service cities and the area codes available in each.
+const CITIES = [
+  { id: "columbus-oh", label: "Columbus, OH", areaCodes: ["614", "380"] },
+  { id: "dallas-tx", label: "Dallas, TX", areaCodes: ["214", "469", "972", "945"] },
+  { id: "tampa-fl", label: "Tampa, FL", areaCodes: ["813", "656"] },
+  { id: "charlotte-nc", label: "Charlotte, NC", areaCodes: ["704", "980"] },
+];
+
+const cityById = (id) => CITIES.find((c) => c.id === id);
 
 export default function TwilioSetupPage() {
   const navigate = useNavigate();
@@ -27,11 +34,23 @@ export default function TwilioSetupPage() {
 
   const [existing, setExisting] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [areaCode, setAreaCode] = useState("704");
+  const [cityId, setCityId] = useState(CITIES[0].id);
+  const [areaCode, setAreaCode] = useState(CITIES[0].areaCodes[0]);
   const [available, setAvailable] = useState([]);
   const [searching, setSearching] = useState(false);
   const [selected, setSelected] = useState(null);
   const [purchasing, setPurchasing] = useState(false);
+
+  const areaCodes = cityById(cityId)?.areaCodes ?? [];
+
+  // Picking a new city resets the area code to that city's first one
+  // and clears any previous search results.
+  const handleCityChange = (id) => {
+    setCityId(id);
+    setAreaCode((cityById(id)?.areaCodes ?? [])[0] ?? "");
+    setAvailable([]);
+    setSelected(null);
+  };
 
   // Load any already-provisioned number.
   useEffect(() => {
@@ -135,15 +154,31 @@ export default function TwilioSetupPage() {
       ) : (
         <Card>
           <CardContent className="space-y-5 p-6">
+            <div className="space-y-1.5">
+              <Label>Location (city)</Label>
+              <Select value={cityId} onValueChange={handleCityChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose your city" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CITIES.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
               <div className="space-y-1.5">
                 <Label>Area code</Label>
-                <Select value={areaCode} onValueChange={setAreaCode}>
+                <Select value={areaCode} onValueChange={setAreaCode} disabled={!areaCodes.length}>
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select an area code" />
                   </SelectTrigger>
-                  <SelectContent>
-                    {AREA_CODES.map((c) => (
+                  <SelectContent className="max-h-72">
+                    {areaCodes.map((c) => (
                       <SelectItem key={c} value={c}>
                         {c}
                       </SelectItem>
@@ -151,7 +186,7 @@ export default function TwilioSetupPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button variant="secondary" onClick={searchNumbers} disabled={searching}>
+              <Button variant="secondary" onClick={searchNumbers} disabled={searching || !areaCode}>
                 {searching ? <Spinner /> : (<><Search className="h-4 w-4" /> Search</>)}
               </Button>
             </div>
