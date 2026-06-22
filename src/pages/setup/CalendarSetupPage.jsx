@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Calendar, Check, ArrowRight, Clock } from "lucide-react";
+import { Calendar, Check, ArrowRight, Clock, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, invokeFunction } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
@@ -45,6 +45,7 @@ export default function CalendarSetupPage() {
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(false);
 
   const [start, setStart] = useState("08:00");
   const [end, setEnd] = useState("17:00");
@@ -89,6 +90,22 @@ export default function CalendarSetupPage() {
       toast.error("Google connect failed. Is the google-oauth-start function deployed?");
       setConnecting(false);
     }
+  };
+
+  const disconnectCalendar = async () => {
+    if (!user) return;
+    setDisconnecting(true);
+    const { error } = await supabase
+      .from("calendar_connections")
+      .delete()
+      .eq("user_id", user.id);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      setConnection(null);
+      toast.success("Calendar disconnected.");
+    }
+    setDisconnecting(false);
   };
 
   const saveAndFinish = async () => {
@@ -166,17 +183,27 @@ export default function CalendarSetupPage() {
       ) : (
         <div className="space-y-5">
           <Card className="border-emerald-200 bg-emerald-50/40">
-            <CardContent className="flex items-center gap-3 p-5">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
-                <Check className="h-5 w-5 text-emerald-600" />
-              </span>
-              <div>
-                <p className="font-semibold text-ink">Connected</p>
-                <p className="text-sm text-muted-foreground">
-                  {connection.google_email || "Google account"} ·{" "}
-                  {connection.calendar_id || "primary"} calendar
-                </p>
+            <CardContent className="flex items-center justify-between gap-3 p-5">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+                  <Check className="h-5 w-5 text-emerald-600" />
+                </span>
+                <div>
+                  <p className="font-semibold text-ink">Connected</p>
+                  <p className="text-sm text-muted-foreground">
+                    {connection.google_email || "Google account"} ·{" "}
+                    {connection.calendar_id || "primary"} calendar
+                  </p>
+                </div>
               </div>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={disconnectCalendar}
+                disabled={disconnecting}
+              >
+                {disconnecting ? <Spinner className="h-4 w-4" /> : <><RefreshCw className="h-4 w-4" /> Change</>}
+              </Button>
             </CardContent>
           </Card>
 
