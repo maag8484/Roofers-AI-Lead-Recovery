@@ -105,6 +105,21 @@ Copy `.env.example` to `.env`. Browser needs `VITE_PUBLIC_SUPABASE_URL`,
 `VITE_PUBLIC_SUPABASE_ANON_KEY`, `VITE_PUBLIC_STRIPE_PUBLISHABLE_KEY`,
 `VITE_PUBLIC_GOOGLE_CLIENT_ID`. `.env` is gitignored — never commit secrets.
 
+## Auth flow (email confirmation is ON)
+
+- Supabase "Confirm email" is **enabled**, so `signUp()` returns a user but **no session** until
+  the user clicks the email link. Signup therefore CANNOT write to the DB at signup time.
+- Workaround: the signup wizard stashes all company details in the `signUp` **metadata**. On the
+  first authenticated load, `AuthContext.ensureCompany()` materializes the `roofing_companies`
+  row from that metadata. Don't re-add a pre-confirmation DB write to the wizard.
+- Gotcha: Supabase rejects clearly-fake emails (`@example.com`) with `email_address_invalid` —
+  test with a real domain. The built-in email service caps confirmation/reset sends (~3/hour);
+  `over_email_send_rate_limit` is a rate limit, not a bug. Configure custom SMTP for production.
+- Password reset: `resetPassword()` emails a link to `/reset-password`
+  ([ResetPasswordPage.jsx](src/pages/ResetPasswordPage.jsx)), which listens for the
+  `PASSWORD_RECOVERY` event and calls `updateUser({ password })`. `/reset-password` is an
+  unguarded public route (the recovery token creates a session).
+
 ## Conventions for edits
 
 - Match the existing style: JSX, Tailwind utility classes, `cn()` from `@/lib/utils`, `@/`
