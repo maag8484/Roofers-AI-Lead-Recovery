@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roof AI Lead Recovery — Process Flow</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 48px;
+    }
+
+    /* ── LANE WRAPPER ── */
+    .lanes {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 0;
+      max-width: 1100px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .lane {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 12px;
+      position: relative;
+    }
+
+    .lane-header {
+      width: 100%;
+      text-align: center;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .lane-header.blue  { background: #eff6ff; color: #2563eb; border: 2px solid #bfdbfe; }
+    .lane-header.green { background: #f0fdf4; color: #16a34a; border: 2px solid #bbf7d0; }
+    .lane-header.slate { background: #f1f5f9; color: #475569; border: 2px solid #cbd5e1; }
+
+    /* ── CARDS ── */
+    .card {
+      width: 100%;
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      position: relative;
+      text-align: center;
+    }
+
+    .card .icon {
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+
+    .card .label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 4px;
+    }
+
+    .card .desc {
+      font-size: 11.5px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    .card.blue-card  { border-color: #93c5fd; }
+    .card.green-card { border-color: #86efac; }
+    .card.slate-card { border-color: #cbd5e1; }
+
+    /* ── ARROWS ── */
+    .arrow-down {
+      width: 2px;
+      background: #cbd5e1;
+      flex-shrink: 0;
+      position: relative;
+      margin: 6px 0;
+      height: 28px;
+    }
+    .arrow-down::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 8px solid #94a3b8;
+    }
+
+    .arrow-down.blue::after  { border-top-color: #2563eb; }
+    .arrow-down.blue { background: #bfdbfe; }
+    .arrow-down.green::after { border-top-color: #16a34a; }
+    .arrow-down.green { background: #bbf7d0; }
+
+    /* ── HORIZONTAL CONNECTOR (between lanes) ── */
+    .h-connector {
+      max-width: 1100px;
+      margin: 0 auto 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 14px 0;
+    }
+
+    .h-connector .h-line {
+      height: 2px;
+      flex: 1;
+      background: #e2e8f0;
+      position: relative;
+    }
+
+    .h-connector .h-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #2563eb;
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      border-radius: 20px;
+      padding: 3px 12px;
+      white-space: nowrap;
+    }
+
+    /* ── SECTION DIVIDER ── */
+    .section-divider {
+      max-width: 1100px;
+      margin: 36px auto 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-divider .line { flex: 1; height: 1px; background: #e2e8f0; }
+    .section-divider .tag {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      white-space: nowrap;
+    }
+
+    /* ── FULL-WIDTH CARD (for cross-lane moments) ── */
+    .full-card {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px 28px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .full-card .icon { font-size: 32px; flex-shrink: 0; }
+    .full-card .label { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+    .full-card .desc  { font-size: 12px; color: #64748b; line-height: 1.5; }
+
+    .full-card.highlight {
+      border-color: #2563eb;
+      background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+    }
+    .full-card.success {
+      border-color: #16a34a;
+      background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 100%);
+    }
+
+    /* arrow from full-width card down */
+    .center-arrow {
+      display: flex;
+      justify-content: center;
+      margin: 4px 0;
+    }
+    .center-arrow .line {
+      width: 2px;
+      height: 28px;
+      background: #cbd5e1;
+      position: relative;
+    }
+    .center-arrow .line::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 8px solid #94a3b8;
+    }
+
+    /* ── LEGEND ── */
+    .legend {
+      max-width: 1100px;
+      margin: 48px auto 0;
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding-top: 24px;
+      border-top: 1px solid #e2e8f0;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .legend-dot {
+      width: 12px; height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 700px) {
+      .lanes { grid-template-columns: 1fr; }
+      .full-card { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>Roof AI Lead Recovery — Complete Process Flow</h1>
+<p class="subtitle">From a missed call to a booked appointment — and how the platform is managed</p>
+
+<!-- ═══════════════════════════════════════════
+     PART A — THE LEAD RECOVERY FLOW
+════════════════════════════════════════════ -->
+
+<div class="section-divider">
+  <div class="line"></div>
+  <div class="tag">A — Lead Recovery (What Happens in the Field)</div>
+  <div class="line"></div>
+</div>
+
+<!-- Step 1: Trigger -->
+<div class="full-card">
+  <div class="icon">📞</div>
+  <div>
+    <div class="label">Homeowner calls, texts, or submits a web form</div>
+    <div class="desc">A storm-damage inquiry, missed call, or after-hours contact triggers the system automatically. The roofing company doesn't need to do anything.</div>
+  </div>
+</div>
+
+<div class="center-arrow"><div class="line"></div></div>
+
+<!-- Step 2: AI Engine -->
+<div class="full-card highlight">
+  <div class="icon">🤖</div>
+  <div>
+    <div class="label">AI responds instantly (within 30 seconds)</div>
+    <div class="desc">The AI automation engine sends a personalized SMS, qualifies the homeowner, answers questions, and checks the roofer's available calendar slots — all automatically, 24/7.</div>
+  </div>
+</div>
+
+<div class="center-arrow"><div class="line"></div></div>
+
+<!-- Step 3: Booking -->
+<div class="full-card success">
+  <div class="icon">📅</div>
+  <div>
+    <div class="label">Inspection booked on the roofer's Google Calendar</div>
+    <div class="desc">The appointment lands directly on the roofing company's calendar. The customer dashboard updates in real time — no manual entry, no follow-up calls needed.</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PART B — THE WEBSITE & SIGN-UP FLOW
+════════════════════════════════════════════ -->
+
+<div class="section-divider">
+  <div class="line"></div>
+  <div class="tag">B — Website & Sign-Up Flow (How a Roofer Joins)</div>
+  <div class="line"></div>
+</div>
+
+<div class="lanes">
+
+  <!-- LANE 1: PUBLIC WEBSITE -->
+  <div class="lane">
+    <div class="lane-header blue">🌐 Public Website</div>
+
+    <div class="card blue-card">
+      <div class="icon">🏠</div>
+      <div class="label">Landing Page</div>
+      <div class="desc">Hero · Problem · How It Works · Dashboard Preview · Pricing · FAQ</div>
+    </div>
+    <div class="arrow-down blue"></div>
+
+    <div class="card blue-card">
+      <div class="icon">💲</div>
+      <div class="label">Pricing Section</div>
+      <div class="desc">$299/month · 7-day free trial · No setup fee · Cancel anytime</div>
+    </div>
+    <div class="arrow-down blue"></div>
+
+    <div class="card blue-card">
+      <div class="icon">👆</div>
+      <div class="label">Click "Start Free Trial"</div>
+      <div class="desc">Roofing company decides to sign up and clicks the CTA button</div>
+    </div>
+  </div>
+
+  <!-- LANE 2: SIGN-UP WIZARD -->
+  <div class="lane">
+    <div class="lane-header blue">📝 Sign-Up Wizard (3 Steps)</div>
+
+    <div class="card blue-card">
+      <div class="icon">👤</div>
+      <div class="label">Step 1 — Account</div>
+      <div class="desc">Company name · Owner name · Email · Password · Phone</div>
+    </div>
+    <div class="arrow-down blue"></div>
+
+    <div class="card blue-card">
+      <div class="icon">🏢</div>
+      <div class="label">Step 2 — Business Info</div>
+      <div class="desc">Business phone · Service area · Website · Monthly lead volume</div>
+    </div>
+    <div class="arrow-down blue"></div>
+
+    <div class="card blue-card">
+      <div class="icon">💳</div>
+      <div class="label">Step 3 — Payment</div>
+      <div class="desc">Secure Stripe Checkout · Card stored for $299/mo after trial ends</div>
+    </div>
+  </div>
+
+  <!-- LANE 3: ONBOARDING SETUP -->
+  <div class="lane">
+    <div class="lane-header green">⚙️ Onboarding Setup</div>
+
+    <div class="card green-card">
+      <div class="icon">📱</div>
+      <div class="label">Get a Phone Number</div>
+      <div class="desc">Search by area code · Pick a number · Provisioned instantly via Twilio</div>
+    </div>
+    <div class="arrow-down green"></div>
+
+    <div class="card green-card">
+      <div class="icon">📆</div>
+      <div class="label">Connect Google Calendar</div>
+      <div class="desc">One-click sign-in · Set availability hours · Set appointment length</div>
+    </div>
+    <div class="arrow-down green"></div>
+
+    <div class="card green-card">
+      <div class="icon">🚀</div>
+      <div class="label">Go Live!</div>
+      <div class="desc">Account activates · AI starts answering calls · Dashboard goes live</div>
+    </div>
+  </div>
+
+</div><!-- /lanes -->
+
+<!-- ═══════════════════════════════════════════
+     PART C — THE CUSTOMER DASHBOARD
+════════════════════════════════════════════ -->
+
+<div class="section-divider">
+  <div class="line"></div>
+  <div class="tag">C — Customer Dashboard (What the Roofer Sees Every Day)</div>
+  <div class="line"></div>
+</div>
+
+<div class="lanes">
+
+  <div class="lane">
+    <div class="lane-header blue">📊 Live Metrics</div>
+    <div class="card blue-card">
+      <div class="icon">📈</div>
+      <div class="label">4 Key Stats</div>
+      <div class="desc">
+        Leads Recovered<br>
+        Missed Calls Responded<br>
+        Estimates Booked<br>
+        Avg Response Time
+      </div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="lane-header green">📋 Appointments</div>
+    <div class="card green-card">
+      <div class="icon">⚡</div>
+      <div class="label">Real-Time Appointment Feed</div>
+      <div class="desc">
+        New bookings appear instantly<br>
+        Lead name · Phone · Address<br>
+        Date &amp; time · Service type<br>
+        Toast notification on arrival
+      </div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="lane-header slate">🔧 Account Panel</div>
+    <div class="card slate-card">
+      <div class="icon">🛠️</div>
+      <div class="label">Side Panel</div>
+      <div class="desc">
+        Business phone number (copy)<br>
+        Calendar connection status<br>
+        Edit availability<br>
+        Billing settings
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PART D — THE ADMIN PORTAL
+════════════════════════════════════════════ -->
+
+<div class="section-divider">
+  <div class="line"></div>
+  <div class="tag">D — Admin Portal (Internal Business Overview)</div>
+  <div class="line"></div>
+</div>
+
+<div class="lanes">
+
+  <div class="lane">
+    <div class="lane-header slate">🔐 Access</div>
+    <div class="card slate-card">
+      <div class="icon">🛡️</div>
+      <div class="label">Admin Login</div>
+      <div class="desc">Separate secure login · Admin-only route · Read-only access to all data</div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="lane-header slate">👥 Customers</div>
+    <div class="card slate-card">
+      <div class="icon">🏗️</div>
+      <div class="label">Customer Overview</div>
+      <div class="desc">
+        Total / Live / Trialing counts<br>
+        Search any customer<br>
+        Company · Owner · Phone<br>
+        Calendar · Plan · Status · Joined
+      </div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="lane-header slate">📅 Activity</div>
+    <div class="card slate-card">
+      <div class="icon">📋</div>
+      <div class="label">Recent Appointments</div>
+      <div class="desc">All bookings across every customer · Lead · Phone · Service · Time booked</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PART E — TECH & INTEGRATIONS
+════════════════════════════════════════════ -->
+
+<div class="section-divider">
+  <div class="line"></div>
+  <div class="tag">E — How the Systems Connect</div>
+  <div class="line"></div>
+</div>
+
+<div class="lanes">
+
+  <div class="lane">
+    <div class="lane-header blue">💳 Stripe</div>
+    <div class="card blue-card">
+      <div class="icon">🔒</div>
+      <div class="label">Billing & Subscriptions</div>
+      <div class="desc">Checkout → Webhook → Subscription record auto-updated in database</div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="lane-header blue">📞 Twilio</div>
+    <div class="card blue-card">
+      <div class="icon">🌐</div>
+      <div class="label">Phone Number Provisioning</div>
+      <div class="desc">Customer picks number → purchased via API → voice calls routed to AI engine</div>
+    </div>
+  </div>
+
+  <div class="lane">
+    <div class="lane-header green">🤖 AI Engine (n8n)</div>
+    <div class="card green-card">
+      <div class="icon">⚙️</div>
+      <div class="label">Automation Backend</div>
+      <div class="desc">Checks calendar availability → Books appointment → Dashboard updates live</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#bfdbfe;border:1.5px solid #93c5fd"></div> Customer-facing (website / portal)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#bbf7d0;border:1.5px solid #86efac"></div> Setup / live actions</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#e2e8f0;border:1.5px solid #cbd5e1"></div> Admin / internal</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#eff6ff;border:1.5px solid #2563eb"></div> Key platform moment</div>
+</div>
+
+</body>
+</html>
