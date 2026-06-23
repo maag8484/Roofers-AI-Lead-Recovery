@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --version)",
+      "Bash(npm --version)",
+      "Bash(git --version)",
+      "mcp__claude_ai_Supabase__list_organizations",
+      "mcp__claude_ai_Supabase__list_projects",
+      "Bash(npm run *)",
+      "Bash(npm audit *)",
+      "Bash(timeout 18 npm run dev)",
+      "Read(//tmp/**)",
+      "Bash(curl -s -o /dev/null -w \"status:%{http_code}\\\\n\" http://localhost:5173/)",
+      "Bash(psql --version)",
+      "Bash(docker --version)",
+      "Bash(docker rm *)",
+      "Bash(docker run *)"
+    ]
+  }
+}

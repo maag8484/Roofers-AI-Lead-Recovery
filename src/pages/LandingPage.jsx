@@ -10,6 +10,9 @@ import {
   Calendar,
   Users,
   Clock,
+  Bot,
+  ClipboardCheck,
+  ChevronDown,
 } from "lucide-react";
 import { Navbar } from "@/components/marketing/Navbar";
 import { Footer } from "@/components/marketing/Footer";
@@ -69,10 +72,26 @@ const STEPS = [
 ];
 
 const DASH_STATS = [
-  { icon: Users, tone: "bg-brand-50 text-brand-600", value: "24", label: "Leads Recovered", color: "text-brand-600" },
-  { icon: Phone, tone: "bg-brand-50 text-brand-600", value: "47", label: "Missed Calls Responded", color: "text-brand-600" },
-  { icon: Calendar, tone: "bg-emerald-50 text-emerald-600", value: "12", label: "Estimates Booked", color: "text-emerald-600" },
-  { icon: Clock, tone: "bg-brand-50 text-brand-600", value: "37s", label: "Avg Response Time", color: "text-brand-600" },
+  { icon: Users, tone: "bg-brand-50 text-brand-600", value: "17", label: "Leads Recovered", color: "text-brand-600" },
+  { icon: Phone, tone: "bg-brand-50 text-brand-600", value: "23", label: "Missed Calls Responded", color: "text-brand-600" },
+  { icon: Calendar, tone: "bg-emerald-50 text-emerald-600", value: "8", label: "Inspections Booked", color: "text-emerald-600" },
+  { icon: Clock, tone: "bg-brand-50 text-brand-600", value: "18s", label: "Avg Response Time", color: "text-brand-600" },
+];
+
+const TRUST_BUILDERS = [
+  "Setup in under 15 minutes",
+  "No contracts",
+  "Cancel anytime",
+  "Works with Google Calendar",
+  "No sales call required",
+];
+
+const WHO_ITS_FOR = [
+  "Run Google Ads",
+  "Use Google LSAs",
+  "Get website leads",
+  "Miss calls after hours",
+  "Want more inspections booked",
 ];
 
 const PLAN_FEATURES = [
@@ -119,10 +138,13 @@ export default function LandingPage() {
         <Hero />
         <Problem />
         <HowItWorks />
+        <CalendarFlow />
+        <WhoItsFor />
         <DashboardPreview />
         <Pricing />
         <TheMath />
         <Faq />
+        <BottomCta />
         <FinalCta />
       </main>
       <Footer />
@@ -137,7 +159,7 @@ function Hero() {
         <div>
           <Badge variant="success" className="mb-6 py-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            Now answering missed calls in under 30 seconds
+            Recovering Roofing Leads 24/7
           </Badge>
           <h1 className="text-4xl font-extrabold leading-[1.08] text-ink sm:text-5xl">
             Stop Losing Roofing Leads to{" "}
@@ -157,10 +179,13 @@ function Hero() {
               </Link>
             </Button>
           </div>
-          <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-            <Check className="h-4 w-4 text-emerald-500" /> No sales call. Setup takes 15
-            minutes.
-          </p>
+          <ul className="mt-6 grid max-w-md grid-cols-1 gap-2 sm:grid-cols-2">
+            {TRUST_BUILDERS.map((t) => (
+              <li key={t} className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Check className="h-4 w-4 shrink-0 text-emerald-500" /> {t}
+              </li>
+            ))}
+          </ul>
         </div>
         <div className="py-6">
           <PhoneMockup />
@@ -235,6 +260,66 @@ function HowItWorks() {
               </div>
               <h3 className="text-xl font-bold text-ink">{s.title}</h3>
               <p className="mt-2 text-muted-foreground">{s.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CalendarFlow() {
+  const flow = [
+    { icon: Phone, tone: "bg-brand-50 text-brand-600", label: "Lead" },
+    { icon: Bot, tone: "bg-brand-50 text-brand-600", label: "AI responds" },
+    { icon: Calendar, tone: "bg-emerald-50 text-emerald-600", label: "Google Calendar" },
+    { icon: ClipboardCheck, tone: "bg-emerald-50 text-emerald-600", label: "Roof Inspection" },
+  ];
+  return (
+    <section className="py-20">
+      <div className="container">
+        <SectionHeading
+          eyebrow="The Outcome"
+          title="From Missed Lead to Booked Inspection"
+          subtitle="Roof AI turns a single inquiry into an inspection on your calendar — automatically."
+        />
+        <div className="mx-auto flex max-w-4xl flex-col items-center justify-center gap-4 sm:flex-row">
+          {flow.map((f, i) => (
+            <div key={f.label} className="flex flex-col items-center gap-4 sm:flex-row">
+              <div className="flex w-40 flex-col items-center rounded-2xl border border-border bg-white p-6 text-center shadow-sm">
+                <span className={"mb-3 flex h-12 w-12 items-center justify-center rounded-xl " + f.tone}>
+                  <f.icon className="h-6 w-6" />
+                </span>
+                <p className="font-semibold text-ink">{f.label}</p>
+              </div>
+              {i < flow.length - 1 && (
+                <ChevronDown className="h-6 w-6 shrink-0 text-brand-600 sm:-rotate-90" />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function WhoItsFor() {
+  return (
+    <section className="bg-secondary/40 py-20">
+      <div className="container">
+        <SectionHeading
+          eyebrow="Who It's For"
+          title="Perfect For Roofing Companies That:"
+          subtitle="If any of these sound like you, Roof AI will pay for itself fast."
+        />
+        <div className="mx-auto grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
+          {WHO_ITS_FOR.map((w) => (
+            <div
+              key={w}
+              className="flex items-center gap-3 rounded-2xl border border-border bg-white p-5 shadow-sm"
+            >
+              <Check className="h-5 w-5 shrink-0 text-emerald-500" />
+              <span className="font-medium text-ink">{w}</span>
             </div>
           ))}
         </div>
@@ -370,6 +455,28 @@ function Faq() {
               </AccordionItem>
             ))}
           </Accordion>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BottomCta() {
+  return (
+    <section className="py-20">
+      <div className="container">
+        <div className="mx-auto max-w-3xl rounded-3xl border-2 border-brand-600 bg-brand-50/40 p-10 text-center sm:p-14">
+          <h2 className="text-3xl font-extrabold text-ink sm:text-4xl">
+            Start Recovering Missed Roofing Leads Today
+          </h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            No sales call required. Setup takes less than 15 minutes.
+          </p>
+          <Button size="lg" className="mt-8" asChild>
+            <Link to="/signup">
+              Start Free Trial <ArrowRight />
+            </Link>
+          </Button>
         </div>
       </div>
     </section>

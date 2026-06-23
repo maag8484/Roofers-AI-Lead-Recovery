@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +30,13 @@ export default function LoginPage() {
       return;
     }
     toast.success("Welcome back!");
-    navigate(location.state?.from || "/dashboard", { replace: true });
+    // Admins go straight to the admin panel; everyone else to the dashboard.
+    const { data: admin } = await supabase.rpc("is_admin");
+    if (admin === true) {
+      navigate("/admin", { replace: true });
+    } else {
+      navigate(location.state?.from || "/dashboard", { replace: true });
+    }
   };
 
   const handleForgot = async () => {

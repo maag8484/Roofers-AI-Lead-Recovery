@@ -4,6 +4,7 @@ import { ProtectedRoute, PublicOnlyRoute, AdminRoute } from "@/components/Protec
 import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/LoginPage";
 import SignupPage from "@/pages/SignupPage";
+import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import TwilioSetupPage from "@/pages/setup/TwilioSetupPage";
 import CalendarSetupPage from "@/pages/setup/CalendarSetupPage";
 import DashboardPage from "@/pages/DashboardPage";
@@ -19,6 +20,9 @@ export default function App() {
       <Route path="/" element={<LandingPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/terms" element={<TermsPage />} />
+
+      {/* Password reset target (recovery session lands here from the email link) */}
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
 
       {/* Auth (redirect away if already signed in) */}
       <Route

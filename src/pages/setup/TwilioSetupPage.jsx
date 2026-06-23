@@ -32,7 +32,7 @@ export default function TwilioSetupPage() {
   const [existing, setExisting] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const [selectedLocation, setSelectedLocation] = useState(null); // LOCATIONS entry
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [selectedCode, setSelectedCode] = useState("");
 
   const [available, setAvailable] = useState([]);

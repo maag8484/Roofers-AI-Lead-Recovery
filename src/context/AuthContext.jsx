@@ -9,30 +9,66 @@ export function AuthProvider({ children }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const loadProfile = useCallback(async (userId) => {
-    if (!userId) {
-      setProfile(null);
-      setIsAdmin(false);
-      return;
-    }
-    // Pull the user's company + setup status and admin flag together.
-    const [{ data, error }, adminRes] = await Promise.all([
-      supabase
-        .from("roofing_companies")
-        .select(
-          "id, company_name, business_phone, website, service_area, monthly_leads_segment, setup_step, is_live"
-        )
-        .eq("user_id", userId)
-        .maybeSingle(),
-      // is_admin() is a SECURITY DEFINER RPC; returns false for non-admins.
-      supabase.rpc("is_admin"),
-    ]);
+  const COMPANY_COLS =
+    "id, company_name, business_phone, website, service_area, monthly_leads_segment, setup_step, is_live";
+
+  /**
+   * Signup stashes the company details in the user's auth metadata because
+   * email confirmation is ON (no session = no DB write at signup time). The
+   * first time a confirmed user is authenticated, materialize their
+   * roofing_companies row from that metadata.
+   */
+  const ensureCompany = useCallback(async (authUser) => {
+    const meta = authUser?.user_metadata ?? {};
+    if (!meta.company_name) return null; // nothing to create (e.g. admin)
+    const { data, error } = await supabase
+      .from("roofing_companies")
+      .insert({
+        user_id: authUser.id,
+        company_name: meta.company_name,
+        business_phone: meta.business_phone ?? null,
+        service_area: meta.service_area ?? null,
+        website: meta.website ?? null,
+        monthly_leads_segment: meta.monthly_leads_segment ?? null,
+        setup_step: 1,
+      })
+      .select(COMPANY_COLS)
+      .single();
     if (error) {
-      console.error("[auth] failed to load profile", error.message);
+      console.error("[auth] failed to create company row", error.message);
+      return null;
     }
-    setProfile(data ?? null);
-    setIsAdmin(adminRes?.data === true);
+    return data;
   }, []);
+
+  const loadProfile = useCallback(
+    async (userId, authUser) => {
+      if (!userId) {
+        setProfile(null);
+        setIsAdmin(false);
+        return;
+      }
+      // Pull the user's company + setup status and admin flag together.
+      const [{ data, error }, adminRes] = await Promise.all([
+        supabase.from("roofing_companies").select(COMPANY_COLS).eq("user_id", userId).maybeSingle(),
+        // is_admin() is a SECURITY DEFINER RPC; returns false for non-admins.
+        supabase.rpc("is_admin"),
+      ]);
+      if (error) {
+        console.error("[auth] failed to load profile", error.message);
+      }
+      const admin = adminRes?.data === true;
+      setIsAdmin(admin);
+
+      // No company row yet + has signup metadata + not an admin → create it.
+      let company = data ?? null;
+      if (!company && !admin && authUser) {
+        company = await ensureCompany(authUser);
+      }
+      setProfile(company);
+    },
+    [ensureCompany]
+  );
 
   useEffect(() => {
     let active = true;
@@ -40,14 +76,14 @@ export function AuthProvider({ children }) {
     supabase.auth.getSession().then(({ data }) => {
       if (!active) return;
       setSession(data.session);
-      loadProfile(data.session?.user?.id).finally(() => setLoading(false));
+      loadProfile(data.session?.user?.id, data.session?.user).finally(() => setLoading(false));
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
-      loadProfile(newSession?.user?.id);
+      loadProfile(newSession?.user?.id, newSession?.user);
     });
 
     return () => {
@@ -62,7 +98,7 @@ export function AuthProvider({ children }) {
     profile,
     isAdmin,
     loading,
-    refreshProfile: () => loadProfile(session?.user?.id),
+    refreshProfile: () => loadProfile(session?.user?.id, session?.user),
     signIn: (email, password) =>
       supabase.auth.signInWithPassword({ email, password }),
     signUp: (email, password, metadata) =>
@@ -70,7 +106,7 @@ export function AuthProvider({ children }) {
     signOut: () => supabase.auth.signOut(),
     resetPassword: (email) =>
       supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/login`,
+        redirectTo: `${window.location.origin}/reset-password`,
       }),
   };
 

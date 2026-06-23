@@ -55,7 +55,7 @@ Deno.serve(async (req) => {
           .from("roofing_companies")
           .update({ setup_step: 3 })
           .eq("user_id", userId)
-          .lt("setup_step", 3);
+          .lt("setup_step", 3); 
       }
     }
     return new Response(JSON.stringify({ received: true }), { status: 200 });

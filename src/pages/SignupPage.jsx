@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Eye, EyeOff, ArrowRight, ArrowLeft, CreditCard, Check } from "lucide-react";
+import { Eye, EyeOff, ArrowRight, ArrowLeft, MailCheck } from "lucide-react";
 import { toast } from "sonner";
-import { supabase, invokeFunction } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { AuthLayout } from "@/components/auth/AuthLayout";
 import { Stepper } from "@/components/Stepper";
@@ -13,11 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-const STEPS = [
-  { label: "Account" },
-  { label: "Business" },
-  { label: "Payment" },
-];
+const STEPS = [{ label: "Account" }, { label: "Business" }];
 
 const LEAD_SEGMENTS = [
   { value: "under_10", label: "Under 10" },
@@ -27,91 +23,119 @@ const LEAD_SEGMENTS = [
 ];
 
 export default function SignupPage() {
-  const navigate = useNavigate();
   const { signUp } = useAuth();
   const [step, setStep] = useState(1);
   const [showPw, setShowPw] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [data, setData] = useState({});
+  const [confirmEmail, setConfirmEmail] = useState(null); // set => show "check your email"
 
   const accountForm = useForm({ defaultValues: data });
   const businessForm = useForm({ defaultValues: data });
 
-  // Step 1: create the auth account.
-  const submitAccount = async (values) => {
-    setSubmitting(true);
-    const { error } = await signUp(values.email, values.password, {
-      full_name: values.owner_name,
-      phone: values.phone,
-    });
-    setSubmitting(false);
-    if (error) {
-      toast.error(error.message || "Could not create account.");
-      return;
-    }
+  // Step 1: validate account fields locally (no network), then advance.
+  const submitAccount = (values) => {
     setData((d) => ({ ...d, ...values }));
     setStep(2);
   };
 
-  // Step 2: persist company info, then move to payment.
+  // Step 2: create the account with ALL details in the signUp metadata.
+  // Because email confirmation is ON, signUp returns a user but NO session —
+  // so we cannot write to the DB yet. The roofing_companies row is created on
+  // first authenticated load (see ensureCompany in DashboardPage) from this
+  // same metadata. This keeps the whole signup pre-confirmation network-free
+  // except for the one signUp call.
   const submitBusiness = async (values) => {
     setSubmitting(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      toast.error("Session expired. Please sign in again.");
-      setSubmitting(false);
-      navigate("/login");
-      return;
-    }
-    const { error } = await supabase.from("roofing_companies").upsert(
-      {
-        user_id: user.id,
-        company_name: data.company_name,
-        business_phone: values.business_phone,
-        service_area: values.service_area,
-        website: values.website,
-        monthly_leads_segment: values.monthly_leads_segment,
-        setup_step: 2,
-      },
-      { onConflict: "user_id" }
-    );
+    const all = { ...data, ...values };
+    const { data: result, error } = await signUp(all.email, all.password, {
+      full_name: all.owner_name,
+      phone: all.phone,
+      company_name: all.company_name,
+      business_phone: all.business_phone,
+      service_area: all.service_area,
+      website: all.website || null,
+      monthly_leads_segment: all.monthly_leads_segment || null,
+    });
     setSubmitting(false);
+
     if (error) {
-      toast.error(error.message);
+      // Surface the real Supabase reason (e.g. invalid email, weak password,
+      // user already registered) instead of a generic message.
+      toast.error(error.message || "Could not create account.");
       return;
     }
-    setData((d) => ({ ...d, ...values }));
-    setStep(3);
-  };
 
-  // Step 3: kick off Stripe Checkout via edge function.
-  const startCheckout = async (trial) => {
-    setSubmitting(true);
-    try {
-      const res = await invokeFunction("stripe-create-checkout", {
-        trial_type: trial, // 'free_7' | 'dollar_7'
-        success_url: `${window.location.origin}/setup/twilio`,
-        cancel_url: `${window.location.origin}/signup`,
-      });
-      if (res?.url) {
-        window.location.href = res.url;
-      } else {
-        throw new Error("No checkout URL returned.");
-      }
-    } catch (err) {
-      // Edge function not deployed yet — let the user continue setup in dev.
-      console.error(err);
-      toast.message("Stripe not configured yet — continuing to setup.", {
-        description: "Deploy the stripe-create-checkout function to enable billing.",
-      });
-      navigate("/setup/twilio");
-    } finally {
-      setSubmitting(false);
+    // If confirmation is required, there is a user but no session.
+    if (result?.user && !result?.session) {
+      setConfirmEmail(all.email);
+      return;
+    }
+
+    // If confirmation is OFF (instant session), the dashboard will pick it up.
+    if (result?.session) {
+      window.location.href = "/dashboard";
     }
   };
 
+  const resend = async () => {
+    if (!confirmEmail) return;
+    const { error } = await supabase.auth.resend({ type: "signup", email: confirmEmail });
+    if (error) toast.error(error.message);
+    else toast.success("Confirmation email re-sent.");
+  };
+
+  // ---- Confirmation screen ----
+  if (confirmEmail) {
+    return (
+      <AuthLayout
+        footer={
+          <>
+            Wrong email?{" "}
+            <button
+              onClick={() => {
+                setConfirmEmail(null);
+                setStep(1);
+              }}
+              className="font-semibold text-brand-600 hover:underline"
+            >
+              Start over
+            </button>
+          </>
+        }
+      >
+        <div className="space-y-5 text-center">
+          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-brand-50">
+            <MailCheck className="h-7 w-7 text-brand-600" />
+          </span>
+          <div>
+            <h1 className="text-2xl font-extrabold text-ink">Confirm your email</h1>
+            <p className="mt-2 text-muted-foreground">
+              We sent a confirmation link to{" "}
+              <span className="font-semibold text-ink">{confirmEmail}</span>. Click it to
+              activate your account, then sign in to finish setup.
+            </p>
+          </div>
+          <div className="rounded-xl border border-border bg-secondary/40 p-4 text-left text-sm text-muted-foreground">
+            Didn't get it? Check your spam folder, or resend below. The link expires after a
+            while — request a fresh one if needed.
+          </div>
+          <div className="flex flex-col gap-2">
+            <Button variant="secondary" onClick={resend}>
+              Resend confirmation email
+            </Button>
+            <Button asChild>
+              <Link to="/login">
+                Go to Sign In <ArrowRight />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </AuthLayout>
+    );
+  }
+
+  // ---- Wizard ----
   return (
     <AuthLayout
       wide
@@ -153,7 +177,13 @@ export default function SignupPage() {
             label="Email"
             type="email"
             placeholder="you@company.com"
-            rules={{ required: "Email is required" }}
+            rules={{
+              required: "Email is required",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Enter a valid email address",
+              },
+            }}
           />
           <div className="space-y-1.5">
             <Label htmlFor="password">Password</Label>
@@ -189,8 +219,8 @@ export default function SignupPage() {
             placeholder="(555) 123-4567"
             rules={{ required: "Phone is required" }}
           />
-          <Button type="submit" className="w-full" disabled={submitting}>
-            {submitting ? <Spinner className="text-white" /> : (<>Continue Setup <ArrowRight /></>)}
+          <Button type="submit" className="w-full">
+            Continue <ArrowRight />
           </Button>
         </form>
       )}
@@ -241,47 +271,13 @@ export default function SignupPage() {
               <ArrowLeft /> Back
             </Button>
             <Button type="submit" className="flex-1" disabled={submitting}>
-              {submitting ? <Spinner className="text-white" /> : (<>Continue <ArrowRight /></>)}
-            </Button>
-          </div>
-        </form>
-      )}
-
-      {step === 3 && (
-        <div className="space-y-5">
-          <div className="text-center">
-            <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50">
-              <CreditCard className="h-6 w-6 text-brand-600" />
-            </span>
-            <h2 className="text-lg font-bold text-ink">Start your free trial</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              $299/month after trial · Cancel anytime · No setup fees
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-border bg-secondary/40 p-4">
-            <p className="mb-2 text-sm font-semibold text-ink">Everything included:</p>
-            <ul className="grid gap-1.5 text-sm text-muted-foreground sm:grid-cols-2">
-              {["AI Lead Follow-Up", "Missed Call Recovery", "Appointment Booking", "Dashboard Access", "Email & SMS Support", "Google Calendar"].map((f) => (
-                <li key={f} className="flex items-center gap-1.5">
-                  <Check className="h-4 w-4 text-emerald-500" /> {f}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Button variant="secondary" onClick={() => startCheckout("free_7")} disabled={submitting}>
-              7-day free trial
-            </Button>
-            <Button onClick={() => startCheckout("dollar_7")} disabled={submitting}>
-              {submitting ? <Spinner className="text-white" /> : "$1 for 7 days"}
+              {submitting ? <Spinner className="text-white" /> : (<>Create Account <ArrowRight /></>)}
             </Button>
           </div>
           <p className="text-center text-xs text-muted-foreground">
-            You'll be redirected to Stripe to complete payment securely.
+            We'll email you a confirmation link. Payment &amp; setup come right after you sign in.
           </p>
-        </div>
+        </form>
       )}
     </AuthLayout>
   );
