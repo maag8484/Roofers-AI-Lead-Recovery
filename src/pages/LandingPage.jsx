@@ -94,6 +94,7 @@ const WHO_ITS_FOR = [
   "Want more inspections booked",
 ];
 
+
 const PLAN_FEATURES = [
   "AI Lead Follow-Up",
   "Missed Call Recovery",
