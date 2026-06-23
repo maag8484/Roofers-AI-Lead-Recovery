@@ -43,8 +43,8 @@ export default function PrivacyPage() {
         <p className="mt-3">
           <strong>Help:</strong> For assistance, reply <strong>HELP</strong> to any message or
           contact us at{" "}
-          <a className="text-brand-600 hover:underline" href="mailto:hello@roofaileadrecovery.com">
-            hello@roofaileadrecovery.com
+          <a className="text-brand-600 hover:underline" href="mailto:support@roofaileadrecovery.com">
+            support@roofaileadrecovery.com
           </a>.
         </p>
         <p className="mt-3">
@@ -128,8 +128,8 @@ export default function PrivacyPage() {
         </ul>
         <p className="mt-3">
           To exercise any of these rights, contact us at{" "}
-          <a className="text-brand-600 hover:underline" href="mailto:hello@roofaileadrecovery.com">
-            hello@roofaileadrecovery.com
+          <a className="text-brand-600 hover:underline" href="mailto:support@roofaileadrecovery.com">
+            support@roofaileadrecovery.com
           </a>.
         </p>
       </LegalSection>
@@ -145,8 +145,8 @@ export default function PrivacyPage() {
       <LegalSection heading="Contact">
         <p>
           If you have questions about this Privacy Policy, please contact us at{" "}
-          <a className="text-brand-600 hover:underline" href="mailto:hello@roofaileadrecovery.com">
-            hello@roofaileadrecovery.com
+          <a className="text-brand-600 hover:underline" href="mailto:support@roofaileadrecovery.com">
+            support@roofaileadrecovery.com
           </a>{" "}
           or write to us at: Roof AI Lead Recovery, roofaileadrecovery.com.
         </p>
