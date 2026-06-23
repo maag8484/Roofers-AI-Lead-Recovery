@@ -8,6 +8,7 @@ import ResetPasswordPage from "@/pages/ResetPasswordPage";
 import TwilioSetupPage from "@/pages/setup/TwilioSetupPage";
 import CalendarSetupPage from "@/pages/setup/CalendarSetupPage";
 import DashboardPage from "@/pages/DashboardPage";
+import BillingPage from "@/pages/BillingPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import PrivacyPage from "@/pages/legal/PrivacyPage";
 import TermsPage from "@/pages/legal/TermsPage";
@@ -66,6 +67,16 @@ export default function App() {
         element={
           <ProtectedRoute>
             <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Billing (auth required) */}
+      <Route
+        path="/billing"
+        element={
+          <ProtectedRoute>
+            <BillingPage />
           </ProtectedRoute>
         }
       />

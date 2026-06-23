@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Phone,
   Calendar,
@@ -14,9 +14,11 @@ import {
   Rocket,
   MapPin,
   Shield,
+  PartyPopper,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabase";
+import { supabase, invokeFunction } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { Logo } from "@/components/Logo";
 import { Card, CardContent } from "@/components/ui/card";
@@ -28,11 +30,13 @@ import { formatPhone, formatDateTime } from "@/lib/utils";
 export default function DashboardPage() {
   const { user, profile, isAdmin, signOut } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [loading, setLoading] = useState(true);
   const [twilio, setTwilio] = useState(null);
   const [calendar, setCalendar] = useState(null);
   const [subscription, setSubscription] = useState(null);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [stats, setStats] = useState({ booked: 0, leads: 0, avgResponse: null });
 
@@ -74,6 +78,14 @@ export default function DashboardPage() {
     loadData();
   }, [loadData]);
 
+  useEffect(() => {
+    if (searchParams.get("payment") === "success") {
+      setShowPaymentSuccess(true);
+      // Clean the URL without reload
+      window.history.replaceState({}, "", "/dashboard");
+    }
+  }, [searchParams]);
+
   // Realtime: new appointments stream straight into the list.
   useEffect(() => {
     if (!user) return;
@@ -103,6 +115,20 @@ export default function DashboardPage() {
     navigate("/");
   };
 
+  const startCheckout = async () => {
+    try {
+      const res = await invokeFunction("stripe-create-checkout", {
+        success_url: `${window.location.origin}/dashboard?payment=success`,
+        cancel_url: `${window.location.origin}/dashboard`,
+      });
+      if (res?.url) window.location.href = res.url;
+      else throw new Error(res?.error ?? "No checkout URL returned.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not start checkout. Please try again.");
+    }
+  };
+
   const copyNumber = () => {
     if (!twilio?.phone_number) return;
     navigator.clipboard.writeText(twilio.phone_number);
@@ -121,6 +147,34 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-secondary/30">
+
+      {/* Payment success modal */}
+      {showPaymentSuccess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative w-full max-w-md rounded-2xl bg-white p-8 text-center shadow-2xl">
+            <button
+              onClick={() => setShowPaymentSuccess(false)}
+              className="absolute right-4 top-4 rounded-lg p-1 text-muted-foreground hover:bg-secondary"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
+              <PartyPopper className="h-8 w-8 text-emerald-600" />
+            </div>
+            <h2 className="mb-2 text-2xl font-extrabold text-ink">Payment Successful!</h2>
+            <p className="mb-1 text-muted-foreground">
+              Welcome to Roof AI Lead Recovery. Your subscription is now active.
+            </p>
+            <p className="mb-6 text-sm text-muted-foreground">
+              Complete your setup below to start recovering missed calls automatically.
+            </p>
+            <Button className="w-full" onClick={() => setShowPaymentSuccess(false)}>
+              Go to Dashboard <ArrowRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Top bar */}
       <header className="sticky top-0 z-30 border-b border-border bg-white">
         <div className="container flex h-16 items-center justify-between">
@@ -169,7 +223,11 @@ export default function DashboardPage() {
               <h2 className="mb-4 font-bold text-ink">Finish your setup</h2>
               <div className="space-y-2.5">
                 <SetupRow done label="Account created" />
-                <SetupRow done={!!subscription} label="Payment processed ($299/month)" to="/signup" />
+                <SetupRow
+                  done={!!subscription}
+                  label="Payment processed ($299/month)"
+                  onAction={!subscription ? startCheckout : undefined}
+                />
                 <SetupRow
                   done={!!twilio}
                   label={twilio ? `Twilio number: ${formatPhone(twilio.phone_number)}` : "Purchase Twilio number"}
@@ -299,7 +357,7 @@ export default function DashboardPage() {
                 <p className="mb-1 text-sm font-medium text-muted-foreground">Settings</p>
                 <SettingsLink icon={Settings} to="/setup/calendar" label="Edit availability" />
                 <SettingsLink icon={Phone} to="/setup/twilio" label="Phone number" />
-                <SettingsLink icon={CreditCard} to="#" label="Billing" />
+                <SettingsLink icon={CreditCard} to="/billing" label="Billing" />
               </CardContent>
             </Card>
           </div>
@@ -327,7 +385,7 @@ function StatCard({ icon: Icon, tone, value, label }) {
   );
 }
 
-function SetupRow({ done, label, to }) {
+function SetupRow({ done, label, to, onAction }) {
   const content = (
     <div className="flex items-center gap-3">
       <span
@@ -341,6 +399,7 @@ function SetupRow({ done, label, to }) {
       <span className={done ? "text-ink" : "font-medium text-brand-600"}>{label}</span>
     </div>
   );
+  if (!done && onAction) return <button onClick={onAction} className="block w-full text-left hover:opacity-80">{content}</button>;
   if (!done && to) return <Link to={to} className="block hover:opacity-80">{content}</Link>;
   return content;
 }

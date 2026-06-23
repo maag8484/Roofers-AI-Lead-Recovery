@@ -38,17 +38,11 @@ Deno.serve(async (req) => {
       customerId = customer.id;
     }
 
-    // "$1 for 7 days" vs "7-day free trial".
-    const trialOptions =
-      trial_type === "dollar_7"
-        ? { trial_period_days: 7 } // collect card now; $1 auth handled via Stripe settings
-        : { trial_period_days: 7 };
-
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer: customerId,
       line_items: [{ price: PRICE_ID, quantity: 1 }],
-      subscription_data: { ...trialOptions, metadata: { supabase_user_id: user.id } },
+      subscription_data: { metadata: { supabase_user_id: user.id } },
       success_url,
       cancel_url,
       allow_promotion_codes: true,
