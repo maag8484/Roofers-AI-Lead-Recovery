@@ -14,17 +14,17 @@ export function Footer() {
             <Link to="/terms" className="text-slate-400 hover:text-white">
               Terms of Service
             </Link>
-            <a href="mailto:hello@roofaileadrecovery.com" className="text-slate-400 hover:text-white">
+            <a href="mailto:support@roofaileadrecovery.com" className="text-slate-400 hover:text-white">
               Contact
             </a>
           </nav>
         </div>
         <div className="mt-8 flex flex-col items-start justify-between gap-3 border-t border-white/10 pt-6 text-sm sm:flex-row sm:items-center">
           <a
-            href="mailto:hello@roofaileadrecovery.com"
+            href="mailto:support@roofaileadrecovery.com"
             className="text-brand-500 hover:text-brand-400"
           >
-            hello@roofaileadrecovery.com
+            support@roofaileadrecovery.com
           </a>
           <p className="text-slate-500">
             © {new Date().getFullYear()} Roof AI Lead Recovery. All rights reserved.
