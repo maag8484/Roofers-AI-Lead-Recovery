@@ -136,6 +136,7 @@ export default function DashboardPage() {
   };
 
   const setupComplete = Boolean(twilio && calendar);
+  const isLive = profile?.is_live || (setupComplete && !!subscription);
 
   if (loading) {
     return (
@@ -205,7 +206,7 @@ export default function DashboardPage() {
             </h1>
             <p className="text-muted-foreground">Here's what's happening with your leads.</p>
           </div>
-          {profile?.is_live ? (
+          {isLive ? (
             <Badge variant="success" className="py-1.5 text-sm">
               <span className="h-2 w-2 rounded-full bg-emerald-500" /> Live
             </Badge>
@@ -217,7 +218,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Setup status / Go Live */}
-        {!profile?.is_live && (
+        {!isLive && (
           <Card className="border-brand-200 bg-brand-50/40">
             <CardContent className="p-6">
               <h2 className="mb-4 font-bold text-ink">Finish your setup</h2>
@@ -246,7 +247,7 @@ export default function DashboardPage() {
                   </Link>
                 </Button>
               )}
-              {setupComplete && !profile?.is_live && (
+              {setupComplete && !isLive && (
                 <Button className="mt-5" asChild>
                   <Link to="/setup/calendar">
                     <Rocket className="h-4 w-4" /> Go Live
