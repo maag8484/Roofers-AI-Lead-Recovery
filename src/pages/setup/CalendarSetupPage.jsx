@@ -1,40 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Calendar, Check, ArrowRight, Clock, RefreshCw } from "lucide-react";
+import { Calendar, Check, ArrowRight, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, invokeFunction } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { SetupLayout } from "@/components/setup/SetupLayout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-const TIMES = [];
-for (let h = 5; h <= 21; h++) {
-  const hh = String(h).padStart(2, "0");
-  TIMES.push({ value: `${hh}:00`, label: to12h(`${hh}:00`) });
-  TIMES.push({ value: `${hh}:30`, label: to12h(`${hh}:30`) });
-}
-function to12h(t) {
-  const [h, m] = t.split(":").map(Number);
-  const period = h >= 12 ? "PM" : "AM";
-  const hr = h % 12 || 12;
-  return `${hr}:${String(m).padStart(2, "0")} ${period}`;
-}
-
-const DURATIONS = [
-  { value: 30, label: "30 minutes" },
-  { value: 60, label: "60 minutes" },
-  { value: 90, label: "90 minutes" },
-];
 
 export default function CalendarSetupPage() {
   const navigate = useNavigate();
@@ -46,11 +19,6 @@ export default function CalendarSetupPage() {
   const [connecting, setConnecting] = useState(false);
   const [saving, setSaving] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
-
-  const [start, setStart] = useState("08:00");
-  const [end, setEnd] = useState("17:00");
-  const [duration, setDuration] = useState(60);
-  const [lunch, setLunch] = useState(true);
 
   // After OAuth, Google redirects back with ?calendar=connected (handled by edge fn).
   useEffect(() => {
@@ -111,21 +79,6 @@ export default function CalendarSetupPage() {
   const saveAndFinish = async () => {
     if (!user) return;
     setSaving(true);
-    const days = ["monday", "tuesday", "wednesday", "thursday", "friday"];
-    const row = {
-      user_id: user.id,
-      inspection_duration_minutes: duration,
-      lunch_start: lunch ? "12:00" : null,
-      lunch_end: lunch ? "13:00" : null,
-    };
-    days.forEach((d) => {
-      row[`${d}_start`] = start;
-      row[`${d}_end`] = end;
-    });
-
-    const { error: availErr } = await supabase
-      .from("availability_settings")
-      .upsert(row, { onConflict: "user_id" });
 
     const { error: liveErr } = await supabase
       .from("roofing_companies")
@@ -133,8 +86,8 @@ export default function CalendarSetupPage() {
       .eq("user_id", user.id);
 
     setSaving(false);
-    if (availErr || liveErr) {
-      toast.error((availErr || liveErr).message);
+    if (liveErr) {
+      toast.error(liveErr.message);
       return;
     }
     await refreshProfile();
@@ -207,64 +160,12 @@ export default function CalendarSetupPage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="space-y-5 p-6">
-              <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-brand-600" />
-                <h2 className="font-bold text-ink">Set your availability</h2>
-              </div>
-
-              <div>
-                <Label className="mb-1.5 block">Working hours (Mon–Fri)</Label>
-                <div className="flex items-center gap-2">
-                  <TimeSelect value={start} onChange={setStart} />
-                  <span className="text-muted-foreground">to</span>
-                  <TimeSelect value={end} onChange={setEnd} />
-                </div>
-              </div>
-
-              <div>
-                <Label className="mb-1.5 block">Appointment duration</Label>
-                <Select value={String(duration)} onValueChange={(v) => setDuration(Number(v))}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {DURATIONS.map((d) => (
-                      <SelectItem key={d.value} value={String(d.value)}>{d.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <label className="flex cursor-pointer items-center gap-2.5 text-sm text-ink">
-                <input
-                  type="checkbox"
-                  checked={lunch}
-                  onChange={(e) => setLunch(e.target.checked)}
-                  className="h-4 w-4 rounded border-border accent-brand-600"
-                />
-                Block lunch break (12:00 PM – 1:00 PM)
-              </label>
-
-              <Button className="w-full" onClick={saveAndFinish} disabled={saving}>
-                {saving ? <Spinner className="text-white" /> : (<>Save &amp; Go Live <ArrowRight /></>)}
-              </Button>
-            </CardContent>
-          </Card>
+          <Button className="w-full" onClick={saveAndFinish} disabled={saving}>
+            {saving ? <Spinner className="text-white" /> : (<>Save &amp; Go Live <ArrowRight /></>)}
+          </Button>
         </div>
       )}
     </SetupLayout>
   );
 }
 
-function TimeSelect({ value, onChange }) {
-  return (
-    <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
-      <SelectContent>
-        {TIMES.map((t) => (
-          <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  );
-}
