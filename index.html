@@ -19,5 +19,30 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- n8n Chat Widget -->
+    <link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+    <script type="module">
+      import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+      createChat({
+        webhookUrl: 'https://n8n.srv1670750.hstgr.cloud/webhook/c29e3aaa-f1d8-4ae7-8e3f-70cada798b9d/chat',
+        mode: 'window',
+        showWelcomeScreen: true,
+        defaultLanguage: 'en',
+        initialMessages: [
+          'Hi! 👋 I\'m the Roof AI assistant.',
+          'How can I help you today?'
+        ],
+        i18n: {
+          en: {
+            title: 'Roof AI Support',
+            subtitle: 'We typically reply in seconds.',
+            footer: '',
+            getStarted: 'Start Chat',
+            inputPlaceholder: 'Type your message...',
+          },
+        },
+      });
+    </script>
   </body>
 </html>
