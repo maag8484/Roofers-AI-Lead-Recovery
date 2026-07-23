@@ -15,3 +15,13 @@ verify_jwt = false
 
 [functions.book-appointment]
 verify_jwt = false
+
+# Gmail OAuth callback — Google redirects the browser here with no Supabase JWT;
+# CSRF protection is the HMAC-signed `state` verified inside the function.
+[functions.gmail-oauth-callback]
+verify_jwt = false
+
+# Gmail health probe — hit by pg_cron / external cron; reads + updates health
+# state only, never returns secrets.
+[functions.gmail-health-check]
+verify_jwt = false

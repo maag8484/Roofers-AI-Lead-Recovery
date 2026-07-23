@@ -120,6 +120,84 @@ Copy `.env.example` to `.env`. Browser needs `VITE_PUBLIC_SUPABASE_URL`,
   `PASSWORD_RECOVERY` event and calls `updateUser({ password })`. `/reset-password` is an
   unguarded public route (the recovery token creates a session).
 
+## New flow (signup → pay → details form → team takeover)
+
+The onboarding order was inverted. Business details are now collected **after
+payment**, not at signup:
+
+1. **Signup** ([SignupPage.jsx](src/pages/SignupPage.jsx)) is **email + password only**.
+   Email confirmation is expected **OFF** in Supabase so `signUp()` returns a live session
+   immediately → redirect to `/checkout`. (If confirmation is re-enabled, signup shows a
+   toast telling the user to confirm; the seamless flow needs it off.)
+2. **Welcome + payment** ([CheckoutPage.jsx](src/pages/CheckoutPage.jsx)) is a premium
+   first-run experience, NOT a bare checkout: a full-page `WelcomeHero` with an auto-opening
+   5-step `OnboardingModal` (Welcome → Features → What you'll need → Pricing → Next steps).
+   The final CTA "Start Free Trial" starts Stripe Checkout with `success_url = /onboarding`;
+   the `stripe-webhook` flips the subscription to active/trialing. Onboarding components live
+   in [src/components/onboarding/](src/components/onboarding/) (Framer Motion animations).
+   First-run auto-show is gated by `profiles.onboarding_completed` (added in
+   `0004_onboarding_flag.sql`); `AuthContext` exposes `onboardingCompleted` +
+   `markOnboardingComplete()`. The modal is replayable from the dashboard header
+   (Help → **Product tour**) and from CheckoutPage's own **Product tour** button /
+   `?tour=1`.
+3. **Details form** ([OnboardingPage.jsx](src/pages/OnboardingPage.jsx)) is grouped into four
+   sections: **Business Information** (name, address, business phone → forwards to Smith.ai,
+   primary contact name + email), **Service Details** (service area, services offered — both
+   free-text), **Call Handling** (conversion goal radio with a CONDITIONAL input: Calendly
+   link for scheduled_appointment / transfer number for warm_transfer / nothing for
+   take_message), and **Hours of Operation** (business hours, after-hours preference). It
+   **upserts** the `roofing_companies` row (keyed by `user_id`), sets `details_submitted =
+   true` and `status = 'new'`, then goes to `/dashboard`. New columns are added in
+   `0003_form_fields.sql` (contact_name, contact_email, transfer_number, business_hours,
+   after_hours_preference).
+4. **Gate:** [DashboardPage.jsx](src/pages/DashboardPage.jsx) redirects non-admins with no
+   active/trialing sub to `/checkout`, and paid-but-`!details_submitted` to `/onboarding`.
+5. The `roofing_companies` row is **no longer created from signup metadata** — `ensureCompany`
+   was removed from [AuthContext.jsx](src/context/AuthContext.jsx). The onboarding upsert is
+   the only creation path now.
+
+### Customer no longer self-serves Twilio/Calendar
+
+The customer-facing "Purchase Twilio number" and "Connect Google Calendar" steps were
+**removed from all customer UI** (dashboard, checklist, setup cards). The `/setup/twilio` and
+`/setup/calendar` routes and their pages (`TwilioSetupPage`, `CalendarSetupPage`,
+`components/setup/SetupLayout`) were **deleted**. Provisioning is handled by the team/n8n; the
+customer just sees status (`new → in_progress → live`). The `twilio_accounts` /
+`calendar_connections` tables and edge functions are **KEPT** — the admin panel's Google
+reconnect (agency model) and n8n still use them. Dashboard setup card is now
+`OnboardingChecklist` (Account → Subscription → Business info → Team configuring → AI activated).
+
+### Account Overview + international phone
+
+- [AccountPage.jsx](src/pages/AccountPage.jsx) (`/account`) — single place for account info,
+  onboarding progress %, subscription, business details, support, recent activity (from
+  `status_history`). Linked from the dashboard header + "Manage" card.
+- Business phone uses [phone-field.jsx](src/components/ui/phone-field.jsx)
+  (`react-phone-number-input`): flag + searchable country + dial code + auto-format. Stored as
+  **E.164** in `business_phone`, with the ISO country in `phone_country` (added in
+  `0005_phone_and_tour.sql`). Validated with the library's `isValidPhoneNumber`.
+- Product tour buttons are gated on `profiles.onboarding_completed` — hidden once completed,
+  everywhere.
+
+### Status lifecycle + audit (admin drives it)
+
+- `roofing_companies.status`: `new → in_progress → live → paused`. The admin changes it from
+  the portal. `0002_new_flow.sql` adds a **narrow admin UPDATE policy** on
+  `roofing_companies` (the ONE deliberate exception to read-only-admin) plus INSERT on
+  `status_history`. Everything else stays admin-read-only.
+- `status_history` (new table) records every change; powers the admin **Audit Log** tab.
+- [AdminDashboardPage.jsx](src/pages/AdminDashboardPage.jsx) is now tabbed: **Overview**
+  (table + inline status dropdown + Google reconnect), **Audit** (one customer's full
+  submitted details), **Audit Log** (status-change timeline).
+
+### Admin Google reconnect (agency model)
+
+The admin connects Google Calendar **on the customer's behalf**. `google-oauth-start` accepts
+`target_user_id`; if present and ≠ caller, it verifies the caller is an admin (`isAdminUser`
+in `_shared/supabase.ts`) and stores the connection against that customer's `user_id`. The
+callback needed no change (it already writes to `state.uid`). **Redeploy both is not needed —
+only `google-oauth-start` changed** (plus `_shared`, which it bundles).
+
 ## Conventions for edits
 
 - Match the existing style: JSX, Tailwind utility classes, `cn()` from `@/lib/utils`, `@/`
@@ -139,3 +217,15 @@ Copy `.env.example` to `.env`. Browser needs `VITE_PUBLIC_SUPABASE_URL`,
 - Single ~650 kB JS bundle (no code-splitting yet) — acceptable for MVP.
 - `.env` wiring + an end-to-end manual run (signup → promote admin → admin view) is the
   natural next milestone.
+
+### New-flow setup steps the USER must do manually (in order)
+1. Run `supabase/migrations/WIPE_USERS.sql` (clears all users; does NOT touch `public.leads`).
+2. Run `supabase/migrations/0002_new_flow.sql` (new columns, `status_history`, admin policies).
+2b. Run `supabase/migrations/0003_form_fields.sql` (expanded onboarding form columns).
+2c. Run `supabase/migrations/0004_onboarding_flag.sql` (profiles.onboarding_completed flag).
+2d. Run `supabase/migrations/0005_phone_and_tour.sql` (roofing_companies.phone_country).
+3. Supabase → Authentication → Providers/Email → **turn OFF "Confirm email"** (enables the
+   instant signup→pay→form flow).
+4. Redeploy the edge function: `supabase functions deploy google-oauth-start` (admin-on-behalf
+   Google reconnect). It bundles the updated `_shared/supabase.ts`.
+5. Create the two users via the app signup, then promote the admin via SQL (see 0001_admin.sql).

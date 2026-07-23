@@ -4,15 +4,30 @@ import { ProtectedRoute, PublicOnlyRoute, AdminRoute } from "@/components/Protec
 import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/LoginPage";
 import SignupPage from "@/pages/SignupPage";
+import CheckoutPage from "@/pages/CheckoutPage";
+import OnboardingPage from "@/pages/OnboardingPage";
 import ResetPasswordPage from "@/pages/ResetPasswordPage";
-import TwilioSetupPage from "@/pages/setup/TwilioSetupPage";
-import CalendarSetupPage from "@/pages/setup/CalendarSetupPage";
 import DashboardPage from "@/pages/DashboardPage";
+import AccountPage from "@/pages/AccountPage";
 import BillingPage from "@/pages/BillingPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
 import PrivacyPage from "@/pages/legal/PrivacyPage";
 import TermsPage from "@/pages/legal/TermsPage";
 import NotFoundPage from "@/pages/NotFoundPage";
+
+// Admin console (Phase 1 shell + placeholder pages)
+import { AdminShell } from "@/components/admin/layout/AdminShell";
+import AdminDashboardOverviewPage from "@/pages/admin/DashboardPage";
+import AdminCustomersPage from "@/pages/admin/CustomersPage";
+import AdminCustomerDetailPage from "@/pages/admin/CustomerDetailPage";
+import AdminOnboardingPage from "@/pages/admin/OnboardingPage";
+import AdminIntegrationsEmailPage from "@/pages/admin/IntegrationsEmailPage";
+import AdminNumbersPage from "@/pages/admin/NumbersPage";
+import AdminActivityPage from "@/pages/admin/ActivityPage";
+import AdminAuditPage from "@/pages/admin/AuditPage";
+import AdminNotificationsPage from "@/pages/admin/NotificationsPage";
+import AdminBillingPage from "@/pages/admin/BillingPage";
+import AdminSettingsPage from "@/pages/admin/SettingsPage";
 
 export default function App() {
   return (
@@ -43,20 +58,22 @@ export default function App() {
         }
       />
 
-      {/* Setup wizard (auth required) */}
+      {/* Payment (auth required) — step 2 of the new flow */}
       <Route
-        path="/setup/twilio"
+        path="/checkout"
         element={
           <ProtectedRoute>
-            <TwilioSetupPage />
+            <CheckoutPage />
           </ProtectedRoute>
         }
       />
+
+      {/* Post-payment business details form (auth required) — step 3 */}
       <Route
-        path="/setup/calendar"
+        path="/onboarding"
         element={
           <ProtectedRoute>
-            <CalendarSetupPage />
+            <OnboardingPage />
           </ProtectedRoute>
         }
       />
@@ -71,6 +88,16 @@ export default function App() {
         }
       />
 
+      {/* Account overview (auth required) */}
+      <Route
+        path="/account"
+        element={
+          <ProtectedRoute>
+            <AccountPage />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Billing (auth required) */}
       <Route
         path="/billing"
@@ -81,15 +108,30 @@ export default function App() {
         }
       />
 
-      {/* Admin (admin role required) */}
+      {/* Admin console (admin role required) — nested under the persistent
+          AdminShell layout. The legacy tabbed admin stays at /admin/legacy
+          until Phase 3 folds it into the new Dashboard. */}
       <Route
         path="/admin"
         element={
           <AdminRoute>
-            <AdminDashboardPage />
+            <AdminShell />
           </AdminRoute>
         }
-      />
+      >
+        <Route index element={<AdminDashboardOverviewPage />} />
+        <Route path="customers" element={<AdminCustomersPage />} />
+        <Route path="customers/:id" element={<AdminCustomerDetailPage />} />
+        <Route path="onboarding" element={<AdminOnboardingPage />} />
+        <Route path="integrations/email" element={<AdminIntegrationsEmailPage />} />
+        <Route path="business-numbers" element={<AdminNumbersPage />} />
+        <Route path="activity" element={<AdminActivityPage />} />
+        <Route path="audit" element={<AdminAuditPage />} />
+        <Route path="notifications" element={<AdminNotificationsPage />} />
+        <Route path="billing" element={<AdminBillingPage />} />
+        <Route path="settings" element={<AdminSettingsPage />} />
+        <Route path="legacy" element={<AdminDashboardPage />} />
+      </Route>
 
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

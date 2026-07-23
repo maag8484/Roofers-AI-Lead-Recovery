@@ -27,6 +27,25 @@ export async function getUser(req: Request) {
 }
 
 /**
+ * True if the given user id is in public.admins. Uses the service client so it
+ * reads the admins table regardless of RLS. Used to authorize admin-only
+ * actions (e.g. connecting a customer's calendar on their behalf).
+ */
+export async function isAdminUser(userId: string): Promise<boolean> {
+  const db = serviceClient();
+  const { data, error } = await db
+    .from("admins")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error) {
+    console.error("isAdminUser check failed", error.message);
+    return false;
+  }
+  return !!data;
+}
+
+/**
  * AES-GCM encrypt/decrypt for tokens at rest.
  * TOKEN_ENCRYPTION_KEY must be a 32-byte base64 string.
  */
