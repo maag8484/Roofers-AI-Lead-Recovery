@@ -59,7 +59,7 @@ export const SORTABLE = new Set([
   "contact_email",
 ]);
 
-// Only roofing_companies fields here. profiles / subscriptions / twilio_accounts
+// Only roofing_companies fields here. profiles / subscriptions
 // are keyed by user_id (FK to auth.users, not to roofing_companies), so Supabase
 // can't reliably auto-embed them — we batch-resolve them by user_id after the
 // paginated main query (LEFT-join semantics: a missing related row -> null, the
@@ -130,10 +130,9 @@ export function useCustomersList({ page, pageSize, sort, dir, search, chips }) {
       const userIds = [...new Set(companies.map((c) => c.user_id).filter(Boolean))];
 
       // Batch-resolve related rows by user_id (LEFT-join: missing -> undefined).
-      const [profByU, subByU, twByU] = await Promise.all([
+      const [profByU, subByU] = await Promise.all([
         idxBy("profiles", "id", "id, full_name, phone", userIds),
         idxBy("subscriptions", "user_id", "user_id, status", userIds),
-        idxBy("twilio_accounts", "user_id", "user_id, phone_number", userIds),
       ]);
 
       setRows(
@@ -150,7 +149,6 @@ export function useCustomersList({ page, pageSize, sort, dir, search, chips }) {
           currentStatus: r.current_status,
           createdAt: r.created_at,
           lastLoginAt: r.last_login_at,
-          twilioNumber: twByU[r.user_id]?.phone_number ?? null,
         }))
       );
       setTotal(count ?? 0);

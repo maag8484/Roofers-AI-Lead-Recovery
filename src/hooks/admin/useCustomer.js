@@ -26,7 +26,7 @@ export function useCustomer(id) {
         return;
       }
 
-      const [{ data: profile }, { data: sub }, { data: tw }] = await Promise.all([
+      const [{ data: profile }, { data: sub }] = await Promise.all([
         supabase.from("profiles").select("full_name, phone").eq("id", c.user_id).maybeSingle(),
         supabase
           .from("subscriptions")
@@ -35,10 +35,9 @@ export function useCustomer(id) {
           .order("created_at", { ascending: true })
           .limit(1)
           .maybeSingle(),
-        supabase.from("twilio_accounts").select("phone_number").eq("user_id", c.user_id).maybeSingle(),
       ]);
 
-      setData({ company: c, profile: profile ?? null, subscription: sub ?? null, twilio: tw ?? null });
+      setData({ company: c, profile: profile ?? null, subscription: sub ?? null });
     } catch (e) {
       setError(e);
     } finally {
