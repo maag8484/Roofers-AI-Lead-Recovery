@@ -77,7 +77,7 @@ export function Sidebar({ open, onClose }) {
             className="absolute inset-0 bg-ink/40"
             onClick={onClose}
           />
-          <aside className="absolute left-0 top-0 flex h-full w-64 flex-col border-r border-border bg-white shadow-xl">
+          <aside className="absolute left-0 top-0 flex h-full w-64 flex-col overflow-y-auto border-r border-border bg-white shadow-xl">
             <div className="flex h-16 items-center justify-between border-b border-border px-5">
               <Logo />
               <button

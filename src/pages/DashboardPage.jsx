@@ -126,17 +126,19 @@ export default function DashboardPage() {
           <Link to="/" aria-label="Roof AI Lead Recovery home">
             <Logo />
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {isAdmin && (
               <Button variant="secondary" size="sm" asChild>
                 <Link to="/admin">
-                  <Shield className="h-4 w-4" /> Admin
+                  <Shield className="h-4 w-4" />
+                  <span className="hidden sm:inline"> Admin</span>
                 </Link>
               </Button>
             )}
             <Button variant="ghost" size="sm" asChild>
               <Link to="/account">
-                <UserCircle className="h-4 w-4" /> Account
+                <UserCircle className="h-4 w-4" />
+                <span className="hidden sm:inline"> Account</span>
               </Link>
             </Button>
             {/* Product tour reopen — hidden once completed (never nag again). */}
@@ -149,7 +151,8 @@ export default function DashboardPage() {
                   setTourOpen(true);
                 }}
               >
-                <HelpCircle className="h-4 w-4" /> Product tour
+                <HelpCircle className="h-4 w-4" />
+                <span className="hidden sm:inline"> Product tour</span>
               </Button>
             )}
             <AccountMenu />

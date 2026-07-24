@@ -42,7 +42,9 @@ export default function AdminDashboardOverviewPage() {
       <div className="grid gap-6 lg:grid-cols-2">
         <RecentSignupsPanel />
         <RecentStatusChangesPanel />
-        <RecentErrorsPanel />
+        <div className="lg:col-span-2">
+          <RecentErrorsPanel />
+        </div>
       </div>
     </div>
   );

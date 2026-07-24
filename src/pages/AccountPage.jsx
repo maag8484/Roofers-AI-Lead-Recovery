@@ -295,11 +295,11 @@ function Row({ icon: Icon, label, value }) {
 
 function ActivityItem({ label, when }) {
   return (
-    <li className="flex items-center justify-between gap-4 border-b border-border/60 pb-3 last:border-0 last:pb-0">
-      <span className="flex items-center gap-2.5 text-sm text-ink">
-        <span className="h-2 w-2 rounded-full bg-brand-500" /> {label}
+    <li className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1 border-b border-border/60 pb-3 last:border-0 last:pb-0">
+      <span className="flex min-w-0 items-center gap-2.5 text-sm text-ink">
+        <span className="h-2 w-2 shrink-0 rounded-full bg-brand-500" /> {label}
       </span>
-      {when && <span className="shrink-0 text-xs text-muted-foreground">{formatDateTime(when)}</span>}
+      {when && <span className="text-xs text-muted-foreground">{formatDateTime(when)}</span>}
     </li>
   );
 }

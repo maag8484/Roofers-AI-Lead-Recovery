@@ -42,7 +42,7 @@ export function Topbar({ onOpenMenu }) {
         <Menu className="h-5 w-5" />
       </button>
 
-      <h1 className="text-base font-bold text-ink lg:text-lg">{title}</h1>
+      <h1 className="min-w-0 flex-1 truncate text-base font-bold text-ink lg:text-lg">{title}</h1>
 
       {/* Global search trigger (opens the ⌘K modal). */}
       <div className="ml-auto hidden max-w-sm flex-1 md:block">
@@ -56,7 +56,7 @@ export function Topbar({ onOpenMenu }) {
         </button>
       </div>
 
-      <div className="ml-auto flex items-center gap-1.5 md:ml-2">
+      <div className="flex shrink-0 items-center gap-1.5 md:ml-2">
         {/* Mobile search icon */}
         <button
           onClick={() => setSearchOpen(true)}

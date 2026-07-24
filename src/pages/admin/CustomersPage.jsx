@@ -1,12 +1,10 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Search,
   ChevronUp,
   ChevronDown,
   MoreVertical,
-  Eye,
-  Pencil,
   Copy,
   Users,
   ArrowLeft,
@@ -24,10 +22,10 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { EmptyState } from "@/components/admin/EmptyState";
-import { StatusBadge } from "@/components/admin/StatusBadge";
 import { OnboardingProgress } from "@/components/admin/OnboardingProgress";
-import { StatusChangeModal } from "@/components/admin/StatusChangeModal";
 import { useCustomersList, SORTABLE } from "@/hooks/admin/useCustomersList";
+import { useChangeStatus } from "@/hooks/admin/useChangeStatus";
+import { ALL_STATUSES, statusLabel } from "@/config/customerStatus";
 import { PLAN_LABEL } from "@/config/plan";
 import { formatPhone, formatDateTime, cn } from "@/lib/utils";
 
@@ -42,22 +40,20 @@ const CHIPS = [
 ];
 
 // column key -> sortable field (or null = not server-sortable, control hidden)
+// `hide` = Tailwind class to hide the column on narrow screens
 const COLUMNS = [
-  { key: "company", label: "Company", sort: "company_name" },
-  { key: "owner", label: "Owner", sort: null },
-  { key: "email", label: "Email", sort: "contact_email" },
-  { key: "phone", label: "Phone", sort: null },
-  { key: "subscription", label: "Subscription", sort: null },
-  { key: "plan", label: "Plan", sort: null },
-  { key: "onboarding", label: "Onboarding %", sort: null },
-  { key: "status", label: "Current Status", sort: "current_status" },
-  { key: "created", label: "Created", sort: "created_at" },
-  { key: "lastLogin", label: "Last Login", sort: "last_login_at" },
-  // Reserved — no per-customer Google state yet (Calendar removed, Gmail is
-  // workspace-level). Column kept so the table shape matches the spec.
-  { key: "google", label: "Google", sort: null },
-  { key: "businessPhone", label: "Business Phone", sort: "business_phone" },
-  { key: "actions", label: "", sort: null },
+  { key: "company", label: "Company", sort: "company_name", hide: "" },
+  { key: "owner", label: "Owner", sort: null, hide: "hidden md:table-cell" },
+  { key: "email", label: "Email", sort: "contact_email", hide: "hidden lg:table-cell" },
+  { key: "phone", label: "Phone", sort: null, hide: "hidden xl:table-cell" },
+  { key: "subscription", label: "Subscription", sort: null, hide: "hidden lg:table-cell" },
+  { key: "plan", label: "Plan", sort: null, hide: "hidden xl:table-cell" },
+  { key: "onboarding", label: "Onboarding %", sort: null, hide: "hidden md:table-cell" },
+  { key: "status", label: "Current Status", sort: "current_status", hide: "" },
+  { key: "created", label: "Created", sort: "created_at", hide: "hidden lg:table-cell" },
+  { key: "lastLogin", label: "Last Login", sort: "last_login_at", hide: "hidden xl:table-cell" },
+  { key: "businessPhone", label: "Business Phone", sort: "business_phone", hide: "hidden lg:table-cell" },
+  { key: "actions", label: "", sort: null, hide: "" },
 ];
 
 export default function AdminCustomersPage() {
@@ -70,7 +66,7 @@ export default function AdminCustomersPage() {
   const [search, setSearch] = useState("");
   const [chips, setChips] = useState([]);
   const [selected, setSelected] = useState(new Set());
-  const [modal, setModal] = useState(null); // { customerId, currentStatus, companyName }
+  const { change } = useChangeStatus();
 
   const { rows, total, loading, error, refetch } = useCustomersList({
     page,
@@ -104,26 +100,21 @@ export default function AdminCustomersPage() {
     setSearch(searchInput);
   };
 
-  const allOnPageSelected = rows.length > 0 && rows.every((r) => selected.has(r.id));
-  const toggleAll = () =>
+  const selectOne = (id) =>
     setSelected((prev) => {
-      const next = new Set(prev);
-      if (allOnPageSelected) rows.forEach((r) => next.delete(r.id));
-      else rows.forEach((r) => next.add(r.id));
-      return next;
-    });
-  const toggleOne = (id) =>
-    setSelected((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
+      // Single-select: clicking the already-selected row deselects it, otherwise select only this one.
+      if (prev.has(id)) return new Set();
+      return new Set([id]);
     });
 
-  const selectedRows = useMemo(() => rows.filter((r) => selected.has(r.id)), [rows, selected]);
-
-  const onSaved = () => {
-    setSelected(new Set());
-    refetch();
+  const handleStatusChange = async (customerId, newStatus) => {
+    const res = await change(customerId, newStatus, null);
+    if (res.ok) {
+      toast.success(`Status → ${statusLabel(newStatus)}`);
+      refetch();
+    } else {
+      toast.error(res.message || "Could not change status.");
+    }
   };
 
   return (
@@ -161,25 +152,6 @@ export default function AdminCustomersPage() {
             </form>
 
             <div className="flex items-center gap-2">
-              {selected.size > 0 && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => {
-                    // Bulk change: open the modal seeded from the first selected row.
-                    const first = selectedRows[0];
-                    if (first)
-                      setModal({
-                        bulk: true,
-                        ids: [...selected],
-                        currentStatus: first.currentStatus,
-                        companyName: `${selected.size} customers`,
-                      });
-                  }}
-                >
-                  Change status ({selected.size})
-                </Button>
-              )}
               <Select
                 value={String(pageSize)}
                 onValueChange={(v) => {
@@ -217,11 +189,9 @@ export default function AdminCustomersPage() {
               <table className="w-full text-sm">
                 <thead className="border-b border-border">
                   <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <th className="px-3 py-3">
-                      <input type="checkbox" checked={allOnPageSelected} onChange={toggleAll} aria-label="Select all" />
-                    </th>
+                    <th className="w-10 px-3 py-3" />
                     {COLUMNS.map((col) => (
-                      <th key={col.key} className="whitespace-nowrap px-4 py-3 font-medium">
+                      <th key={col.key} className={cn("whitespace-nowrap px-4 py-3 font-medium", col.hide)}>
                         {col.sort ? (
                           <button
                             onClick={() => toggleSort(col.sort)}
@@ -244,53 +214,54 @@ export default function AdminCustomersPage() {
                 </thead>
                 <tbody>
                   {rows.map((r) => (
-                    <tr key={r.id} className="border-b border-border/60 last:border-0 hover:bg-secondary/40">
-                      <td className="px-3 py-3">
+                    <tr
+                      key={r.id}
+                      onClick={() => navigate(`/admin/customers/${r.id}`)}
+                      className="cursor-pointer border-b border-border/60 last:border-0 hover:bg-secondary/40"
+                    >
+                      <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
                         <input
-                          type="checkbox"
+                          type="radio"
+                          name="customer-select"
                           checked={selected.has(r.id)}
-                          onChange={() => toggleOne(r.id)}
+                          onChange={() => selectOne(r.id)}
                           aria-label={`Select ${r.company}`}
+                          className="cursor-pointer accent-brand-600"
                         />
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 font-medium text-ink">{r.company}</td>
-                      <td className="whitespace-nowrap px-4 py-3 text-ink">{r.owner}</td>
-                      <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">{r.email}</td>
-                      <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
+                      <td className="hidden whitespace-nowrap px-4 py-3 text-ink md:table-cell">{r.owner}</td>
+                      <td className="hidden whitespace-nowrap px-4 py-3 text-muted-foreground lg:table-cell">{r.email}</td>
+                      <td className="hidden whitespace-nowrap px-4 py-3 text-muted-foreground xl:table-cell">
                         {r.ownerPhone ? formatPhone(r.ownerPhone) : "—"}
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
+                      <td className="hidden whitespace-nowrap px-4 py-3 text-muted-foreground lg:table-cell">
                         {r.subscriptionStatus || "—"}
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
+                      <td className="hidden whitespace-nowrap px-4 py-3 text-muted-foreground xl:table-cell">
                         {r.subscriptionStatus ? PLAN_LABEL : "—"}
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3">
+                      <td className="hidden whitespace-nowrap px-4 py-3 md:table-cell">
                         <OnboardingProgress status={r.currentStatus} compact />
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3">
-                        <StatusBadge status={r.currentStatus} />
+                      <td className="px-2 py-2" onClick={(e) => e.stopPropagation()}>
+                        <InlineStatusSelect
+                          customerId={r.id}
+                          currentStatus={r.currentStatus}
+                          onChange={handleStatusChange}
+                        />
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
+                      <td className="hidden whitespace-nowrap px-4 py-3 text-muted-foreground lg:table-cell">
                         {formatDateTime(r.createdAt)}
                       </td>
-                      <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
+                      <td className="hidden whitespace-nowrap px-4 py-3 text-muted-foreground xl:table-cell">
                         {r.lastLoginAt ? formatDateTime(r.lastLoginAt) : "Never"}
                       </td>
-                      <td className="px-4 py-3 text-muted-foreground">—</td>
-                      <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
+                      <td className="hidden whitespace-nowrap px-4 py-3 text-muted-foreground lg:table-cell">
                         {r.businessPhone ? formatPhone(r.businessPhone) : "—"}
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
                         <KebabMenu
-                          onView={() => navigate(`/admin/customers/${r.id}`)}
-                          onEditStatus={() =>
-                            setModal({
-                              customerId: r.id,
-                              currentStatus: r.currentStatus,
-                              companyName: r.company,
-                            })
-                          }
                           onCopyEmail={() => {
                             navigator.clipboard.writeText(r.email);
                             toast.success("Email copied");
@@ -306,8 +277,8 @@ export default function AdminCustomersPage() {
 
           {/* Pagination footer */}
           {!loading && !error && rows.length > 0 && (
-            <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm">
-              <span className="text-muted-foreground">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-4 py-3 text-sm">
+              <span className="min-w-0 text-muted-foreground">
                 {total} customer{total === 1 ? "" : "s"} · page {page + 1} of {pageCount}
               </span>
               <div className="flex gap-2">
@@ -333,33 +304,39 @@ export default function AdminCustomersPage() {
         </CardContent>
       </Card>
 
-      {/* Status change (single or bulk) */}
-      {modal && !modal.bulk && (
-        <StatusChangeModal
-          open
-          customerId={modal.customerId}
-          currentStatus={modal.currentStatus}
-          companyName={modal.companyName}
-          onClose={() => setModal(null)}
-          onSaved={onSaved}
-        />
-      )}
-      {modal?.bulk && (
-        <StatusChangeModal
-          open
-          bulkIds={modal.ids}
-          currentStatus={modal.currentStatus}
-          companyName={modal.companyName}
-          onClose={() => setModal(null)}
-          onSaved={onSaved}
-        />
-      )}
     </div>
   );
 }
 
-// Kebab menu with click-outside close.
-function KebabMenu({ onView, onEditStatus, onCopyEmail }) {
+// Inline status dropdown — renders directly in the table cell.
+function InlineStatusSelect({ customerId, currentStatus, onChange }) {
+  const [saving, setSaving] = useState(false);
+  const normalized = currentStatus?.toUpperCase() ?? "";
+
+  const handleChange = async (val) => {
+    setSaving(true);
+    await onChange(customerId, val);
+    setSaving(false);
+  };
+
+  return (
+    <Select value={normalized} onValueChange={handleChange} disabled={saving}>
+      <SelectTrigger className="h-8 min-w-[140px] border-border text-xs">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {ALL_STATUSES.map((s) => (
+          <SelectItem key={s} value={s} disabled={s === normalized} className="text-xs">
+            {statusLabel(s)}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
+// Kebab menu with click-outside close. Row click handles navigation.
+function KebabMenu({ onCopyEmail }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
@@ -373,8 +350,6 @@ function KebabMenu({ onView, onEditStatus, onCopyEmail }) {
       </button>
       {open && (
         <div className="absolute right-0 z-20 mt-1 w-40 overflow-hidden rounded-lg border border-border bg-white shadow-lg">
-          <MenuItem icon={Eye} label="View" onClick={onView} />
-          <MenuItem icon={Pencil} label="Edit status" onClick={onEditStatus} />
           <MenuItem icon={Copy} label="Copy email" onClick={onCopyEmail} />
         </div>
       )}

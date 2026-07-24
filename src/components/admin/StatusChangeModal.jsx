@@ -32,12 +32,15 @@ export function StatusChangeModal({
   onSaved,
 }) {
   const { change, saving } = useChangeStatus();
-  const [toStatus, setToStatus] = useState(currentStatus);
+  // Postgres enums come back lowercase ("new"); ALL_STATUSES uses uppercase.
+  // Normalize on the way in so the Select always finds a matching item.
+  const normalizedCurrent = currentStatus?.toUpperCase() ?? "";
+  const [toStatus, setToStatus] = useState(normalizedCurrent);
   const [note, setNote] = useState("");
 
   useEffect(() => {
     if (open) {
-      setToStatus(currentStatus);
+      setToStatus(currentStatus?.toUpperCase() ?? "");
       setNote("");
     }
   }, [open, currentStatus]);
@@ -51,7 +54,7 @@ export function StatusChangeModal({
 
   if (!open) return null;
 
-  const unchanged = toStatus === currentStatus;
+  const unchanged = toStatus === normalizedCurrent;
 
   const submit = async () => {
     if (bulkIds?.length) {
@@ -109,7 +112,7 @@ export function StatusChangeModal({
         <div className="space-y-4 p-5">
           <div className="flex items-center gap-2 text-sm">
             <span className="text-muted-foreground">Current:</span>
-            <StatusBadge status={currentStatus} />
+            <StatusBadge status={normalizedCurrent} />
           </div>
 
           <div className="space-y-1.5">
@@ -120,7 +123,7 @@ export function StatusChangeModal({
               </SelectTrigger>
               <SelectContent>
                 {ALL_STATUSES.map((s) => (
-                  <SelectItem key={s} value={s} disabled={s === currentStatus}>
+                  <SelectItem key={s} value={s} disabled={s === normalizedCurrent}>
                     {statusLabel(s)}
                   </SelectItem>
                 ))}
