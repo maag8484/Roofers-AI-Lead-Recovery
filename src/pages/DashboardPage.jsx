@@ -1,76 +1,46 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
-  Phone,
-  Calendar,
-  Users,
-  Clock,
   Check,
-  LogOut,
-  Settings,
   CreditCard,
-  Copy,
   ArrowRight,
-  Rocket,
-  MapPin,
   Shield,
   PartyPopper,
   X,
+  HelpCircle,
+  UserCircle,
+  Loader2,
 } from "lucide-react";
-import { toast } from "sonner";
-import { supabase, invokeFunction } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { Logo } from "@/components/Logo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
-import { formatPhone, formatDateTime } from "@/lib/utils";
+import { AccountMenu } from "@/components/AccountMenu";
+import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
+import { formatPhone } from "@/lib/utils";
 
 export default function DashboardPage() {
-  const { user, profile, isAdmin, signOut } = useAuth();
+  const { user, profile, isAdmin, onboardingCompleted, markOnboardingComplete } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const [loading, setLoading] = useState(true);
-  const [twilio, setTwilio] = useState(null);
-  const [calendar, setCalendar] = useState(null);
   const [subscription, setSubscription] = useState(null);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
-  const [appointments, setAppointments] = useState([]);
-  const [stats, setStats] = useState({ booked: 0, leads: 0, avgResponse: null });
+  const [tourOpen, setTourOpen] = useState(false);
+  const [tourStep, setTourStep] = useState(1);
 
   const loadData = useCallback(async () => {
     if (!user) return;
-    const [tw, cal, sub, appts, leads] = await Promise.all([
-      supabase.from("twilio_accounts").select("phone_number").eq("user_id", user.id).maybeSingle(),
-      supabase.from("calendar_connections").select("google_email").eq("user_id", user.id).maybeSingle(),
-      supabase.from("subscriptions").select("status, trial_ends_at").eq("user_id", user.id).maybeSingle(),
-      supabase
-        .from("appointments")
-        .select("*")
-        .eq("user_id", user.id)
-        .gte("scheduled_time", new Date().toISOString())
-        .order("scheduled_time", { ascending: true })
-        .limit(20),
-      supabase.from("recovered_leads").select("response_seconds").eq("user_id", user.id),
-    ]);
-
-    setTwilio(tw.data);
-    setCalendar(cal.data);
-    setSubscription(sub.data);
-    setAppointments(appts.data ?? []);
-
-    const leadRows = leads.data ?? [];
-    const responded = leadRows.filter((l) => l.response_seconds != null);
-    const avg = responded.length
-      ? Math.round(responded.reduce((s, l) => s + l.response_seconds, 0) / responded.length)
-      : null;
-    setStats({
-      booked: appts.data?.length ?? 0,
-      leads: leadRows.length,
-      avgResponse: avg,
-    });
+    const { data } = await supabase
+      .from("subscriptions")
+      .select("status, trial_ends_at")
+      .eq("user_id", user.id)
+      .maybeSingle();
+    setSubscription(data);
     setLoading(false);
   }, [user]);
 
@@ -78,65 +48,27 @@ export default function DashboardPage() {
     loadData();
   }, [loadData]);
 
+  // New-flow gate: a customer must (1) have paid, then (2) have submitted the
+  // onboarding details form before they can use the dashboard. Send them to
+  // whichever step is missing. Admins are exempt. Runs after data is loaded.
+  useEffect(() => {
+    if (loading || isAdmin) return;
+    const paid = ["active", "trialing"].includes(subscription?.status);
+    if (!paid) {
+      navigate("/checkout", { replace: true });
+    } else if (!profile?.details_submitted) {
+      navigate("/onboarding", { replace: true });
+    }
+  }, [loading, isAdmin, subscription, profile, navigate]);
+
   useEffect(() => {
     if (searchParams.get("payment") === "success") {
       setShowPaymentSuccess(true);
-      // Clean the URL without reload
       window.history.replaceState({}, "", "/dashboard");
     }
   }, [searchParams]);
 
-  // Realtime: new appointments stream straight into the list.
-  useEffect(() => {
-    if (!user) return;
-    const channel = supabase
-      .channel("appointments-realtime")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "appointments", filter: `user_id=eq.${user.id}` },
-        (payload) => {
-          setAppointments((prev) =>
-            [...prev, payload.new].sort(
-              (a, b) => new Date(a.scheduled_time) - new Date(b.scheduled_time)
-            )
-          );
-          setStats((s) => ({ ...s, booked: s.booked + 1 }));
-          toast.success(`New appointment: ${payload.new.lead_name || "lead"}`);
-        }
-      )
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [user]);
-
-  const handleSignOut = async () => {
-    await signOut();
-    navigate("/");
-  };
-
-  const startCheckout = async () => {
-    try {
-      const res = await invokeFunction("stripe-create-checkout", {
-        success_url: `${window.location.origin}/dashboard?payment=success`,
-        cancel_url: `${window.location.origin}/dashboard`,
-      });
-      if (res?.url) window.location.href = res.url;
-      else throw new Error(res?.error ?? "No checkout URL returned.");
-    } catch (err) {
-      console.error(err);
-      toast.error("Could not start checkout. Please try again.");
-    }
-  };
-
-  const copyNumber = () => {
-    if (!twilio?.phone_number) return;
-    navigator.clipboard.writeText(twilio.phone_number);
-    toast.success("Number copied to clipboard");
-  };
-
-  const setupComplete = Boolean(twilio && calendar);
-  const isLive = profile?.is_live || (setupComplete && !!subscription);
+  const isLive = profile?.status === "live" || profile?.is_live;
 
   if (loading) {
     return (
@@ -148,7 +80,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-secondary/30">
-
       {/* Payment success modal */}
       {showPaymentSuccess && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -167,7 +98,7 @@ export default function DashboardPage() {
               Welcome to Roof AI Lead Recovery. Your subscription is now active.
             </p>
             <p className="mb-6 text-sm text-muted-foreground">
-              Complete your setup below to start recovering missed calls automatically.
+              Our team is configuring your AI receptionist — we'll take it from here.
             </p>
             <Button className="w-full" onClick={() => setShowPaymentSuccess(false)}>
               Go to Dashboard <ArrowRight className="h-4 w-4" />
@@ -176,10 +107,23 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* Replayable product tour (Help → Product Tour). Only rendered when it
+          hasn't been completed, or when explicitly reopened this session. */}
+      <OnboardingModal
+        open={tourOpen}
+        step={tourStep}
+        setStep={setTourStep}
+        onClose={() => setTourOpen(false)}
+        onFinish={() => setTourOpen(false)}
+        finishing={false}
+        finishLabel="Done"
+        finishIcon={Check}
+      />
+
       {/* Top bar */}
       <header className="sticky top-0 z-30 border-b border-border bg-white">
         <div className="container flex h-16 items-center justify-between">
-          <Link to="/dashboard">
+          <Link to="/" aria-label="Roof AI Lead Recovery home">
             <Logo />
           </Link>
           <div className="flex items-center gap-2">
@@ -190,9 +134,25 @@ export default function DashboardPage() {
                 </Link>
               </Button>
             )}
-            <Button variant="ghost" size="sm" onClick={handleSignOut}>
-              <LogOut className="h-4 w-4" /> Logout
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/account">
+                <UserCircle className="h-4 w-4" /> Account
+              </Link>
             </Button>
+            {/* Product tour reopen — hidden once completed (never nag again). */}
+            {!onboardingCompleted && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setTourStep(1);
+                  setTourOpen(true);
+                }}
+              >
+                <HelpCircle className="h-4 w-4" /> Product tour
+              </Button>
+            )}
+            <AccountMenu />
           </div>
         </div>
       </header>
@@ -202,207 +162,129 @@ export default function DashboardPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-extrabold text-ink">
-              Welcome, {profile?.company_name || profileName(profile) || "there"}!
+              Welcome, {profile?.company_name || "there"}!
             </h1>
             <p className="text-muted-foreground">Here's what's happening with your leads.</p>
           </div>
-          {isLive ? (
-            <Badge variant="success" className="py-1.5 text-sm">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" /> Live
-            </Badge>
-          ) : (
-            <Badge variant="warning" className="py-1.5 text-sm">
-              Setup incomplete
-            </Badge>
-          )}
+          <StatusBadge status={profile?.status} isLive={isLive} />
         </div>
 
-        {/* Setup status / Go Live */}
+        {/* Onboarding checklist — reflects the REAL flow. Hidden once live. */}
         {!isLive && (
-          <Card className="border-brand-200 bg-brand-50/40">
-            <CardContent className="p-6">
-              <h2 className="mb-4 font-bold text-ink">Finish your setup</h2>
-              <div className="space-y-2.5">
-                <SetupRow done label="Account created" />
-                <SetupRow
-                  done={!!subscription}
-                  label="Payment processed ($299/month)"
-                  onAction={!subscription ? startCheckout : undefined}
-                />
-                <SetupRow
-                  done={!!twilio}
-                  label={twilio ? `Twilio number: ${formatPhone(twilio.phone_number)}` : "Purchase Twilio number"}
-                  to="/setup/twilio"
-                />
-                <SetupRow
-                  done={!!calendar}
-                  label={calendar ? `Calendar connected: ${calendar.google_email}` : "Connect Google Calendar"}
-                  to="/setup/calendar"
-                />
-              </div>
-              {!setupComplete && (
-                <Button className="mt-5" asChild>
-                  <Link to={!twilio ? "/setup/twilio" : "/setup/calendar"}>
-                    Continue Setup <ArrowRight />
-                  </Link>
-                </Button>
-              )}
-              {setupComplete && !isLive && (
-                <Button className="mt-5" asChild>
-                  <Link to="/setup/calendar">
-                    <Rocket className="h-4 w-4" /> Go Live
-                  </Link>
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+          <OnboardingChecklist status={profile?.status} subscription={subscription} />
         )}
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <StatCard icon={Users} tone="bg-brand-50 text-brand-600" value={stats.leads} label="Leads Recovered" />
-          <StatCard icon={Phone} tone="bg-brand-50 text-brand-600" value={stats.leads} label="Missed Calls Responded" />
-          <StatCard icon={Calendar} tone="bg-emerald-50 text-emerald-600" value={stats.booked} label="Estimates Booked" />
-          <StatCard
-            icon={Clock}
-            tone="bg-brand-50 text-brand-600"
-            value={stats.avgResponse != null ? `${stats.avgResponse}s` : "—"}
-            label="Avg Response Time"
-          />
-        </div>
-
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Upcoming appointments */}
-          <Card className="lg:col-span-2">
+        <div className="grid gap-6 sm:grid-cols-2">
+          <Card>
             <CardContent className="p-6">
-              <h2 className="mb-4 font-bold text-ink">Upcoming Appointments</h2>
-              {appointments.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-border py-12 text-center">
-                  <Calendar className="mx-auto mb-3 h-8 w-8 text-muted-foreground/50" />
-                  <p className="text-muted-foreground">
-                    None yet — they'll appear here in real time as leads come in.
-                  </p>
-                </div>
+              <p className="text-sm font-medium text-muted-foreground">Business Phone</p>
+              {profile?.business_phone ? (
+                <p className="mt-1 text-lg font-extrabold text-ink">
+                  {formatPhone(profile.business_phone)}
+                </p>
               ) : (
-                <ul className="space-y-3">
-                  {appointments.map((a) => (
-                    <li
-                      key={a.id}
-                      className="flex items-start justify-between gap-4 rounded-xl border border-border p-4"
-                    >
-                      <div className="min-w-0">
-                        <p className="font-semibold text-ink">{a.lead_name || "New lead"}</p>
-                        <p className="text-sm text-muted-foreground">{formatPhone(a.lead_phone)}</p>
-                        {a.property_address && (
-                          <p className="mt-1 flex items-center gap-1 truncate text-sm text-muted-foreground">
-                            <MapPin className="h-3.5 w-3.5 shrink-0" /> {a.property_address}
-                          </p>
-                        )}
-                      </div>
-                      <div className="shrink-0 text-right">
-                        <p className="text-sm font-semibold text-brand-600">
-                          {formatDateTime(a.scheduled_time)}
-                        </p>
-                        {a.service_type && (
-                          <Badge variant="muted" className="mt-1.5">
-                            {a.service_type.replace(/_/g, " ")}
-                          </Badge>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                <p className="mt-1 text-sm text-muted-foreground">—</p>
               )}
+              <p className="mt-1 text-xs text-muted-foreground">
+                Forwards to your AI receptionist.
+              </p>
             </CardContent>
           </Card>
 
-          {/* Side panel */}
-          <div className="space-y-6">
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-sm font-medium text-muted-foreground">Your Business Number</p>
-                {twilio ? (
-                  <>
-                    <p className="mt-1 text-xl font-extrabold text-ink">
-                      {formatPhone(twilio.phone_number)}
-                    </p>
-                    <Button variant="secondary" size="sm" className="mt-3 w-full" onClick={copyNumber}>
-                      <Copy className="h-4 w-4" /> Copy number
-                    </Button>
-                  </>
-                ) : (
-                  <Button size="sm" className="mt-3 w-full" asChild>
-                    <Link to="/setup/twilio">Get a number</Link>
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-sm font-medium text-muted-foreground">Calendar Status</p>
-                {calendar ? (
-                  <p className="mt-1 flex items-center gap-1.5 font-semibold text-emerald-600">
-                    <Check className="h-4 w-4" /> {calendar.google_email}
-                  </p>
-                ) : (
-                  <Button size="sm" className="mt-3 w-full" asChild>
-                    <Link to="/setup/calendar">Connect calendar</Link>
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardContent className="space-y-2 p-6">
-                <p className="mb-1 text-sm font-medium text-muted-foreground">Settings</p>
-                <SettingsLink icon={Settings} to="/setup/calendar" label="Edit availability" />
-                <SettingsLink icon={Phone} to="/setup/twilio" label="Phone number" />
-                <SettingsLink icon={CreditCard} to="/billing" label="Billing" />
-              </CardContent>
-            </Card>
-          </div>
+          <Card>
+            <CardContent className="space-y-2 p-6">
+              <p className="mb-1 text-sm font-medium text-muted-foreground">Manage</p>
+              <SettingsLink icon={UserCircle} to="/account" label="Account overview" />
+              <SettingsLink icon={CreditCard} to="/billing" label="Billing" />
+            </CardContent>
+          </Card>
         </div>
       </main>
     </div>
   );
 }
 
-function profileName(profile) {
-  return null; // company_name is the primary display; placeholder for future owner name
-}
+// ---------------------------------------------------------------------------
+// Onboarding checklist — mirrors the actual customer journey. The Twilio/
+// Calendar self-serve steps were removed; provisioning is handled by the team
+// (reflected by the account status: new -> in_progress -> live).
+// ---------------------------------------------------------------------------
+function OnboardingChecklist({ status, subscription }) {
+  const paid = ["active", "trialing"].includes(subscription?.status);
+  const detailsDone = true; // dashboard is only reachable after details submitted
+  const reviewing = status === "in_progress";
+  const live = status === "live";
 
-function StatCard({ icon: Icon, tone, value, label }) {
+  const steps = [
+    { label: "Account created", state: "done" },
+    { label: "Subscription active", state: paid ? "done" : "todo" },
+    { label: "Business information submitted", state: detailsDone ? "done" : "todo" },
+    {
+      label: "Our team is configuring your AI receptionist",
+      state: live ? "done" : reviewing ? "active" : "todo",
+    },
+    { label: "AI activated — recovering calls 24/7", state: live ? "done" : "todo" },
+  ];
+
   return (
-    <Card>
-      <CardContent className="p-5">
-        <span className={"mb-3 flex h-10 w-10 items-center justify-center rounded-lg " + tone}>
-          <Icon className="h-5 w-5" />
-        </span>
-        <p className="text-3xl font-extrabold text-ink">{value}</p>
-        <p className="text-sm text-muted-foreground">{label}</p>
+    <Card className="border-brand-200 bg-brand-50/40">
+      <CardContent className="p-6">
+        <h2 className="mb-1 font-bold text-ink">Your setup</h2>
+        <p className="mb-4 text-sm text-muted-foreground">
+          You're all set on your end — our team takes it from here. No action needed.
+        </p>
+        <div className="space-y-2.5">
+          {steps.map((s) => (
+            <ChecklistRow key={s.label} label={s.label} state={s.state} />
+          ))}
+        </div>
       </CardContent>
     </Card>
   );
 }
 
-function SetupRow({ done, label, to, onAction }) {
-  const content = (
-    <div className="flex items-center gap-3">
-      <span
-        className={
-          "flex h-6 w-6 items-center justify-center rounded-full " +
-          (done ? "bg-emerald-500 text-white" : "border-2 border-border bg-white")
-        }
-      >
-        {done && <Check className="h-3.5 w-3.5" />}
+function ChecklistRow({ label, state }) {
+  let icon;
+  let textClass = "text-ink";
+  if (state === "done") {
+    icon = (
+      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500 text-white">
+        <Check className="h-3.5 w-3.5" />
       </span>
-      <span className={done ? "text-ink" : "font-medium text-brand-600"}>{label}</span>
+    );
+  } else if (state === "active") {
+    icon = (
+      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+      </span>
+    );
+    textClass = "font-medium text-brand-700";
+  } else {
+    icon = <span className="h-6 w-6 rounded-full border-2 border-border bg-white" />;
+    textClass = "text-muted-foreground";
+  }
+  return (
+    <div className="flex items-center gap-3">
+      {icon}
+      <span className={textClass}>{label}</span>
     </div>
   );
-  if (!done && onAction) return <button onClick={onAction} className="block w-full text-left hover:opacity-80">{content}</button>;
-  if (!done && to) return <Link to={to} className="block hover:opacity-80">{content}</Link>;
-  return content;
+}
+
+// Reflects the admin-driven lifecycle status. Falls back to the is_live flag.
+function StatusBadge({ status, isLive }) {
+  const map = {
+    new: { variant: "warning", dot: "bg-amber-500", label: "Setting up" },
+    in_progress: { variant: "default", dot: "bg-brand-500", label: "In progress" },
+    live: { variant: "success", dot: "bg-emerald-500", label: "Live" },
+    paused: { variant: "muted", dot: "bg-muted-foreground", label: "Paused" },
+  };
+  const s = map[status] ?? (isLive ? map.live : map.new);
+  return (
+    <Badge variant={s.variant} className="py-1.5 text-sm">
+      <span className={"h-2 w-2 rounded-full " + s.dot} /> {s.label}
+    </Badge>
+  );
 }
 
 function SettingsLink({ icon: Icon, to, label }) {

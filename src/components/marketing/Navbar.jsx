@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
+import { AccountMenu } from "@/components/AccountMenu";
+import { useAuth } from "@/context/AuthContext";
+import { useResumePath } from "@/lib/useResumePath";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -13,6 +16,13 @@ const navLinks = [
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const { user, isAdmin } = useAuth();
+  const { path: resumePath } = useResumePath();
+
+  // Label the resume button by where it sends them.
+  let resumeLabel = "Continue setup";
+  if (isAdmin) resumeLabel = "Admin";
+  else if (resumePath === "/dashboard") resumeLabel = "Go to dashboard";
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-white/80 backdrop-blur-md">
@@ -34,12 +44,25 @@ export function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button variant="ghost" asChild>
-            <Link to="/login">Login</Link>
-          </Button>
-          <Button asChild>
-            <Link to="/signup">Sign Up</Link>
-          </Button>
+          {user ? (
+            <>
+              <Button asChild>
+                <Link to={resumePath}>
+                  {resumeLabel} <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              <AccountMenu />
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" asChild>
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/signup">Sign Up</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         <button
@@ -65,12 +88,22 @@ export function Navbar() {
               </a>
             ))}
             <div className="mt-2 flex flex-col gap-2">
-              <Button variant="secondary" asChild>
-                <Link to="/login">Login</Link>
-              </Button>
-              <Button asChild>
-                <Link to="/signup">Sign Up</Link>
-              </Button>
+              {user ? (
+                <Button asChild onClick={() => setOpen(false)}>
+                  <Link to={resumePath}>
+                    {resumeLabel} <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              ) : (
+                <>
+                  <Button variant="secondary" asChild>
+                    <Link to="/login">Login</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link to="/signup">Sign Up</Link>
+                  </Button>
+                </>
+              )}
             </div>
           </nav>
         </div>
