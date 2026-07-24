@@ -1,18 +1,16 @@
 import { useState } from "react";
-import { Mail, Users, BellRing } from "lucide-react";
-import { GmailSettingsTab } from "@/components/admin/settings/GmailSettingsTab";
+import { Users, BellRing } from "lucide-react";
 import { AdminUsersTab } from "@/components/admin/settings/AdminUsersTab";
 import { NotificationPreferencesTab } from "@/components/admin/settings/NotificationPreferencesTab";
 import { cn } from "@/lib/utils";
 
 const TABS = [
-  { key: "gmail", label: "Gmail Integration", icon: Mail },
   { key: "admins", label: "Admin Users", icon: Users },
   { key: "prefs", label: "Notification Preferences", icon: BellRing },
 ];
 
 export default function AdminSettingsPage() {
-  const [tab, setTab] = useState("gmail");
+  const [tab, setTab] = useState("admins");
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -33,7 +31,6 @@ export default function AdminSettingsPage() {
         ))}
       </div>
 
-      {tab === "gmail" && <GmailSettingsTab />}
       {tab === "admins" && <AdminUsersTab />}
       {tab === "prefs" && <NotificationPreferencesTab />}
     </div>
