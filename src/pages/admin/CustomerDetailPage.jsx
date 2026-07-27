@@ -9,6 +9,9 @@ import {
   Pencil,
   UserX,
   CheckCircle2,
+  Wrench,
+  Clock,
+  PhoneForwarded,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,6 +38,12 @@ import { useChangeStatus } from "@/hooks/admin/useChangeStatus";
 import { ALL_STATUSES, statusLabel } from "@/config/customerStatus";
 import { PLAN_LABEL } from "@/config/plan";
 import { formatPhone, formatDateTime } from "@/lib/utils";
+
+const CONVERSION_LABEL = {
+  scheduled_appointment: "Schedule appointment",
+  warm_transfer: "Warm transfer",
+  take_message: "Take a message",
+};
 
 export default function CustomerDetailPage() {
   const { id } = useParams();
@@ -108,10 +117,31 @@ export default function CustomerDetailPage() {
             <Row label="Website" value={c.website} isLink />
           </InfoCard>
 
-          <InfoCard icon={User} title="Owner Information">
-            <Row label="Name" value={profile?.full_name} />
-            <Row label="Email" value={c.contact_email} />
-            <Row label="Phone" value={formatPhone(profile?.phone)} />
+          <InfoCard icon={User} title="Owner / Contact">
+            <Row label="Owner name" value={profile?.full_name} />
+            <Row label="Contact name" value={c.contact_name} />
+            <Row label="Contact email" value={c.contact_email} />
+            <Row label="Owner phone" value={formatPhone(profile?.phone)} />
+          </InfoCard>
+
+          <InfoCard icon={Wrench} title="Service Details">
+            <Row label="Service area" value={c.service_areas} />
+            <Row label="Services offered" value={c.services} />
+          </InfoCard>
+
+          <InfoCard icon={PhoneForwarded} title="Call Handling">
+            <Row label="Conversion goal" value={CONVERSION_LABEL[c.conversion_preference] ?? c.conversion_preference} />
+            {c.conversion_preference === "scheduled_appointment" && (
+              <Row label="Scheduling link" value={c.calendly_link} isLink />
+            )}
+            {c.conversion_preference === "warm_transfer" && (
+              <Row label="Transfer number" value={c.transfer_number} />
+            )}
+          </InfoCard>
+
+          <InfoCard icon={Clock} title="Hours of Operation">
+            <Row label="Business hours" value={c.business_hours} />
+            <Row label="After-hours preference" value={c.after_hours_preference} />
           </InfoCard>
 
           <InfoCard icon={CreditCard} title="Subscription">
