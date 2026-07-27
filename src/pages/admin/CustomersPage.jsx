@@ -65,7 +65,7 @@ export default function AdminCustomersPage() {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [chips, setChips] = useState([]);
-  const [selected, setSelected] = useState(new Set());
+  const [selectedId, setSelectedId] = useState(null);
   const { change } = useChangeStatus();
 
   const { rows, total, loading, error, refetch } = useCustomersList({
@@ -100,12 +100,7 @@ export default function AdminCustomersPage() {
     setSearch(searchInput);
   };
 
-  const selectOne = (id) =>
-    setSelected((prev) => {
-      // Single-select: clicking the already-selected row deselects it, otherwise select only this one.
-      if (prev.has(id)) return new Set();
-      return new Set([id]);
-    });
+  const selectOne = (id) => setSelectedId((prev) => (prev === id ? null : id));
 
   const handleStatusChange = async (customerId, newStatus) => {
     const res = await change(customerId, newStatus, null);
@@ -223,7 +218,7 @@ export default function AdminCustomersPage() {
                         <input
                           type="radio"
                           name="customer-select"
-                          checked={selected.has(r.id)}
+                          checked={selectedId === r.id}
                           onChange={() => selectOne(r.id)}
                           aria-label={`Select ${r.company}`}
                           className="cursor-pointer accent-brand-600"
