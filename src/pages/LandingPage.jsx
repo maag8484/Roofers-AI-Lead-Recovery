@@ -96,12 +96,14 @@ const WHO_ITS_FOR = [
 
 
 const PLAN_FEATURES = [
-  "AI Lead Follow-Up",
-  "Missed Call Recovery",
-  "Appointment Booking",
-  "Dashboard Access",
-  "Email & SMS Support",
-  "Google Calendar Integration",
+  "AI responds to missed calls in under 30 seconds",
+  "Live receptionist backup for unanswered calls",
+  "AI qualifies every homeowner",
+  "Books inspections directly on your calendar",
+  "SMS & Email notifications",
+  "Google Calendar integration",
+  "Lead tracking dashboard",
+  "Unlimited users",
 ];
 
 const FAQS = [
@@ -143,7 +145,10 @@ export default function LandingPage() {
         <WhoItsFor />
         <DashboardPreview />
         <Pricing />
+        <WhyRoofersJoin />
         <TheMath />
+        <SmithAiTrust />
+        <ComparisonTable />
         <Faq />
         <BottomCta />
         <FinalCta />
@@ -368,8 +373,8 @@ function Pricing() {
       <div className="container">
         <SectionHeading
           eyebrow="Pricing"
-          title="Simple, Transparent Pricing"
-          subtitle="One plan. Everything included. Recover a single job and it pays for itself."
+          title="Recover More Roofing Jobs for Less Than the Profit From One Roof"
+          subtitle="One plan. Everything included. No surprises."
         />
         <div className="mx-auto max-w-lg rounded-3xl border-2 border-brand-600 bg-white p-8 shadow-xl">
           <div className="flex items-center justify-between">
@@ -392,12 +397,61 @@ function Pricing() {
 
           <Button size="lg" className="mt-7 w-full" asChild>
             <Link to="/signup">
-              Start Free Trial <ArrowRight />
+              Start Recovering Missed Leads <ArrowRight />
             </Link>
           </Button>
-          <p className="mt-3 text-center text-sm text-muted-foreground">
-            7-day free trial · Cancel anytime
-          </p>
+          <ul className="mt-4 space-y-1.5">
+            {[
+              "No contracts",
+              "7-Day Free Trial",
+              "No new phone number required",
+              "Keep your current workflow",
+              "Setup takes about 10 minutes",
+            ].map((t) => (
+              <li key={t} className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <Check className="h-4 w-4 shrink-0 text-emerald-500" /> {t}
+              </li>
+            ))}</ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function WhyRoofersJoin() {
+  const boxes = [
+    {
+      emoji: "💰",
+      title: "Recover Lost Revenue",
+      desc: "Stop losing homeowners to the next roofer who answers first. Every missed call is money already spent on marketing — walking out the door.",
+    },
+    {
+      emoji: "📅",
+      title: "Book More Inspections",
+      desc: "Turn missed calls into scheduled estimates automatically. No manual follow-up. No leads falling through the cracks.",
+    },
+    {
+      emoji: "⏰",
+      title: "Works 24/7",
+      desc: "On the roof. Driving. After hours. Every lead gets an immediate response — even when you can't pick up.",
+    },
+  ];
+  return (
+    <section className="py-20">
+      <div className="container">
+        <SectionHeading
+          eyebrow="Why Roofers Join"
+          title="Not Just a Feature. A Revenue Safety Net."
+          subtitle="Roof AI doesn't add work to your plate — it recovers the revenue you were already losing."
+        />
+        <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-3">
+          {boxes.map((b) => (
+            <div key={b.title} className="rounded-2xl border border-border bg-white p-8 text-center shadow-sm">
+              <div className="mb-4 text-4xl">{b.emoji}</div>
+              <h3 className="mb-2 text-lg font-bold text-ink">{b.title}</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">{b.desc}</p>
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -405,37 +459,87 @@ function Pricing() {
 }
 
 function TheMath() {
-  const cards = [
-    { value: "$12,000", label: "Average Roof Job Value", color: "text-white" },
-    { value: "$3,000+", label: "Gross Profit per Job", color: "text-emerald-400" },
-    { value: "$299", label: "Monthly Platform Cost", color: "text-brand-500" },
-  ];
   return (
     <section className="bg-ink-900 py-20 text-white">
       <div className="container">
-        <SectionHeading dark eyebrow="The Math" title="What One Missed Roof Job Costs You" />
-        <div className="mx-auto grid max-w-3xl gap-5">
-          {cards.map((c) => (
-            <div
-              key={c.label}
-              className="rounded-2xl border border-white/10 bg-white/[0.04] py-10 text-center"
-            >
-              <p className={"text-5xl font-extrabold " + c.color}>{c.value}</p>
-              <p className="mt-2 text-slate-400">{c.label}</p>
-            </div>
-          ))}
+        <SectionHeading
+          dark
+          eyebrow="Simple ROI Calculator"
+          title="Recover Just One Roofing Job…"
+          subtitle="That's all it takes."
+        />
+        <div className="mx-auto grid max-w-3xl gap-5 sm:grid-cols-3">
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] py-10 text-center">
+            <p className="text-5xl font-extrabold text-white">$12,000<span className="text-2xl">+</span></p>
+            <p className="mt-2 text-slate-400">Average roof replacement value</p>
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] py-10 text-center">
+            <p className="text-5xl font-extrabold text-emerald-400">$299</p>
+            <p className="mt-2 text-slate-400">Monthly investment</p>
+          </div>
+          <div className="rounded-2xl border border-emerald-500/40 bg-emerald-500/10 py-10 text-center">
+            <p className="text-5xl font-extrabold text-emerald-400">40x</p>
+            <p className="mt-2 text-slate-400">Return on just one recovered job</p>
+          </div>
         </div>
-        <div className="mx-auto mt-10 max-w-2xl text-center">
-          <p className="text-lg text-slate-300">
-            Recovering just{" "}
-            <span className="font-bold text-emerald-400">one additional roof job</span> can
-            pay for the platform many times over.
+        <div className="mx-auto mt-10 max-w-2xl rounded-2xl border border-white/10 bg-white/[0.04] p-8 text-center">
+          <p className="text-lg font-semibold text-white">
+            One recovered customer could pay for your subscription{" "}
+            <span className="text-emerald-400">many times over.</span>
           </p>
-          <Button size="lg" className="mt-7 shadow-[0_0_40px_rgba(37,99,235,0.5)]" asChild>
+          <p className="mt-3 text-slate-400">
+            Instead of thinking <span className="italic">"$299 is expensive"</span> — ask yourself:{" "}
+            <span className="font-semibold text-white">"Can I afford to keep missing calls?"</span>
+          </p>
+        </div>
+        <div className="mt-10 text-center">
+          <Button size="lg" className="shadow-[0_0_40px_rgba(37,99,235,0.5)]" asChild>
             <Link to="/signup">
               Start Your Free Trial <ArrowRight />
             </Link>
           </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SmithAiTrust() {
+  return (
+    <section className="bg-secondary/40 py-20">
+      <div className="container">
+        <div className="mx-auto max-w-3xl rounded-3xl border border-border bg-white p-10 shadow-sm">
+          <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-left">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-3xl">
+              🤝
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-widest text-brand-600">
+                Trusted Call Handling
+              </p>
+              <h3 className="mt-1 text-xl font-extrabold text-ink">
+                Live Receptionist Support Powered by Smith.ai
+              </h3>
+              <p className="mt-2 text-muted-foreground leading-relaxed">
+                When AI needs a human, your customers speak with a{" "}
+                <span className="font-semibold text-ink">trained live receptionist</span> —
+                not voicemail. Smith.ai handles overflow calls so every homeowner gets a
+                real response, every single time.
+              </p>
+            </div>
+          </div>
+          <div className="mt-8 grid gap-4 border-t border-border pt-8 sm:grid-cols-3">
+            {[
+              { emoji: "🎯", text: "Every call answered by a real person when AI can't" },
+              { emoji: "🏆", text: "Smith.ai is trusted by thousands of businesses" },
+              { emoji: "📞", text: "No customer ever reaches voicemail" },
+            ].map((item) => (
+              <div key={item.text} className="flex items-start gap-3">
+                <span className="text-xl">{item.emoji}</span>
+                <p className="text-sm text-muted-foreground">{item.text}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -462,22 +566,92 @@ function Faq() {
   );
 }
 
+function ComparisonTable() {
+  const rows = [
+    {
+      without: "Missed calls go to voicemail",
+      with: "Every missed call gets an immediate response",
+    },
+    {
+      without: "Homeowners call another roofer",
+      with: "Homeowners stay engaged with your business",
+    },
+    {
+      without: "Lost inspections",
+      with: "More inspections booked automatically",
+    },
+    {
+      without: "Lost revenue",
+      with: "Revenue recovered 24/7",
+    },
+    {
+      without: "After-hours leads disappear",
+      with: "24/7 lead recovery — even while you sleep",
+    },
+  ];
+
+  return (
+    <section className="py-20">
+      <div className="container">
+        <SectionHeading
+          eyebrow="The Real Question"
+          title="Can You Afford NOT to Have This?"
+          subtitle="Instead of asking 'should I spend $299?' — ask yourself what you're losing every month without it."
+        />
+        <div className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-border shadow-sm">
+          {/* Header */}
+          <div className="grid grid-cols-2">
+            <div className="bg-red-50 px-6 py-4 text-center">
+              <p className="font-bold text-red-700">❌ Without Roof AI</p>
+            </div>
+            <div className="bg-emerald-50 px-6 py-4 text-center">
+              <p className="font-bold text-emerald-700">✅ With Roof AI</p>
+            </div>
+          </div>
+          {/* Rows */}
+          {rows.map((r, i) => (
+            <div
+              key={i}
+              className={`grid grid-cols-2 border-t border-border ${i % 2 === 0 ? "bg-white" : "bg-secondary/30"}`}
+            >
+              <div className="flex items-center gap-3 px-6 py-4 text-sm text-red-700 border-r border-border">
+                <span className="shrink-0">❌</span> {r.without}
+              </div>
+              <div className="flex items-center gap-3 px-6 py-4 text-sm text-emerald-700">
+                <span className="shrink-0">✅</span> {r.with}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="mt-8 text-center text-muted-foreground text-sm">
+          People buy because they don't want the left column.{" "}
+          <span className="font-semibold text-ink">Which column are you in right now?</span>
+        </p>
+      </div>
+    </section>
+  );
+}
+
 function BottomCta() {
   return (
     <section className="py-20">
       <div className="container">
         <div className="mx-auto max-w-3xl rounded-3xl border-2 border-brand-600 bg-brand-50/40 p-10 text-center sm:p-14">
           <h2 className="text-3xl font-extrabold text-ink sm:text-4xl">
-            Start Recovering Missed Roofing Leads Today
+            Stop Losing Roofing Jobs to Voicemail
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            No sales call required. Setup takes less than 15 minutes.
+            Every missed call is a homeowner looking for help. We'll respond within seconds —
+            so you book more inspections and recover more revenue.
           </p>
           <Button size="lg" className="mt-8" asChild>
             <Link to="/signup">
-              Start Free Trial <ArrowRight />
+              Start Your 7-Day Free Trial <ArrowRight />
             </Link>
           </Button>
+          <p className="mt-4 text-sm text-muted-foreground">
+            No contracts · No setup fee · Cancel anytime
+          </p>
         </div>
       </div>
     </section>
@@ -488,15 +662,21 @@ function FinalCta() {
   return (
     <section className="cta-gradient py-20 text-white">
       <div className="container text-center">
-        <h2 className="text-3xl font-extrabold sm:text-4xl">Stop Losing Roofing Leads</h2>
+        <h2 className="text-3xl font-extrabold sm:text-4xl">
+          Stop Losing Roofing Jobs to Voicemail
+        </h2>
         <p className="mt-4 text-lg text-white/90">
-          No sales call. No demo scheduling. Just start.
+          Every missed call is a homeowner looking for help. We'll respond within seconds.
+          Book more inspections. Recover more revenue.
         </p>
         <Button variant="white" size="lg" className="mt-8" asChild>
           <Link to="/signup">
-            Start Free Trial <ArrowRight />
+            Start Your 7-Day Free Trial <ArrowRight />
           </Link>
         </Button>
+        <p className="mt-4 text-sm text-white/60">
+          No contracts · No setup fee · Cancel anytime
+        </p>
       </div>
     </section>
   );
