@@ -73,11 +73,10 @@ export default function AdminDashboardPage() {
 
   const loadAll = useCallback(async () => {
     // Admin RLS lets these reads return ALL rows across every customer.
-    const [companies, profiles, subs, twilio, calendars, appts, hist] = await Promise.all([
+    const [companies, profiles, subs, calendars, appts, hist] = await Promise.all([
       supabase.from("roofing_companies").select("*"),
       supabase.from("profiles").select("id, full_name, phone"),
       supabase.from("subscriptions").select("user_id, status, trial_ends_at, current_period_end"),
-      supabase.from("twilio_accounts").select("user_id, phone_number"),
       supabase.from("calendar_connections").select("user_id, google_email, expires_at"),
       supabase.from("appointments").select("*").order("created_at", { ascending: false }).limit(50),
       supabase
@@ -87,7 +86,7 @@ export default function AdminDashboardPage() {
         .limit(200),
     ]);
 
-    const firstError = [companies, profiles, subs, twilio, calendars, appts, hist].find(
+    const firstError = [companies, profiles, subs, calendars, appts, hist].find(
       (r) => r.error
     );
     if (firstError?.error) {
@@ -99,14 +98,12 @@ export default function AdminDashboardPage() {
 
     const profileBy = index(profiles.data, "id");
     const subBy = index(subs.data, "user_id");
-    const twilioBy = index(twilio.data, "user_id");
     const calBy = index(calendars.data, "user_id");
 
     const rows = (companies.data ?? []).map((c) => ({
       ...c,
       profile: profileBy[c.user_id] ?? null,
       subscription: subBy[c.user_id] ?? null,
-      twilio: twilioBy[c.user_id] ?? null,
       calendar: calBy[c.user_id] ?? null,
     }));
     rows.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -211,7 +208,6 @@ export default function AdminDashboardPage() {
       c.business_phone,
       c.service_area,
       c.service_areas,
-      c.twilio?.phone_number,
       c.calendar?.google_email,
     ]
       .filter(Boolean)
@@ -360,7 +356,6 @@ function OverviewTab({
               <thead>
                 <tr className="border-b border-border text-left text-xs uppercase tracking-wide text-muted-foreground">
                   <th className="px-4 py-3 font-medium">Company</th>
-                  <th className="px-4 py-3 font-medium">Number</th>
                   <th className="px-4 py-3 font-medium">Google</th>
                   <th className="px-4 py-3 font-medium">Plan</th>
                   <th className="px-4 py-3 font-medium">Status</th>
@@ -375,16 +370,6 @@ function OverviewTab({
                       <p className="text-xs text-muted-foreground">
                         {c.service_areas || c.service_area || "—"}
                       </p>
-                    </td>
-                    <td className="px-4 py-3">
-                      {c.twilio?.phone_number ? (
-                        <span className="inline-flex items-center gap-1 text-ink">
-                          <Phone className="h-3.5 w-3.5 text-muted-foreground" />
-                          {formatPhone(c.twilio.phone_number)}
-                        </span>
-                      ) : (
-                        <Dash />
-                      )}
                     </td>
                     <td className="px-4 py-3">
                       <GoogleCell

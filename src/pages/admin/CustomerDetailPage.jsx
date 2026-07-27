@@ -5,7 +5,6 @@ import {
   Building2,
   User,
   CreditCard,
-  Phone,
   Bot,
   Pencil,
   UserX,
@@ -68,7 +67,7 @@ export default function CustomerDetailPage() {
     return <div className="p-6 text-sm text-red-600">Couldn't load this customer.</div>;
   }
 
-  const { company: c, profile, subscription, twilio } = data;
+  const { company: c, profile, subscription } = data;
   const normalizedStatus = c.current_status?.toUpperCase() ?? "";
 
   const handleStatusChange = async (newStatus) => {
@@ -130,10 +129,6 @@ export default function CustomerDetailPage() {
                   : null
               }
             />
-          </InfoCard>
-
-          <InfoCard icon={Phone} title="Business Number">
-            <Row label="Number" value={twilio?.phone_number ? formatPhone(twilio.phone_number) : null} />
           </InfoCard>
 
           <InfoCard icon={Bot} title="AI Configuration Status">
