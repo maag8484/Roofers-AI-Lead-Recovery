@@ -65,7 +65,6 @@ export default function AdminCustomersPage() {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [chips, setChips] = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
   const { change } = useChangeStatus();
 
   const { rows, total, loading, error, refetch } = useCustomersList({
@@ -99,8 +98,6 @@ export default function AdminCustomersPage() {
     setPage(0);
     setSearch(searchInput);
   };
-
-  const selectOne = (id) => setSelectedId((prev) => (prev === id ? null : id));
 
   const handleStatusChange = async (customerId, newStatus) => {
     const res = await change(customerId, newStatus, null);
@@ -184,7 +181,6 @@ export default function AdminCustomersPage() {
               <table className="w-full text-sm">
                 <thead className="border-b border-border">
                   <tr className="text-left text-xs uppercase tracking-wide text-muted-foreground">
-                    <th className="w-10 px-3 py-3" />
                     {COLUMNS.map((col) => (
                       <th key={col.key} className={cn("whitespace-nowrap px-4 py-3 font-medium", col.hide)}>
                         {col.sort ? (
@@ -214,16 +210,6 @@ export default function AdminCustomersPage() {
                       onClick={() => navigate(`/admin/customers/${r.id}`)}
                       className="cursor-pointer border-b border-border/60 last:border-0 hover:bg-secondary/40"
                     >
-                      <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
-                        <input
-                          type="radio"
-                          name="customer-select"
-                          checked={selectedId === r.id}
-                          onChange={() => selectOne(r.id)}
-                          aria-label={`Select ${r.company}`}
-                          className="cursor-pointer accent-brand-600"
-                        />
-                      </td>
                       <td className="whitespace-nowrap px-4 py-3 font-medium text-ink">{r.company}</td>
                       <td className="hidden whitespace-nowrap px-4 py-3 text-ink md:table-cell">{r.owner}</td>
                       <td className="hidden whitespace-nowrap px-4 py-3 text-muted-foreground lg:table-cell">{r.email}</td>
