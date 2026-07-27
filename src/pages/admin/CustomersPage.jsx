@@ -80,7 +80,8 @@ export default function AdminCustomersPage() {
 
   const toggleChip = (key) => {
     setPage(0);
-    setChips((prev) => (prev.includes(key) ? prev.filter((c) => c !== key) : [...prev, key]));
+    // Single-select: clicking active chip deselects, clicking another replaces.
+    setChips((prev) => (prev.includes(key) ? [] : [key]));
   };
 
   const toggleSort = (col) => {
