@@ -30,9 +30,7 @@ import { CustomerTimeline } from "@/components/admin/CustomerTimeline";
 
 import { useCustomer } from "@/hooks/admin/useCustomer";
 import { useLogCustomerView } from "@/hooks/admin/useLogCustomerView";
-import { useStatusHistory } from "@/hooks/admin/useStatusHistory";
 import { useCustomerActivityLogs } from "@/hooks/admin/useCustomerActivityLogs";
-import { useCustomerAuditLogs } from "@/hooks/admin/useCustomerAuditLogs";
 import { useAdminNotesAutosave } from "@/hooks/admin/useAdminNotesAutosave";
 import { useChangeStatus } from "@/hooks/admin/useChangeStatus";
 import { ALL_STATUSES, statusLabel } from "@/config/customerStatus";
@@ -161,15 +159,6 @@ export default function CustomerDetailPage() {
             />
           </InfoCard>
 
-          <InfoCard icon={Bot} title="AI Configuration Status">
-            <p className="text-sm text-muted-foreground">Not tracked.</p>
-          </InfoCard>
-
-          <InfoCard icon={User} title="Google Connection">
-            <p className="text-sm text-muted-foreground">
-              Google integration reserved for future per-customer setup.
-            </p>
-          </InfoCard>
         </div>
 
         {/* Right: interactive */}
@@ -216,9 +205,7 @@ export default function CustomerDetailPage() {
 
           <AdminNotesCard customerId={c.id} initialNotes={c.admin_notes} />
 
-          <StatusHistoryCard customerId={c.id} refreshKey={historyKey} />
           <RecentLogsCard customerId={c.id} refreshKey={historyKey} />
-          <AuditHistoryCard customerId={c.id} refreshKey={historyKey} />
         </div>
       </div>
 
@@ -279,35 +266,6 @@ function AdminNotesCard({ customerId, initialNotes }) {
   );
 }
 
-function StatusHistoryCard({ customerId, refreshKey }) {
-  const { data, loading } = useStatusHistory(customerId, refreshKey);
-  return (
-    <InfoCard icon={CheckCircle2} title="Status History">
-      {loading ? (
-        <SkeletonRows />
-      ) : data.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No status changes yet.</p>
-      ) : (
-        <ul className="space-y-3">
-          {data.map((h) => (
-            <li key={h.id} className="border-b border-border/60 pb-3 text-sm last:border-0 last:pb-0">
-              <div className="flex items-center gap-2">
-                <StatusBadge status={h.from || undefined} />
-                <span className="text-muted-foreground">→</span>
-                <StatusBadge status={h.to} />
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {h.changedBy} · {formatDateTime(h.created_at)}
-                {h.note ? ` · ${h.note}` : ""}
-              </p>
-            </li>
-          ))}
-        </ul>
-      )}
-    </InfoCard>
-  );
-}
-
 function RecentLogsCard({ customerId, refreshKey }) {
   const { data, loading } = useCustomerActivityLogs(customerId, refreshKey);
   return (
@@ -322,30 +280,6 @@ function RecentLogsCard({ customerId, refreshKey }) {
             <li key={l.id} className="flex flex-wrap items-start justify-between gap-x-3 gap-y-0.5">
               <span className="min-w-0 break-all font-medium text-ink">{l.action}</span>
               <span className="shrink-0 text-xs text-muted-foreground">{formatDateTime(l.created_at)}</span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </InfoCard>
-  );
-}
-
-function AuditHistoryCard({ customerId, refreshKey }) {
-  const { data, loading } = useCustomerAuditLogs(customerId, refreshKey);
-  return (
-    <InfoCard icon={CheckCircle2} title="Audit History">
-      {loading ? (
-        <SkeletonRows />
-      ) : data.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No audit records yet.</p>
-      ) : (
-        <ul className="space-y-2 text-sm">
-          {data.map((a) => (
-            <li key={a.id} className="border-b border-border/60 pb-2 last:border-0 last:pb-0">
-              <p className="text-ink">
-                <span className="font-medium">{a.field}</span>: {a.old_value || "—"} → {a.new_value || "—"}
-              </p>
-              <p className="text-xs text-muted-foreground">{formatDateTime(a.created_at)}</p>
             </li>
           ))}
         </ul>

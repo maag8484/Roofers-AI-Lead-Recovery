@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Building2, Bell, Activity, ShieldCheck } from "lucide-react";
+import { Search, Building2, Bell, ShieldCheck } from "lucide-react";
 import { useGlobalSearch } from "@/hooks/admin/useGlobalSearch";
 import { useRecentSearch } from "@/hooks/admin/useRecentSearch";
 import { Spinner } from "@/components/ui/spinner";
@@ -24,15 +24,19 @@ function Highlight({ text, q }) {
 const GROUP_META = {
   customers: { label: "Customers", icon: Building2 },
   notifications: { label: "Notifications", icon: Bell },
-  activity: { label: "Activity", icon: Activity },
   audit: { label: "Audit", icon: ShieldCheck },
 };
+
+// The groups we surface. The search RPC still returns an `activity` group, but
+// the Activity Logs page was removed, so we deliberately drop it here rather
+// than offer a result that has nowhere to navigate to.
+const GROUP_KEYS = ["customers", "notifications", "audit"];
 
 // Flatten grouped results into a single ordered list for keyboard nav.
 function flatten(results) {
   if (!results) return [];
   const out = [];
-  for (const key of ["customers", "notifications", "activity", "audit"]) {
+  for (const key of GROUP_KEYS) {
     (results[key] ?? []).forEach((row) => out.push({ group: key, row }));
   }
   return out;
@@ -61,7 +65,6 @@ export function GlobalSearchModal({ open, onClose }) {
     onClose();
     if (item.group === "customers") navigate(`/admin/customers/${item.row.id}`);
     else if (item.group === "notifications") navigate("/admin/notifications");
-    else if (item.group === "activity") navigate("/admin/activity");
     else if (item.group === "audit") navigate("/admin/audit");
   };
 
@@ -86,14 +89,12 @@ export function GlobalSearchModal({ open, onClose }) {
     const r = item.row;
     if (item.group === "customers") return r.company_name;
     if (item.group === "notifications") return r.title;
-    if (item.group === "activity") return r.action;
     return `${r.entity_type} · ${r.field ?? ""}`;
   };
   const excerpt = (item) => {
     const r = item.row;
     if (item.group === "customers") return r.contact_email || r.owner_name || r.business_phone || "";
     if (item.group === "notifications") return r.body || "";
-    if (item.group === "activity") return r.result || "";
     return r.new_value || r.old_value || "";
   };
 
@@ -148,7 +149,7 @@ export function GlobalSearchModal({ open, onClose }) {
           )}
 
           {q &&
-            ["customers", "notifications", "activity", "audit"].map((group) => {
+            GROUP_KEYS.map((group) => {
               const rows = results?.[group] ?? [];
               if (!rows.length) return null;
               const Meta = GROUP_META[group];

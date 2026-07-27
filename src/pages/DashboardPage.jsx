@@ -22,6 +22,36 @@ import { AccountMenu } from "@/components/AccountMenu";
 import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 import { formatPhone } from "@/lib/utils";
 
+// Customer-facing wording for the admin's 13-value `current_status`. Deliberately
+// NOT the admin labels from config/customerStatus.js — internal stage names like
+// "Pending Review" mean nothing to a roofer. Anything unmapped falls back to the
+// coarse 4-value badge label.
+const CUSTOMER_STATUS_LABEL = {
+  NEW: "Setting up",
+  WAITING_FOR_BUSINESS_INFO: "Action needed",
+  BUSINESS_INFO_SUBMITTED: "Details received",
+  SETUP_IN_PROGRESS: "Building your AI",
+  WAITING_FOR_CUSTOMER: "Action needed",
+  PENDING_REVIEW: "Final review",
+  CONFIGURATION_COMPLETE: "Almost live",
+  AI_ACTIVATED: "Live",
+  LIVE: "Live",
+  PAUSED: "Paused",
+  CANCELLED: "Cancelled",
+  SUPPORT_REQUIRED: "Support in progress",
+  REJECTED: "On hold",
+};
+
+// Sub-label for the "our team is configuring" checklist step, so the customer
+// can see movement between admin stages that all collapse to 'in_progress'.
+const CONFIG_STAGE_NOTE = {
+  SETUP_IN_PROGRESS: "Building your AI receptionist",
+  WAITING_FOR_CUSTOMER: "We've reached out — check your email",
+  PENDING_REVIEW: "Final quality review",
+  CONFIGURATION_COMPLETE: "Configuration complete — activating shortly",
+  SUPPORT_REQUIRED: "Our support team is on it",
+};
+
 export default function DashboardPage() {
   const { user, profile, isAdmin, onboardingCompleted, markOnboardingComplete } = useAuth();
   const navigate = useNavigate();
@@ -169,12 +199,20 @@ export default function DashboardPage() {
             </h1>
             <p className="text-muted-foreground">Here's what's happening with your leads.</p>
           </div>
-          <StatusBadge status={profile?.status} isLive={isLive} />
+          <StatusBadge
+            status={profile?.status}
+            currentStatus={profile?.current_status}
+            isLive={isLive}
+          />
         </div>
 
         {/* Onboarding checklist — reflects the REAL flow. Hidden once live. */}
         {!isLive && (
-          <OnboardingChecklist status={profile?.status} subscription={subscription} />
+          <OnboardingChecklist
+            status={profile?.status}
+            currentStatus={profile?.current_status}
+            subscription={subscription}
+          />
         )}
 
         <div className="grid gap-6 sm:grid-cols-2">
@@ -212,11 +250,18 @@ export default function DashboardPage() {
 // Calendar self-serve steps were removed; provisioning is handled by the team
 // (reflected by the account status: new -> in_progress -> live).
 // ---------------------------------------------------------------------------
-function OnboardingChecklist({ status, subscription }) {
+function OnboardingChecklist({ status, currentStatus, subscription }) {
   const paid = ["active", "trialing"].includes(subscription?.status);
   const detailsDone = true; // dashboard is only reachable after details submitted
-  const reviewing = status === "in_progress";
+  // AI_ACTIVATED and LIVE both map to legacy 'live'; either means configuration
+  // is finished, so the checklist completes for both.
   const live = status === "live";
+  // The precise stage, when the admin has set one, drives the sub-label.
+  const stageNote = CONFIG_STAGE_NOTE[currentStatus];
+
+  let configState = "todo";
+  if (live) configState = "done";
+  else if (status === "in_progress") configState = "active";
 
   const steps = [
     { label: "Account created", state: "done" },
@@ -224,7 +269,8 @@ function OnboardingChecklist({ status, subscription }) {
     { label: "Business information submitted", state: detailsDone ? "done" : "todo" },
     {
       label: "Our team is configuring your AI receptionist",
-      state: live ? "done" : reviewing ? "active" : "todo",
+      note: live ? undefined : stageNote,
+      state: configState,
     },
     { label: "AI activated — recovering calls 24/7", state: live ? "done" : "todo" },
   ];
@@ -238,7 +284,7 @@ function OnboardingChecklist({ status, subscription }) {
         </p>
         <div className="space-y-2.5">
           {steps.map((s) => (
-            <ChecklistRow key={s.label} label={s.label} state={s.state} />
+            <ChecklistRow key={s.label} label={s.label} note={s.note} state={s.state} />
           ))}
         </div>
       </CardContent>
@@ -246,7 +292,7 @@ function OnboardingChecklist({ status, subscription }) {
   );
 }
 
-function ChecklistRow({ label, state }) {
+function ChecklistRow({ label, note, state }) {
   let icon;
   let textClass = "text-ink";
   if (state === "done") {
@@ -267,15 +313,20 @@ function ChecklistRow({ label, state }) {
     textClass = "text-muted-foreground";
   }
   return (
-    <div className="flex items-center gap-3">
-      {icon}
-      <span className={textClass}>{label}</span>
+    <div className="flex items-start gap-3">
+      <span className="shrink-0">{icon}</span>
+      <span className="min-w-0">
+        <span className={textClass}>{label}</span>
+        {note && <span className="block text-sm text-muted-foreground">{note}</span>}
+      </span>
     </div>
   );
 }
 
-// Reflects the admin-driven lifecycle status. Falls back to the is_live flag.
-function StatusBadge({ status, isLive }) {
+// Reflects the admin-driven lifecycle status. The coarse `status` column picks
+// the color; `current_status` (the 13-value column the admin actually sets)
+// refines the label so the customer sees the real stage, not just "In progress".
+function StatusBadge({ status, currentStatus, isLive }) {
   const map = {
     new: { variant: "warning", dot: "bg-amber-500", label: "Setting up" },
     in_progress: { variant: "default", dot: "bg-brand-500", label: "In progress" },
@@ -283,9 +334,10 @@ function StatusBadge({ status, isLive }) {
     paused: { variant: "muted", dot: "bg-muted-foreground", label: "Paused" },
   };
   const s = map[status] ?? (isLive ? map.live : map.new);
+  const label = CUSTOMER_STATUS_LABEL[currentStatus] ?? s.label;
   return (
     <Badge variant={s.variant} className="py-1.5 text-sm">
-      <span className={"h-2 w-2 rounded-full " + s.dot} /> {s.label}
+      <span className={"h-2 w-2 rounded-full " + s.dot} /> {label}
     </Badge>
   );
 }

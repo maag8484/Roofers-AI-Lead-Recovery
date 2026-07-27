@@ -13,7 +13,7 @@ the AI agent conversation, lead qualification, SMS/email sending) lives in **n8n
 codebase. Do **not** build call/AI/SMS/booking-logic features here. This app handles: signup,
 Stripe billing, a realtime customer dashboard, and a **full admin operations console** (see the
 "Admin console" section below — customers, onboarding pipeline, billing/numbers views,
-activity/audit logs, notifications, global search, and an admin-connected Gmail send pipe).
+audit logs, notifications, global search, and an admin-connected Gmail send pipe).
 Twilio provisioning and Google Calendar are now team/n8n-driven, not customer self-serve. n8n
 talks to this system via edge functions (`check-availability`, `book-appointment`).
 
@@ -227,7 +227,7 @@ rebuilt into a full operations console. The legacy page is preserved at **`/admi
 - **Pages** (`src/pages/admin/`, routes under `/admin/*`): `Dashboard` (KPI cards +
   EmailHealthCard + 4 recent panels), `Customers` (server-paginated list) + `customers/:id`
   detail (timeline, autosave notes, status history/logs), `Onboarding` (kanban + stalled),
-  `IntegrationsEmail`, `business-numbers`, `Billing`, `Activity`, `Audit`, `Notifications`,
+  `IntegrationsEmail`, `business-numbers`, `Billing`, `Audit`, `Notifications`,
   `Settings` (3 tabs: Gmail / Admin Users / Notification Prefs).
 - **Data access:** direct Supabase queries via hooks in [src/hooks/admin/](src/hooks/admin/),
   one per concern, `{ data, loading, error }`. **Server-side** pagination/sort/filter
@@ -246,10 +246,32 @@ rebuilt into a full operations console. The legacy page is preserved at **`/admi
 - `current_status` (`customer_status_v2` enum, 13 values) — the ADMIN console's lifecycle,
   backfilled from `status` in `0006`. The admin console reads/writes this one.
 
+**`current_status` is the source of truth; `status` is a derived mirror of it** (`0016`).
+Originally nothing kept them in sync, so admin status changes were invisible on the customer
+portal. `0016` adds `customer_status_v2_to_legacy()` (the 13→4 mapping, the exact inverse of
+0006's backfill), makes the RPC write BOTH columns, and adds a
+`roofing_companies_sync_legacy_status` BEFORE UPDATE trigger so direct SQL/n8n writes to
+`current_status` stay in sync too. **Never write `status` directly** — set `current_status` and
+let the mapping derive it. `roofing_companies` is in the `supabase_realtime` publication, and
+`AuthContext` subscribes to its own row, so the customer portal updates live.
+The RPC also mirrors into the customer-visible `status_history` table (read by AccountPage),
+but only when the coarse legacy value actually changes.
+
 **All admin status changes go through the `admin_change_customer_status` RPC (0012)** — one
 atomic transaction that updates `current_status` + inserts `customer_status_history` + `audit_logs`
 + `activity_logs`. Never do split client writes for status. The RPC is `SECURITY DEFINER` with
 `is_admin()` as its first statement.
+
+### Activity Logs page removed (table KEPT)
+
+The standalone `/admin/activity` page, `pages/admin/ActivityPage.jsx`, and
+`hooks/admin/useActivityLogs.js` were **deleted** — the console has no Activity Logs screen.
+The `activity_logs` **table is still written and still read** everywhere else: dashboard KPIs
+(`useDashboardKpis`), `useRecentErrors`, `useRecentEmailEvents`, `useRecentSearch`,
+`useLogCustomerView`, and the customer detail **Recent Logs** card
+(`useCustomerActivityLogs`). Do NOT treat it as dead schema. The `admin_global_search` RPC
+still returns an `activity` group; `GlobalSearchModal` drops it via `GROUP_KEYS` because it
+would have nowhere to navigate.
 
 ### Admin observability tables (migrations 0006–0014)
 
@@ -316,6 +338,9 @@ so n8n and data aren't broken. The admin "Google" column is now reserved/neutral
    `0011_audit_logs`, `0012_admin_change_customer_status` (RPC), `0013_admin_global_search` (RPC),
    `0014_admin_settings` (settings + prefs + 3 admin RPCs; seeds the `admin_settings` singleton).
    Each has a matching `.down.sql` for rollback (run in reverse order).
+   Then `0015_drop_twilio` and **`0016_status_sync`** (syncs `status` ← `current_status`:
+   mapping fn + backfill + updated RPC + trigger + realtime). **0016 is required** or admin
+   status changes will not appear on the customer portal.
 7. **Gmail integration** (only if using the email pipe): in Google Cloud enable the Gmail API,
    add the `gmail.send` scope to the consent screen, and register a new redirect URI for
    `gmail-oauth-callback`. Set secrets: `GMAIL_REDIRECT_URI`, `GMAIL_FROM`, `DAILY_SEND_CAP`,

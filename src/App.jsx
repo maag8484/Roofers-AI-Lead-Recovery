@@ -22,7 +22,6 @@ import AdminCustomersPage from "@/pages/admin/CustomersPage";
 import AdminCustomerDetailPage from "@/pages/admin/CustomerDetailPage";
 import AdminOnboardingPage from "@/pages/admin/OnboardingPage";
 import AdminIntegrationsEmailPage from "@/pages/admin/IntegrationsEmailPage";
-import AdminActivityPage from "@/pages/admin/ActivityPage";
 import AdminAuditPage from "@/pages/admin/AuditPage";
 import AdminNotificationsPage from "@/pages/admin/NotificationsPage";
 import AdminBillingPage from "@/pages/admin/BillingPage";
@@ -123,7 +122,6 @@ export default function App() {
         <Route path="customers/:id" element={<AdminCustomerDetailPage />} />
         <Route path="onboarding" element={<AdminOnboardingPage />} />
         <Route path="integrations/email" element={<AdminIntegrationsEmailPage />} />
-        <Route path="activity" element={<AdminActivityPage />} />
         <Route path="audit" element={<AdminAuditPage />} />
         <Route path="notifications" element={<AdminNotificationsPage />} />
         <Route path="billing" element={<AdminBillingPage />} />
