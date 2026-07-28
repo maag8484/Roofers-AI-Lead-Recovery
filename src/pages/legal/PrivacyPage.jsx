@@ -2,153 +2,151 @@ import { LegalLayout, LegalSection } from "@/components/marketing/LegalLayout";
 
 export default function PrivacyPage() {
   return (
-    <LegalLayout title="Privacy Policy" updated="June 23, 2026">
+    <LegalLayout title="Privacy Policy" updated="July 28, 2026">
       <p>
-        Roof AI Lead Recovery ("we", "us", "our") respects your privacy. This Privacy Policy
-        explains what information we collect, how we use it, and your rights regarding your data.
-        By using our service, you agree to the practices described in this policy.
+        Welcome to Roof AI Lead Recovery ("Roof AI," "we," "our," or "us"). We value your privacy and
+        are committed to protecting your personal and business information. This Privacy Policy explains
+        what information we collect, how we use it, and your choices regarding your information.
       </p>
 
       <LegalSection heading="Information We Collect">
-        <p>We collect the following categories of information:</p>
+        <p>When you use our website or services, we may collect:</p>
+        <p className="mt-3 font-semibold text-ink">Business Information</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
-          <li><strong>Account information:</strong> company name, owner name, email address, and phone number provided during signup.</li>
-          <li><strong>Business information:</strong> service area, business phone, website, and monthly lead volume provided during onboarding.</li>
-          <li><strong>Payment information:</strong> processed and stored securely by Stripe. We do not store card numbers on our servers.</li>
-          <li><strong>Telephony data:</strong> phone numbers provisioned through Twilio, call logs, and SMS message records.</li>
-          <li><strong>Lead and appointment data:</strong> homeowner contact information, inquiry details, and appointment records generated through the service.</li>
-          <li><strong>Calendar data:</strong> availability and appointment information from your connected Google Calendar.</li>
+          <li>Company name</li>
+          <li>Contact name</li>
+          <li>Email address</li>
+          <li>Phone number</li>
+          <li>Business address</li>
+          <li>Website URL</li>
         </ul>
-      </LegalSection>
-
-      <LegalSection heading="SMS Messaging & Telephone Consumer Protection Act (TCPA)">
-        <p>
-          Roof AI Lead Recovery sends automated SMS messages to homeowners who have called a
-          roofing company's business phone number. By calling the business phone number, homeowners
-          provide implied consent to receive a follow-up SMS regarding their inquiry.
+        <p className="mt-3 font-semibold text-ink">Customer Information</p>
+        <p className="mt-1">
+          As part of providing our services, we may process information relating to your customers, including:
         </p>
-        <p className="mt-3">
-          <strong>Message frequency:</strong> Message frequency varies based on homeowner interactions.
-          You may receive up to 5 messages per inquiry.
-        </p>
-        <p className="mt-3">
-          <strong>Message and data rates:</strong> Standard message and data rates may apply depending
-          on your mobile carrier and plan.
-        </p>
-        <p className="mt-3">
-          <strong>Opt-out:</strong> Homeowners can opt out of receiving SMS messages at any time by
-          replying <strong>STOP</strong> to any message. After opting out, you will receive one
-          confirmation message and no further messages will be sent.
-        </p>
-        <p className="mt-3">
-          <strong>Help:</strong> For assistance, reply <strong>HELP</strong> to any message or
-          contact us at{" "}
-          <a className="text-brand-600 hover:underline" href="mailto:support@roofaileadrecovery.com">
-            support@roofaileadrecovery.com
-          </a>.
-        </p>
-        <p className="mt-3">
-          We do not share homeowner phone numbers with third parties for marketing purposes.
-        </p>
-      </LegalSection>
-
-      <LegalSection heading="Google Calendar Data">
-        <p>
-          With your explicit authorization, we access your Google Calendar solely to check your
-          availability and book inspection appointments on your behalf. We request only the minimum
-          scopes required for this functionality. OAuth tokens are stored encrypted using AES-256
-          encryption. You can revoke access at any time from your Google Account settings or by
-          disconnecting in the app dashboard.
-        </p>
-        <p className="mt-3">
-          Our use of information received from Google APIs adheres to the{" "}
-          <a
-            className="text-brand-600 hover:underline"
-            href="https://developers.google.com/terms/api-services-user-data-policy"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Google API Services User Data Policy
-          </a>
-          , including the Limited Use requirements. We do not use Google user data for advertising
-          or to train AI/ML models.
-        </p>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
+          <li>Name</li>
+          <li>Phone number</li>
+          <li>Email address</li>
+          <li>Appointment details</li>
+          <li>Messages exchanged through our platform</li>
+        </ul>
+        <p className="mt-3">We process this information solely to provide our services to your business.</p>
       </LegalSection>
 
       <LegalSection heading="How We Use Your Information">
-        <p>We use collected information to:</p>
+        <p>We use information to:</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
-          <li>Provide, operate, and improve the service</li>
-          <li>Respond to missed calls and inquiries on your behalf via SMS</li>
-          <li>Book appointments on your connected Google Calendar</li>
-          <li>Process billing and manage your subscription</li>
-          <li>Send service notifications and support communications</li>
+          <li>Provide our AI lead recovery service</li>
+          <li>Respond to missed calls</li>
+          <li>Send SMS follow-ups</li>
+          <li>Schedule appointments</li>
+          <li>Improve our platform</li>
+          <li>Process subscription payments</li>
+          <li>Provide customer support</li>
+          <li>Prevent fraud and abuse</li>
           <li>Comply with legal obligations</li>
         </ul>
       </LegalSection>
 
-      <LegalSection heading="Information Sharing">
-        <p>
-          We share data only with third-party service providers that are necessary to operate the
-          platform:
-        </p>
-        <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
-          <li><strong>Supabase</strong> — database hosting and user authentication</li>
-          <li><strong>Stripe</strong> — payment processing and subscription management</li>
-          <li><strong>Twilio</strong> — phone number provisioning and SMS delivery</li>
-          <li><strong>Google</strong> — calendar integration</li>
-        </ul>
+      <LegalSection heading="SMS Communications">
+        <p>Our platform sends automated text messages on behalf of your business.</p>
         <p className="mt-3">
-          We do not sell, rent, or share your personal information or homeowner data with any
-          third parties for marketing or advertising purposes.
+          By using Roof AI Lead Recovery, you represent that you have obtained all necessary customer
+          consent required under applicable laws before sending communications through our platform.
+        </p>
+        <p className="mt-3">Standard message and data rates may apply.</p>
+        <p className="mt-3">Recipients may opt out by replying <strong>STOP</strong>.</p>
+      </LegalSection>
+
+      <LegalSection heading="Third-Party Services">
+        <p>To provide our services, we work with trusted third-party providers, including but not limited to:</p>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
+          <li>Smith.ai</li>
+          <li>Stripe</li>
+          <li>Google Calendar</li>
+          <li>Twilio or other messaging providers</li>
+          <li>Email service providers</li>
+          <li>Cloud hosting providers</li>
+        </ul>
+        <p className="mt-3">These providers process information only as necessary to perform their services.</p>
+      </LegalSection>
+
+      <LegalSection heading="Payment Information">
+        <p>Payments are securely processed through Stripe.</p>
+        <p className="mt-3">Roof AI Lead Recovery does not store your complete credit card information.</p>
+      </LegalSection>
+
+      <LegalSection heading="Data Security">
+        <p>
+          We implement commercially reasonable security measures designed to protect your information.
+        </p>
+        <p className="mt-3">
+          However, no internet transmission or electronic storage system is 100% secure, and we cannot
+          guarantee absolute security.
         </p>
       </LegalSection>
 
-      <LegalSection heading="Data Retention & Security">
+      <LegalSection heading="Data Retention">
         <p>
-          We retain your account and business data for as long as your account is active. Lead and
-          appointment records are retained for up to 2 years. Sensitive credentials (e.g., Google
-          OAuth tokens) are encrypted at rest using AES-256 encryption. All data is protected by
-          row-level security policies ensuring each customer can only access their own data.
-        </p>
-        <p className="mt-3">
-          No method of transmission over the internet is 100% secure. We take commercially
-          reasonable measures to protect your data but cannot guarantee absolute security.
+          We retain information only as long as necessary to provide our services, comply with legal
+          obligations, resolve disputes, and enforce our agreements.
         </p>
       </LegalSection>
 
       <LegalSection heading="Your Rights">
-        <p>You have the right to:</p>
+        <p>Depending on your location, you may have rights to:</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
-          <li>Access the personal data we hold about you</li>
-          <li>Request correction of inaccurate data</li>
-          <li>Request deletion of your account and associated data</li>
-          <li>Disconnect your Google Calendar at any time</li>
-          <li>Opt out of SMS communications by replying STOP</li>
+          <li>Access your information</li>
+          <li>Correct inaccurate information</li>
+          <li>Delete your information</li>
+          <li>Request data portability</li>
+          <li>Object to certain processing activities</li>
         </ul>
         <p className="mt-3">
-          To exercise any of these rights, contact us at{" "}
+          To make a request, contact us at{" "}
           <a className="text-brand-600 hover:underline" href="mailto:support@roofaileadrecovery.com">
             support@roofaileadrecovery.com
           </a>.
         </p>
       </LegalSection>
 
-      <LegalSection heading="Changes to This Policy">
+      <LegalSection heading="Cookies">
+        <p>We may use cookies and similar technologies to:</p>
+        <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
+          <li>Improve website performance</li>
+          <li>Remember preferences</li>
+          <li>Analyze website traffic</li>
+          <li>Enhance user experience</li>
+        </ul>
+        <p className="mt-3">You may disable cookies through your browser settings.</p>
+      </LegalSection>
+
+      <LegalSection heading="Children's Privacy">
         <p>
-          We may update this Privacy Policy from time to time. We will notify you of significant
-          changes by email or by posting a notice in the dashboard. Continued use of the service
-          after changes constitutes acceptance of the updated policy.
+          Our services are intended for businesses and are not directed to individuals under the age of 13.
         </p>
       </LegalSection>
 
-      <LegalSection heading="Contact">
+      <LegalSection heading="Changes to This Policy">
+        <p>We may update this Privacy Policy from time to time.</p>
+        <p className="mt-3">
+          The latest version will always be posted on this page with an updated effective date.
+        </p>
+      </LegalSection>
+
+      <LegalSection heading="Contact Us">
+        <p>Questions? Contact us at:</p>
+        <p className="mt-2 font-semibold text-ink">Roof AI Lead Recovery</p>
         <p>
-          If you have questions about this Privacy Policy, please contact us at{" "}
           <a className="text-brand-600 hover:underline" href="mailto:support@roofaileadrecovery.com">
             support@roofaileadrecovery.com
-          </a>{" "}
-          or write to us at: Roof AI Lead Recovery, roofaileadrecovery.com.
+          </a>
+        </p>
+        <p>
+          <a className="text-brand-600 hover:underline" href="https://www.roofaileadrecovery.com">
+            www.roofaileadrecovery.com
+          </a>
         </p>
       </LegalSection>
     </LegalLayout>
