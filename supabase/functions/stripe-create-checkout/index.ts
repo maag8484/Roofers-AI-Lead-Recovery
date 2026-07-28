@@ -46,6 +46,9 @@ Deno.serve(async (req) => {
         trial_period_days: 7,
         metadata: { supabase_user_id: user.id },
       },
+      custom_text: {
+        submit: { message: "Recover missed calls. Book more roof inspections. Grow your business for just $299/month." } as any,
+      },
       success_url,
       cancel_url,
       allow_promotion_codes: true,
