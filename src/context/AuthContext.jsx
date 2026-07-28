@@ -12,8 +12,11 @@ export function AuthProvider({ children }) {
 
   // Includes the new-flow columns: status lifecycle + details_submitted, plus
   // the business-detail fields captured by the post-payment /onboarding form.
+  // `status` is the legacy 4-value column the customer UI renders; `current_status`
+  // is the admin console's 13-value lifecycle. 0016 keeps the two in sync, and we
+  // pull both so the portal can show the precise stage the admin actually set.
   const COMPANY_COLS =
-    "id, company_name, business_phone, phone_country, website, address, contact_name, contact_email, service_area, service_areas, services, calendly_link, transfer_number, conversion_preference, business_hours, after_hours_preference, monthly_leads_segment, setup_step, is_live, status, details_submitted";
+    "id, company_name, business_phone, phone_country, website, address, contact_name, contact_email, service_area, service_areas, services, calendly_link, transfer_number, conversion_preference, business_hours, after_hours_preference, monthly_leads_segment, setup_step, is_live, status, current_status, details_submitted";
 
   const loadProfile = useCallback(async (userId) => {
     if (!userId) {
@@ -74,6 +77,37 @@ export function AuthProvider({ children }) {
       subscription.unsubscribe();
     };
   }, [loadProfile]);
+
+  // Live-sync the company row. When an admin changes the customer's status from
+  // the console, the update lands here and the portal re-renders immediately —
+  // no manual reload. Requires roofing_companies in the supabase_realtime
+  // publication (added in 0016).
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (!userId) return;
+
+    const channel = supabase
+      .channel(`roofing_companies:${userId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "roofing_companies",
+          filter: `user_id=eq.${userId}`,
+        },
+        (payload) => {
+          // Merge rather than replace: the payload carries every column, but
+          // keeping the merge shape guards against a narrowed future select.
+          setProfile((prev) => (prev ? { ...prev, ...payload.new } : payload.new));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [session?.user?.id]);
 
   const value = {
     session,
