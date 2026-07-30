@@ -9,6 +9,8 @@ const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
   httpClient: Stripe.createFetchHttpClient(),
 });
 
+const ADMIN_EMAIL = Deno.env.get("ADMIN_NOTIFICATION_EMAIL") ?? "support@roofaileadrecovery.com";
+
 Deno.serve(async (req) => {
   const pre = handleOptions(req);
   if (pre) return pre;
@@ -20,6 +22,9 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const pauseDays = Math.min(Number(body.pause_days ?? 60), 90);
     const resumeAt = Math.floor(Date.now() / 1000) + pauseDays * 24 * 60 * 60;
+    const resumeDate = new Date(resumeAt * 1000).toLocaleDateString("en-US", {
+      month: "long", day: "numeric", year: "numeric",
+    });
 
     const db = serviceClient();
     const { data: sub } = await db
@@ -37,7 +42,6 @@ Deno.serve(async (req) => {
     }
 
     // Pause billing — Stripe voids invoices during the pause window.
-    // The subscription stays alive; it auto-resumes at resumes_at.
     await stripe.subscriptions.update(sub.stripe_subscription_id, {
       pause_collection: {
         behavior: "void",
@@ -45,13 +49,64 @@ Deno.serve(async (req) => {
       },
     });
 
-    // Mirror the paused state in our DB so the dashboard reflects it.
+    // Mirror paused state in DB
     await db
       .from("subscriptions")
       .update({ status: "paused" })
       .eq("user_id", user.id);
 
-    return json({ ok: true, resumes_at: resumeAt, pause_days: pauseDays });
+    // Get user profile for email
+    const { data: profile } = await db
+      .from("roofing_companies")
+      .select("company_name, contact_email")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    const companyName = profile?.company_name ?? user.email;
+
+    // Email to user
+    await db.functions.invoke("gmail-send", {
+      body: {
+        to: user.email,
+        subject: "Your Roof AI account has been paused",
+        html: `
+          <div style="font-family:sans-serif;max-width:560px;margin:0 auto">
+            <h2 style="color:#2563eb">Your account is paused</h2>
+            <p>Hi ${companyName},</p>
+            <p>Your Roof AI Lead Recovery account has been <strong>paused for ${pauseDays} days</strong>.</p>
+            <div style="background:#f1f5f9;border-radius:8px;padding:16px;margin:20px 0">
+              <p style="margin:0;font-size:14px;color:#475569">📅 Billing resumes on</p>
+              <p style="margin:4px 0 0;font-size:20px;font-weight:700;color:#1e293b">${resumeDate}</p>
+            </div>
+            <p>No charges will be made during the pause period. Your settings, calendar, and workflows are all saved and ready when you come back.</p>
+            <p>Want to resume early? Just log in and click <strong>Resume Account</strong> on your billing page.</p>
+            <p style="margin-top:24px">
+              <a href="https://roofaileadrecovery.com/billing" style="background:#2563eb;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:600">
+                Go to Billing
+              </a>
+            </p>
+            <p style="margin-top:32px;color:#6b7280;font-size:13px">
+              Questions? Contact <a href="mailto:support@roofaileadrecovery.com">support@roofaileadrecovery.com</a>
+            </p>
+          </div>
+        `,
+      },
+    }).catch(() => null); // non-fatal
+
+    // Notify admin
+    await db.functions.invoke("gmail-send", {
+      body: {
+        to: ADMIN_EMAIL,
+        subject: `[Roof AI] Account paused — ${companyName}`,
+        html: `
+          <p><strong>${companyName}</strong> (${user.email}) has paused their account for ${pauseDays} days.</p>
+          <p>Billing resumes: <strong>${resumeDate}</strong></p>
+          <p>Subscription ID: ${sub.stripe_subscription_id}</p>
+        `,
+      },
+    }).catch(() => null); // non-fatal
+
+    return json({ ok: true, resumes_at: resumeAt, pause_days: pauseDays, resume_date: resumeDate });
   } catch (err) {
     console.error("stripe-pause-subscription error", err);
     return json({ error: String(err?.message ?? err) }, 500);

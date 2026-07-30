@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CreditCard, LogOut, ChevronLeft, CheckCircle2, AlertCircle, Clock, Pause, X } from "lucide-react";
+import { CreditCard, LogOut, ChevronLeft, CheckCircle2, AlertCircle, Clock, Pause, Play, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, invokeFunction } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
@@ -115,9 +115,33 @@ export default function BillingPage() {
     }
   };
 
+  const handleResume = async () => {
+    setRedirecting(true);
+    try {
+      const res = await invokeFunction("stripe-resume-subscription", {});
+      if (res?.ok) {
+        toast.success("Account resumed! Your AI is back active.");
+        const { data } = await supabase
+          .from("subscriptions")
+          .select("status, trial_ends_at, current_period_end, stripe_customer_id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setSubscription(data ?? null);
+      } else {
+        throw new Error(res?.error ?? "Could not resume subscription.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message ?? "Could not resume. Please contact support.");
+    } finally {
+      setRedirecting(false);
+    }
+  };
+
   const statusInfo = (status) => {
     if (status === "active")   return { label: "Active",   icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" };
     if (status === "trialing") return { label: "Trial",    icon: Clock,        color: "text-brand-600",   bg: "bg-brand-50"   };
+    if (status === "paused")   return { label: "Paused",   icon: Pause,        color: "text-amber-600",   bg: "bg-amber-50"   };
     if (status === "canceled") return { label: "Canceled", icon: AlertCircle,  color: "text-red-600",     bg: "bg-red-50"     };
     return                            { label: status ?? "No plan", icon: AlertCircle, color: "text-muted-foreground", bg: "bg-secondary" };
   };
@@ -135,6 +159,7 @@ export default function BillingPage() {
   const info = statusInfo(subscription?.status);
   const StatusIcon = info.icon;
   const isActive = ["active", "trialing"].includes(subscription?.status);
+  const isPaused = subscription?.status === "paused";
 
   return (
     <div className="min-h-screen bg-secondary/30">
@@ -253,12 +278,35 @@ export default function BillingPage() {
           </Card>
         )}
 
+        {/* Paused state — show resume option */}
+        {isPaused && !pauseDone && (
+          <Card className="border-amber-200 bg-amber-50">
+            <CardContent className="p-6 space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100">
+                  <Pause className="h-5 w-5 text-amber-600" />
+                </span>
+                <div>
+                  <p className="font-bold text-ink">Account is paused</p>
+                  <p className="text-sm text-muted-foreground">No billing during this period. Your settings are saved.</p>
+                </div>
+              </div>
+              <Button className="w-full" onClick={handleResume} disabled={redirecting}>
+                {redirecting ? <Spinner className="text-white" /> : <><Play className="h-4 w-4" /> Resume Account Now</>}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {pauseDone && (
           <Card>
             <CardContent className="p-6 text-center space-y-2">
               <Pause className="h-8 w-8 text-brand-600 mx-auto" />
-              <p className="font-bold text-ink">Pause request received</p>
-              <p className="text-sm text-muted-foreground">Our team will pause your account within 24 hours. You'll get a confirmation email.</p>
+              <p className="font-bold text-ink">Account paused successfully</p>
+              <p className="text-sm text-muted-foreground">A confirmation email has been sent. You can resume anytime from this page.</p>
+              <Button variant="secondary" className="mt-2" onClick={handleResume} disabled={redirecting}>
+                {redirecting ? <Spinner /> : <><Play className="h-4 w-4" /> Resume Early</>}
+              </Button>
             </CardContent>
           </Card>
         )}
