@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CreditCard, LogOut, ChevronLeft, CheckCircle2, AlertCircle, Clock, ExternalLink } from "lucide-react";
+import { CreditCard, LogOut, ChevronLeft, CheckCircle2, AlertCircle, Clock, Pause, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, invokeFunction } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
 import { Logo } from "@/components/Logo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Spinner } from "@/components/ui/spinner";
+import { CancellationFlow } from "@/components/CancellationFlow";
 
 export default function BillingPage() {
   const { user, signOut } = useAuth();
@@ -17,6 +17,11 @@ export default function BillingPage() {
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [redirecting, setRedirecting] = useState(false);
+
+  // cancellation flow modal
+  const [showCancelFlow, setShowCancelFlow] = useState(false);
+  const [cancelDone, setCancelDone] = useState(false);
+  const [pauseDone, setPauseDone] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -70,6 +75,27 @@ export default function BillingPage() {
     navigate("/");
   };
 
+  // Retention flow handlers
+  const handleKeep = () => {
+    setShowCancelFlow(false);
+    toast.success("Great! Your account is still active.");
+  };
+
+  const handleConfirmCancel = () => {
+    setShowCancelFlow(false);
+    setCancelDone(true);
+    // Redirect to Stripe portal to complete cancellation
+    openPortal();
+  };
+
+  const handlePause = () => {
+    setShowCancelFlow(false);
+    setPauseDone(true);
+    // For now, email support to trigger pause — Stripe pause can be wired later
+    toast.success("Pause request sent! Our team will pause your account within 24 hours.");
+    window.location.href = "mailto:support@roofaileadrecovery.com?subject=Account Pause Request&body=Please pause my account for 60 days. My email is: " + user?.email;
+  };
+
   const statusInfo = (status) => {
     if (status === "active")   return { label: "Active",   icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" };
     if (status === "trialing") return { label: "Trial",    icon: Clock,        color: "text-brand-600",   bg: "bg-brand-50"   };
@@ -89,6 +115,7 @@ export default function BillingPage() {
 
   const info = statusInfo(subscription?.status);
   const StatusIcon = info.icon;
+  const isActive = ["active", "trialing"].includes(subscription?.status);
 
   return (
     <div className="min-h-screen bg-secondary/30">
@@ -174,11 +201,71 @@ export default function BillingPage() {
             )}
 
             <p className="text-xs text-center text-muted-foreground">
-              You'll be redirected to Stripe's secure billing portal to update your card, view invoices, or cancel.
+              You'll be redirected to Stripe's secure billing portal to update your card or view invoices.
             </p>
           </CardContent>
         </Card>
+
+        {/* Cancel / Pause section — only show for active subs */}
+        {isActive && !cancelDone && !pauseDone && (
+          <Card>
+            <CardContent className="p-6 space-y-3">
+              <h2 className="font-bold text-ink">Account Actions</h2>
+              <p className="text-sm text-muted-foreground">
+                Need a break or want to cancel? We have options that may work better than cancelling outright.
+              </p>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Button
+                  variant="secondary"
+                  className="flex-1"
+                  onClick={handlePause}
+                >
+                  <Pause className="h-4 w-4" /> Pause Account
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="flex-1 text-red-500 hover:text-red-700 hover:bg-red-50"
+                  onClick={() => setShowCancelFlow(true)}
+                >
+                  <X className="h-4 w-4" /> Cancel Subscription
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {pauseDone && (
+          <Card>
+            <CardContent className="p-6 text-center space-y-2">
+              <Pause className="h-8 w-8 text-brand-600 mx-auto" />
+              <p className="font-bold text-ink">Pause request received</p>
+              <p className="text-sm text-muted-foreground">Our team will pause your account within 24 hours. You'll get a confirmation email.</p>
+            </CardContent>
+          </Card>
+        )}
       </main>
+
+      {/* Cancellation flow modal */}
+      {showCancelFlow && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl">
+            <button
+              className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground hover:bg-secondary hover:text-ink transition-colors"
+              onClick={() => setShowCancelFlow(false)}
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div className="p-6 pt-8">
+              <CancellationFlow
+                onKeep={handleKeep}
+                onConfirmCancel={handleConfirmCancel}
+                onPause={handlePause}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
