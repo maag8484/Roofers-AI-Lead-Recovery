@@ -249,7 +249,7 @@ export default function BillingPage() {
         )}
 
         {/* Active account actions */}
-        {isActive && !cancelDone && !pauseDone && (
+        {isActive && !cancelDone && (
           <Card>
             <CardContent className="p-6 space-y-3">
               <h2 className="font-bold text-ink">Account Actions</h2>
