@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { CreditCard, LogOut, ChevronLeft, CheckCircle2, AlertCircle, Clock, Pause, X } from "lucide-react";
+import { CreditCard, LogOut, ChevronLeft, CheckCircle2, AlertCircle, Clock, Pause, Play, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, invokeFunction } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
@@ -17,23 +17,23 @@ export default function BillingPage() {
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [redirecting, setRedirecting] = useState(false);
-
-  // cancellation flow modal
   const [showCancelFlow, setShowCancelFlow] = useState(false);
   const [cancelDone, setCancelDone] = useState(false);
   const [pauseDone, setPauseDone] = useState(false);
 
-  useEffect(() => {
+  const fetchSubscription = async () => {
     if (!user) return;
-    supabase
+    const { data } = await supabase
       .from("subscriptions")
       .select("status, trial_ends_at, current_period_end, stripe_customer_id")
       .eq("user_id", user.id)
-      .maybeSingle()
-      .then(({ data }) => {
-        setSubscription(data ?? null);
-        setLoading(false);
-      });
+      .maybeSingle();
+    setSubscription(data ?? null);
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    fetchSubscription().finally(() => setLoading(false));
   }, [user]);
 
   const startCheckout = async () => {
@@ -55,14 +55,9 @@ export default function BillingPage() {
   const openPortal = async () => {
     setRedirecting(true);
     try {
-      const res = await invokeFunction("stripe-billing-portal", {
-        return_url: window.location.href,
-      });
-      if (res?.url) {
-        window.location.href = res.url;
-      } else {
-        throw new Error(res?.error ?? "No portal URL returned.");
-      }
+      const res = await invokeFunction("stripe-billing-portal", { return_url: window.location.href });
+      if (res?.url) window.location.href = res.url;
+      else throw new Error(res?.error ?? "No portal URL returned.");
     } catch (err) {
       console.error(err);
       toast.error("Could not open billing portal. Please try again.");
@@ -75,7 +70,6 @@ export default function BillingPage() {
     navigate("/");
   };
 
-  // Retention flow handlers
   const handleKeep = () => {
     setShowCancelFlow(false);
     toast.success("Great! Your account is still active.");
@@ -84,25 +78,19 @@ export default function BillingPage() {
   const handleConfirmCancel = () => {
     setShowCancelFlow(false);
     setCancelDone(true);
-    // Redirect to Stripe portal to complete cancellation
     openPortal();
   };
 
-  const handlePause = async (pauseDays = 60) => {
+  const handlePause = async (pauseDays) => {
+    const days = typeof pauseDays === "number" ? pauseDays : 60;
     setShowCancelFlow(false);
     setRedirecting(true);
     try {
-      const res = await invokeFunction("stripe-pause-subscription", { pause_days: pauseDays });
+      const res = await invokeFunction("stripe-pause-subscription", { pause_days: days });
       if (res?.ok) {
         setPauseDone(true);
-        toast.success(`Account paused for ${pauseDays} days. No billing until then.`);
-        // Refresh subscription state
-        const { data } = await supabase
-          .from("subscriptions")
-          .select("status, trial_ends_at, current_period_end, stripe_customer_id")
-          .eq("user_id", user.id)
-          .maybeSingle();
-        setSubscription(data ?? null);
+        toast.success(`Account paused for ${days} days. No billing until then.`);
+        await fetchSubscription();
       } else {
         throw new Error(res?.error ?? "Could not pause subscription.");
       }
@@ -114,9 +102,29 @@ export default function BillingPage() {
     }
   };
 
+  const handleResume = async () => {
+    setRedirecting(true);
+    try {
+      const res = await invokeFunction("stripe-resume-subscription", {});
+      if (res?.ok) {
+        setPauseDone(false);
+        toast.success("Account resumed! Your AI is back active.");
+        await fetchSubscription();
+      } else {
+        throw new Error(res?.error ?? "Could not resume subscription.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message ?? "Could not resume. Please contact support.");
+    } finally {
+      setRedirecting(false);
+    }
+  };
+
   const statusInfo = (status) => {
     if (status === "active")   return { label: "Active",   icon: CheckCircle2, color: "text-emerald-600", bg: "bg-emerald-50" };
     if (status === "trialing") return { label: "Trial",    icon: Clock,        color: "text-brand-600",   bg: "bg-brand-50"   };
+    if (status === "paused")   return { label: "Paused",   icon: Pause,        color: "text-amber-600",   bg: "bg-amber-50"   };
     if (status === "canceled") return { label: "Canceled", icon: AlertCircle,  color: "text-red-600",     bg: "bg-red-50"     };
     return                            { label: status ?? "No plan", icon: AlertCircle, color: "text-muted-foreground", bg: "bg-secondary" };
   };
@@ -134,6 +142,7 @@ export default function BillingPage() {
   const info = statusInfo(subscription?.status);
   const StatusIcon = info.icon;
   const isActive = ["active", "trialing"].includes(subscription?.status);
+  const isPaused = subscription?.status === "paused";
 
   return (
     <div className="min-h-screen bg-secondary/30">
@@ -157,7 +166,6 @@ export default function BillingPage() {
           <p className="text-muted-foreground">Manage your subscription and payment details.</p>
         </div>
 
-        {/* Current plan */}
         <Card>
           <CardContent className="p-6 space-y-5">
             <div className="flex items-center justify-between">
@@ -210,11 +218,7 @@ export default function BillingPage() {
 
             {subscription?.stripe_customer_id && (
               <Button className="w-full" onClick={openPortal} disabled={redirecting}>
-                {redirecting ? (
-                  <Spinner className="text-white" />
-                ) : (
-                  <><CreditCard className="h-4 w-4" /> Manage Subscription & Billing</>
-                )}
+                {redirecting ? <Spinner className="text-white" /> : <><CreditCard className="h-4 w-4" /> Manage Subscription & Billing</>}
               </Button>
             )}
 
@@ -224,7 +228,27 @@ export default function BillingPage() {
           </CardContent>
         </Card>
 
-        {/* Cancel / Pause section — only show for active subs */}
+        {/* Paused state banner */}
+        {isPaused && (
+          <Card className="border-amber-200 bg-amber-50">
+            <CardContent className="p-6 space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100">
+                  <Pause className="h-5 w-5 text-amber-600" />
+                </span>
+                <div>
+                  <p className="font-bold text-ink">Account is paused</p>
+                  <p className="text-sm text-muted-foreground">No billing during this period. Your settings are saved.</p>
+                </div>
+              </div>
+              <Button className="w-full" onClick={handleResume} disabled={redirecting}>
+                {redirecting ? <Spinner className="text-white" /> : <><Play className="h-4 w-4" /> Resume Account Now</>}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Active account actions */}
         {isActive && !cancelDone && !pauseDone && (
           <Card>
             <CardContent className="p-6 space-y-3">
@@ -233,11 +257,7 @@ export default function BillingPage() {
                 Need a break or want to cancel? We have options that may work better than cancelling outright.
               </p>
               <div className="flex flex-col gap-2 sm:flex-row">
-                <Button
-                  variant="secondary"
-                  className="flex-1"
-                  onClick={handlePause}
-                >
+                <Button variant="secondary" className="flex-1" onClick={handlePause}>
                   <Pause className="h-4 w-4" /> Pause Account
                 </Button>
                 <Button
@@ -252,12 +272,13 @@ export default function BillingPage() {
           </Card>
         )}
 
-        {pauseDone && (
-          <Card>
+        {/* Just paused confirmation */}
+        {pauseDone && !isPaused && (
+          <Card className="border-emerald-200 bg-emerald-50">
             <CardContent className="p-6 text-center space-y-2">
-              <Pause className="h-8 w-8 text-brand-600 mx-auto" />
-              <p className="font-bold text-ink">Pause request received</p>
-              <p className="text-sm text-muted-foreground">Our team will pause your account within 24 hours. You'll get a confirmation email.</p>
+              <CheckCircle2 className="h-8 w-8 text-emerald-600 mx-auto" />
+              <p className="font-bold text-ink">Account resumed successfully</p>
+              <p className="text-sm text-muted-foreground">Your AI is back active and answering missed calls.</p>
             </CardContent>
           </Card>
         )}
