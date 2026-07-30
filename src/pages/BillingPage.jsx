@@ -19,7 +19,7 @@ export default function BillingPage() {
   const [redirecting, setRedirecting] = useState(false);
   const [showCancelFlow, setShowCancelFlow] = useState(false);
   const [cancelDone, setCancelDone] = useState(false);
-  const [pauseDone, setPauseDone] = useState(false);
+  const [justResumed, setJustResumed] = useState(false);
 
   const fetchSubscription = async () => {
     if (!user) return;
@@ -85,9 +85,9 @@ export default function BillingPage() {
     const days = typeof pauseDays === "number" ? pauseDays : 60;
     setShowCancelFlow(false);
 
-    // Stripe cannot pause a trialing subscription — trial has no invoice to void
+    // Stripe cannot pause a trialing subscription
     if (subscription?.status === "trialing") {
-      toast.info("Your account is on a free trial — no billing will occur until the trial ends on " + fmt(subscription.trial_ends_at) + ". No need to pause!");
+      toast.info("You're on a free trial until " + fmt(subscription.trial_ends_at) + " — no billing will occur. No need to pause!");
       return;
     }
 
@@ -95,7 +95,7 @@ export default function BillingPage() {
     try {
       const res = await invokeFunction("stripe-pause-subscription", { pause_days: days });
       if (res?.ok) {
-        setPauseDone(true);
+        setJustResumed(false);
         toast.success(`Account paused for ${days} days. No billing until then.`);
         await fetchSubscription();
       } else {
@@ -114,7 +114,7 @@ export default function BillingPage() {
     try {
       const res = await invokeFunction("stripe-resume-subscription", {});
       if (res?.ok) {
-        setPauseDone(false);
+        setJustResumed(true);
         toast.success("Account resumed! Your AI is back active.");
         await fetchSubscription();
       } else {
@@ -235,7 +235,7 @@ export default function BillingPage() {
           </CardContent>
         </Card>
 
-        {/* Paused state banner */}
+        {/* PAUSED — show resume banner */}
         {isPaused && (
           <Card className="border-amber-200 bg-amber-50">
             <CardContent className="p-6 space-y-3">
@@ -255,7 +255,7 @@ export default function BillingPage() {
           </Card>
         )}
 
-        {/* Active account actions */}
+        {/* ACTIVE — show pause/cancel actions */}
         {isActive && !cancelDone && (
           <Card>
             <CardContent className="p-6 space-y-3">
@@ -264,8 +264,8 @@ export default function BillingPage() {
                 Need a break or want to cancel? We have options that may work better than cancelling outright.
               </p>
               <div className="flex flex-col gap-2 sm:flex-row">
-                <Button variant="secondary" className="flex-1" onClick={handlePause}>
-                  <Pause className="h-4 w-4" /> Pause Account
+                <Button variant="secondary" className="flex-1" onClick={handlePause} disabled={redirecting}>
+                  {redirecting ? <Spinner /> : <><Pause className="h-4 w-4" /> Pause Account</>}
                 </Button>
                 <Button
                   variant="ghost"
@@ -279,8 +279,8 @@ export default function BillingPage() {
           </Card>
         )}
 
-        {/* Resumed confirmation — only show if user just resumed this session */}
-        {pauseDone && !isPaused && subscription?.status === "active" && (
+        {/* Just resumed confirmation */}
+        {justResumed && !isPaused && (
           <Card className="border-emerald-200 bg-emerald-50">
             <CardContent className="p-6 text-center space-y-2">
               <CheckCircle2 className="h-8 w-8 text-emerald-600 mx-auto" />
