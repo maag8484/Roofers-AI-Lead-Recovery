@@ -36,7 +36,14 @@ Deno.serve(async (req) => {
     ) {
       const sub = event.data.object as Stripe.Subscription;
       const userId = sub.metadata?.supabase_user_id;
+
       if (userId) {
+        // Extract cancellation reason from Stripe's cancellation_details
+        const cancelDetails = (sub as any).cancellation_details;
+        const cancelReason = cancelDetails?.reason ?? null;
+        const canceledAt = sub.canceled_at ? toIso(sub.canceled_at) : null;
+        const cancelAtPeriodEnd = sub.cancel_at_period_end ?? false;
+
         await db.from("subscriptions").upsert(
           {
             user_id: userId,
@@ -46,16 +53,20 @@ Deno.serve(async (req) => {
             trial_ends_at: toIso(sub.trial_end),
             current_period_start: toIso(sub.current_period_start),
             current_period_end: toIso(sub.current_period_end),
+            cancel_reason: cancelReason,
+            canceled_at: canceledAt,
+            cancel_at_period_end: cancelAtPeriodEnd,
             updated_at: new Date().toISOString(),
           },
           { onConflict: "stripe_subscription_id" }
         );
-        // Advance setup step past payment.
+
+        // Advance setup step past payment
         await db
           .from("roofing_companies")
           .update({ setup_step: 3 })
           .eq("user_id", userId)
-          .lt("setup_step", 3); 
+          .lt("setup_step", 3);
       }
     }
     return new Response(JSON.stringify({ received: true }), { status: 200 });

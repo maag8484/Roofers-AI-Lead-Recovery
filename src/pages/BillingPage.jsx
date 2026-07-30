@@ -25,7 +25,7 @@ export default function BillingPage() {
     if (!user) return;
     const { data } = await supabase
       .from("subscriptions")
-      .select("status, trial_ends_at, current_period_end, stripe_customer_id")
+      .select("status, trial_ends_at, current_period_end, stripe_customer_id, cancel_reason, canceled_at, cancel_at_period_end")
       .eq("user_id", user.id)
       .maybeSingle();
     setSubscription(data ?? null);
@@ -35,6 +35,16 @@ export default function BillingPage() {
     if (!user) return;
     fetchSubscription().finally(() => setLoading(false));
   }, [user]);
+
+  // Poll for status update after returning from Stripe portal
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("from") === "portal") {
+      const interval = setInterval(fetchSubscription, 3000);
+      setTimeout(() => clearInterval(interval), 30000);
+      return () => clearInterval(interval);
+    }
+  }, []);
 
   const startCheckout = async () => {
     setRedirecting(true);
@@ -55,7 +65,8 @@ export default function BillingPage() {
   const openPortal = async () => {
     setRedirecting(true);
     try {
-      const res = await invokeFunction("stripe-billing-portal", { return_url: window.location.href });
+      const returnUrl = `${window.location.origin}/billing?from=portal`;
+      const res = await invokeFunction("stripe-billing-portal", { return_url: returnUrl });
       if (res?.url) window.location.href = res.url;
       else throw new Error(res?.error ?? "No portal URL returned.");
     } catch (err) {
@@ -150,6 +161,18 @@ export default function BillingPage() {
   const StatusIcon = info.icon;
   const isActive = ["active", "trialing"].includes(subscription?.status);
   const isPaused = subscription?.status === "paused";
+  const isCanceled = subscription?.status === "canceled";
+  const cancelAtPeriodEnd = subscription?.cancel_at_period_end;
+
+  const CANCEL_REASON_LABEL = {
+    "too_expensive":        "Too expensive",
+    "missing_features":     "Missing features",
+    "switched_service":     "Switched to another service",
+    "unused":               "Not using the service",
+    "customer_service":     "Customer service issues",
+    "low_quality":          "Low quality",
+    "other":                null,
+  };
 
   return (
     <div className="min-h-screen bg-secondary/30">
@@ -251,6 +274,61 @@ export default function BillingPage() {
               <Button className="w-full" onClick={handleResume} disabled={redirecting}>
                 {redirecting ? <Spinner className="text-white" /> : <><Play className="h-4 w-4" /> Resume Account Now</>}
               </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* CANCEL AT PERIOD END — scheduled to cancel */}
+        {cancelAtPeriodEnd && isActive && (
+          <Card className="border-orange-200 bg-orange-50">
+            <CardContent className="p-6 space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100">
+                  <AlertCircle className="h-5 w-5 text-orange-600" />
+                </span>
+                <div>
+                  <p className="font-bold text-ink">Subscription scheduled to cancel</p>
+                  <p className="text-sm text-muted-foreground">
+                    Your access continues until <strong>{fmt(subscription?.current_period_end)}</strong>. After that, billing stops and AI deactivates.
+                  </p>
+                </div>
+              </div>
+              <Button className="w-full" onClick={openPortal} disabled={redirecting}>
+                {redirecting ? <Spinner className="text-white" /> : <><CreditCard className="h-4 w-4" /> Reactivate Subscription</>}
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* CANCELED — fully cancelled */}
+        {isCanceled && (
+          <Card className="border-red-200 bg-red-50">
+            <CardContent className="p-6 space-y-4">
+              <div className="flex items-center gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+                  <AlertCircle className="h-5 w-5 text-red-600" />
+                </span>
+                <div>
+                  <p className="font-bold text-ink">Subscription Cancelled</p>
+                  <p className="text-sm text-muted-foreground">
+                    {subscription?.canceled_at
+                      ? `Cancelled on ${fmt(subscription.canceled_at)}`
+                      : "Your subscription has been cancelled."}
+                  </p>
+                </div>
+              </div>
+              {subscription?.cancel_reason && CANCEL_REASON_LABEL[subscription.cancel_reason] && (
+                <div className="rounded-lg border border-red-200 bg-white p-3">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Reason</p>
+                  <p className="text-sm font-medium text-ink">{CANCEL_REASON_LABEL[subscription.cancel_reason]}</p>
+                </div>
+              )}
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Want to come back? Resubscribe and your AI will be back online within minutes.</p>
+                <Button className="w-full" onClick={startCheckout} disabled={redirecting}>
+                  {redirecting ? <Spinner className="text-white" /> : <><CreditCard className="h-4 w-4" /> Resubscribe — $299/month</>}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
