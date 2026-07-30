@@ -84,6 +84,13 @@ export default function BillingPage() {
   const handlePause = async (pauseDays) => {
     const days = typeof pauseDays === "number" ? pauseDays : 60;
     setShowCancelFlow(false);
+
+    // Stripe cannot pause a trialing subscription — trial has no invoice to void
+    if (subscription?.status === "trialing") {
+      toast.info("Your account is on a free trial — no billing will occur until the trial ends on " + fmt(subscription.trial_ends_at) + ". No need to pause!");
+      return;
+    }
+
     setRedirecting(true);
     try {
       const res = await invokeFunction("stripe-pause-subscription", { pause_days: days });
@@ -272,8 +279,8 @@ export default function BillingPage() {
           </Card>
         )}
 
-        {/* Just paused confirmation */}
-        {pauseDone && !isPaused && (
+        {/* Resumed confirmation — only show if user just resumed this session */}
+        {pauseDone && !isPaused && subscription?.status === "active" && (
           <Card className="border-emerald-200 bg-emerald-50">
             <CardContent className="p-6 text-center space-y-2">
               <CheckCircle2 className="h-8 w-8 text-emerald-600 mx-auto" />
