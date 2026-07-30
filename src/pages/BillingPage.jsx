@@ -88,12 +88,30 @@ export default function BillingPage() {
     openPortal();
   };
 
-  const handlePause = () => {
+  const handlePause = async (pauseDays = 60) => {
     setShowCancelFlow(false);
-    setPauseDone(true);
-    // For now, email support to trigger pause — Stripe pause can be wired later
-    toast.success("Pause request sent! Our team will pause your account within 24 hours.");
-    window.location.href = "mailto:support@roofaileadrecovery.com?subject=Account Pause Request&body=Please pause my account for 60 days. My email is: " + user?.email;
+    setRedirecting(true);
+    try {
+      const res = await invokeFunction("stripe-pause-subscription", { pause_days: pauseDays });
+      if (res?.ok) {
+        setPauseDone(true);
+        toast.success(`Account paused for ${pauseDays} days. No billing until then.`);
+        // Refresh subscription state
+        const { data } = await supabase
+          .from("subscriptions")
+          .select("status, trial_ends_at, current_period_end, stripe_customer_id")
+          .eq("user_id", user.id)
+          .maybeSingle();
+        setSubscription(data ?? null);
+      } else {
+        throw new Error(res?.error ?? "Could not pause subscription.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message ?? "Could not pause. Please contact support.");
+    } finally {
+      setRedirecting(false);
+    }
   };
 
   const statusInfo = (status) => {
