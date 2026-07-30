@@ -121,6 +121,7 @@ export default function BillingPage() {
       const res = await invokeFunction("stripe-resume-subscription", {});
       if (res?.ok) {
         toast.success("Account resumed! Your AI is back active.");
+        setPauseDone(false);
         const { data } = await supabase
           .from("subscriptions")
           .select("status, trial_ends_at, current_period_end, stripe_customer_id")
