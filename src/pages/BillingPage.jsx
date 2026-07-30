@@ -88,7 +88,8 @@ export default function BillingPage() {
     openPortal();
   };
 
-  const handlePause = async (pauseDays = 60) => {
+  const handlePause = async (pauseDays) => {
+    pauseDays = typeof pauseDays === "number" ? pauseDays : 60;
     setShowCancelFlow(false);
     setRedirecting(true);
     try {
