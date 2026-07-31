@@ -168,8 +168,8 @@ function Hero() {
             Recovering Roofing Leads 24/7
           </Badge>
           <h1 className="text-4xl font-extrabold leading-[1.08] text-ink sm:text-5xl">
-            Stop Losing Roofing Leads to{" "}
-            <span className="text-brand-600">Missed Calls</span> &amp; Slow Follow-Up
+            Recover just one roofing job, and the service can{" "}
+            <span className="text-brand-600">pay for itself</span> many times over
           </h1>
           <p className="mt-5 max-w-xl text-lg text-muted-foreground">
             Roof AI Lead Recovery instantly responds to missed calls, web leads, and
