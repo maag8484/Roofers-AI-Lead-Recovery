@@ -177,7 +177,7 @@ function Hero() {
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Button variant="secondary" size="lg">
-              <Play className="fill-brand-600 text-brand-600" /> Watch 90-Second Demo
+              <Play className="fill-brand-600 text-brand-600" /> Watch 120-Second Demo
             </Button>
             <Button size="lg" asChild>
               <Link to="/signup">

@@ -29,7 +29,7 @@ export const DEMO_VIDEO = {
   captions: null,
 
   /* Used for the dialog title and the <video> accessible name. */
-  title: "Roof AI Lead Recovery — 90-second demo",
+  title: "Roof AI Lead Recovery — 120-second demo",
 
   /* Shown under the title inside the modal. */
   subtitle: "See how a missed call becomes a booked inspection.",
