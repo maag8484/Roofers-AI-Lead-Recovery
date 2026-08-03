@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import { ProtectedRoute, PublicOnlyRoute, AdminRoute } from "@/components/ProtectedRoute";
 
 import LandingPage from "@/pages/LandingPage";
+import HomeV2Page from "@/pages/home-v2/HomeV2Page";
 import LoginPage from "@/pages/LoginPage";
 import SignupPage from "@/pages/SignupPage";
 import CheckoutPage from "@/pages/CheckoutPage";
@@ -32,6 +33,7 @@ export default function App() {
     <Routes>
       {/* Public marketing + legal */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/home-v2" element={<HomeV2Page />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/terms" element={<TermsPage />} />
 
