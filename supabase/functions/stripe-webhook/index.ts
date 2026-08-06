@@ -38,7 +38,6 @@ Deno.serve(async (req) => {
       const userId = sub.metadata?.supabase_user_id;
 
       if (userId) {
-        // Extract cancellation reason from Stripe's cancellation_details
         const cancelDetails = (sub as any).cancellation_details;
         const cancelReason = cancelDetails?.reason ?? null;
         const canceledAt = sub.canceled_at ? toIso(sub.canceled_at) : null;
@@ -61,14 +60,44 @@ Deno.serve(async (req) => {
           { onConflict: "stripe_subscription_id" }
         );
 
-        // Advance setup step past payment
         await db
           .from("roofing_companies")
           .update({ setup_step: 3 })
           .eq("user_id", userId)
           .lt("setup_step", 3);
+
+        // Send new user notification email on first subscription
+        if (event.type === "customer.subscription.created") {
+          const customer = typeof sub.customer === "string"
+            ? await stripe.customers.retrieve(sub.customer) as Stripe.Customer
+            : sub.customer as Stripe.Customer;
+
+          await db.functions.invoke("gmail-send", {
+            body: {
+              to: "zaid.ullah@growwstacks.com",
+              subject: `New User Signed Up — ${customer.email}`,
+              html: `
+                <div style="font-family:sans-serif;max-width:520px;margin:0 auto">
+                  <h2 style="color:#2563eb">New Customer Signed Up 🎉</h2>
+                  <table style="width:100%;font-size:14px;border-collapse:collapse">
+                    <tr><td style="padding:8px 0;color:#64748b;width:35%">Email</td><td style="padding:8px 0;font-weight:600">${customer.email}</td></tr>
+                    <tr><td style="padding:8px 0;color:#64748b">Name</td><td style="padding:8px 0;font-weight:600">${customer.name ?? "—"}</td></tr>
+                    <tr><td style="padding:8px 0;color:#64748b">Stripe Customer</td><td style="padding:8px 0;font-family:monospace;font-size:12px">${customer.id}</td></tr>
+                    <tr><td style="padding:8px 0;color:#64748b">Supabase User</td><td style="padding:8px 0;font-family:monospace;font-size:12px">${userId}</td></tr>
+                    <tr><td style="padding:8px 0;color:#64748b">Plan</td><td style="padding:8px 0;font-weight:600">$299/month</td></tr>
+                    <tr><td style="padding:8px 0;color:#64748b">Signed up at</td><td style="padding:8px 0;font-weight:600">${new Date().toLocaleString("en-US", { timeZone: "America/New_York" })} ET</td></tr>
+                  </table>
+                  <div style="margin-top:20px">
+                    <a href="https://roofaileadrecovery.com/admin/customers" style="background:#2563eb;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">View in Admin Panel →</a>
+                  </div>
+                </div>
+              `,
+            },
+          }).catch((e: any) => console.error("New user email failed:", e));
+        }
       }
     }
+
     return new Response(JSON.stringify({ received: true }), { status: 200 });
   } catch (err) {
     console.error("stripe-webhook handler error", err);
