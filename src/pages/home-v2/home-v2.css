@@ -1,0 +1,385 @@
+/* =============================================================================
+   /home-v2 — LIGHT theme, main-homepage palette.
+
+   Colours are the live site's own values (tailwind.config.js): brand #2563eb,
+   emerald success, ink #0b1220, slate neutrals. Typography and layout keep the
+   newer system (Bricolage Grotesque / Instrument Serif / Plus Jakarta Sans).
+
+   IMPORTANT — STICKY vs OVERFLOW
+   Do NOT put `overflow: hidden` (or overflow-x) on a <section> that contains a
+   `position: sticky` child, nor on the page root. A clipped ancestor becomes
+   the scroll container and the sticky child stops pinning to the viewport —
+   that is what turned the pinned Problem section into 300vh of blank page.
+   Clip decorations with .hv2-clip on an inner absolute wrapper instead.
+
+   Namespaced under .hv2 so nothing leaks to other routes.
+   ========================================================================== */
+
+.hv2 {
+  /* --- Base (live-site values) ------------------------------------------- */
+  --paper: #ffffff;
+  --mist: #f8fafc;
+  --surface-2: #f1f5f9;
+  --line: #e2e8f0;
+  --line-2: #cbd5e1;
+
+  --ink: #0b1220;
+  --ink-900: #0d1526;
+  --muted: #64748b;
+  --faint: #94a3b8;
+
+  --brand-50: #eff6ff;
+  --brand-100: #dbeafe;
+  --brand-500: #3b82f6;
+  --brand-600: #2563eb;
+  --brand-700: #1d4ed8;
+
+  --emerald-50: #ecfdf5;
+  --emerald-400: #34d399;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+
+  --red-50: #fef2f2;
+  --red-500: #ef4444;
+  --red-700: #b91c1c;
+
+  /* --- Semantic aliases --------------------------------------------------
+     Components address these names; remapping here is what flips the whole
+     page between themes without touching markup. */
+  --void: var(--paper);
+  --deep: var(--mist);
+  --surface: var(--paper);
+  --glass: var(--paper);
+  --glass-2: var(--mist);
+
+  --text: var(--ink);
+  --text-dim: var(--muted);
+  --text-faint: var(--faint);
+
+  --brand: var(--brand-600);
+  --brand-bright: var(--brand-500);
+  --brand-glow: var(--brand-600);
+  --brand-deep: var(--brand-700);
+
+  /* Primary accent. On the dark build this was acid lime; on the live
+     palette the accent IS the brand blue. */
+  --acid: var(--brand-600);
+  --acid-dim: var(--brand-700);
+
+  --emerald: var(--emerald-600);
+  --emerald-deep: var(--emerald-500);
+  --rose: var(--red-500);
+  --rose-deep: var(--red-700);
+
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-accent: "Instrument Serif", ui-serif, Georgia, serif;
+
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.hv2 .hv2-display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-variation-settings: "wdth" 92;
+  letter-spacing: -0.038em;
+  line-height: 0.99;
+}
+
+/* The accent voice — serif italic inside the grotesque headline. */
+.hv2 .hv2-accent {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.hv2 .hv2-eyebrow {
+  font-family: var(--font-body);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.6875rem;
+}
+
+.hv2 .hv2-mono {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+/* Viewport-aware hero scale — min(vw, vh) so a short laptop shrinks the
+   headline instead of pushing the CTA below the fold. */
+.hv2 .hv2-hero-title { font-size: clamp(2.1rem, min(5.1vw, 7.6vh), 4.05rem); }
+.hv2 .hv2-hero-sub   { font-size: clamp(0.98rem, min(1.3vw, 2.1vh), 1.16rem); }
+.hv2 .hv2-hero-gap   { margin-top: clamp(1.1rem, 2.8vh, 2.1rem); }
+
+/* =============================================================================
+   CLIPPING — the sticky-safe way to contain decorations.
+   ========================================================================== */
+
+/* Put this on an absolutely-positioned wrapper INSIDE a section, never on the
+   section itself. Contains aurora/glow without creating a scroll container. */
+.hv2-clip {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* =============================================================================
+   ATMOSPHERE
+   ========================================================================== */
+
+@keyframes hv2-drift-a {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  33%      { transform: translate(8%, -6%) scale(1.15) rotate(6deg); }
+  66%      { transform: translate(-6%, 7%) scale(0.92) rotate(-5deg); }
+}
+@keyframes hv2-drift-b {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  33%      { transform: translate(-9%, 7%) scale(0.9) rotate(-7deg); }
+  66%      { transform: translate(7%, -5%) scale(1.13) rotate(5deg); }
+}
+.hv2-aurora {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(76px);
+  pointer-events: none;
+  will-change: transform;
+}
+.hv2-aurora-a { animation: hv2-drift-a 22s ease-in-out infinite; }
+.hv2-aurora-b { animation: hv2-drift-b 28s ease-in-out infinite; }
+
+/* Blueprint floor grid, receding to a horizon. */
+.hv2-floor {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 44%;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(37, 99, 235, 0.16) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(37, 99, 235, 0.16) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transform: perspective(340px) rotateX(62deg);
+  transform-origin: bottom center;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 80%);
+  mask-image: linear-gradient(to top, #000 0%, transparent 80%);
+  opacity: 0.45;
+}
+
+.hv2-dots::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(37, 99, 235, 0.15) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse 74% 62% at 50% 40%, #000 18%, transparent 74%);
+  mask-image: radial-gradient(ellipse 74% 62% at 50% 40%, #000 18%, transparent 74%);
+}
+
+/* Grain is kept very low on light — heavy noise on white reads as dirt. */
+.hv2-grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
+}
+
+/* =============================================================================
+   SURFACES
+   ========================================================================== */
+
+/* Card. Solid white with a hairline and a soft lift — the light-mode
+   equivalent of the dark build's glass. */
+.hv2-glass {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 12px 32px -20px rgba(15, 23, 42, 0.22);
+}
+
+/* Gradient hairline frame. */
+.hv2-frame { position: relative; }
+.hv2-frame::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    150deg,
+    rgba(37, 99, 235, 0.85) 0%,
+    rgba(59, 130, 246, 0.35) 32%,
+    rgba(226, 232, 240, 0.9) 62%,
+    rgba(37, 99, 235, 0.4) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.hv2-lift {
+  transition:
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.45s ease;
+  will-change: transform;
+}
+.hv2-lift:hover {
+  transform: translateY(-6px);
+  border-color: rgba(37, 99, 235, 0.4);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 26px 52px -26px rgba(15, 23, 42, 0.3);
+}
+
+/* =============================================================================
+   MOTION
+   ========================================================================== */
+
+@keyframes hv2-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.hv2-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: hv2-marquee var(--hv2-marquee-duration, 38s) linear infinite;
+  will-change: transform;
+}
+.hv2-marquee-track:hover { animation-play-state: paused; }
+.hv2-marquee-rev { animation-direction: reverse; }
+
+.hv2-edge-fade {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+@keyframes hv2-ping {
+  0%        { transform: scale(1);   opacity: 0.7; }
+  70%, 100% { transform: scale(2.8); opacity: 0; }
+}
+.hv2-ping::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: hv2-ping 2.1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes hv2-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-11px); }
+}
+.hv2-float { animation: hv2-float 5.5s ease-in-out infinite; }
+.hv2-float-slow { animation: hv2-float 7.5s ease-in-out infinite; animation-delay: -2.5s; }
+
+@keyframes hv2-dot {
+  0%, 60%, 100% { transform: translateY(0);    opacity: 0.3; }
+  30%           { transform: translateY(-4px); opacity: 1; }
+}
+.hv2-dot { animation: hv2-dot 1.3s ease-in-out infinite; }
+
+@keyframes hv2-dash { to { stroke-dashoffset: -28; } }
+.hv2-dash { stroke-dasharray: 7 7; animation: hv2-dash 1.1s linear infinite; }
+
+@keyframes hv2-beam {
+  0%   { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+  35%  { opacity: 1; }
+  100% { transform: translateX(320%) skewX(-18deg); opacity: 0; }
+}
+.hv2-beam::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 32%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  animation: hv2-beam 5.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Gradient text — brand blue range, readable on white.
+
+   DESCENDER FIX: `background-clip: text` paints the gradient only inside the
+   element's own box. With the display line-height of ~0.99 the box stops at
+   the baseline, so descenders (y, p, g, j, q) fall outside it, receive no
+   paint, and look sliced off — which is what clipped the "y" in
+   "pay for itself". Giving the box explicit room below the baseline fixes it
+   for every gradient phrase on the page. */
+.hv2 .hv2-grad-text {
+  background: linear-gradient(100deg, var(--brand-500) 0%, var(--brand-600) 55%, var(--brand-700) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+
+  /* Instrument Serif's italic descenders are deep — the f and p reach further
+     below the baseline than the y. The paint box needs generous room, and the
+     matching negative margin cancels the extra height again so the headline's
+     line spacing is unchanged. Padding alone (without the margin) would push
+     following lines apart. */
+  display: inline-block;
+  line-height: 1.1;
+  padding-bottom: 0.34em;
+  margin-bottom: -0.34em;
+
+  /* Ascenders/overshoot at the top of the italic also sit outside a tight box. */
+  padding-top: 0.06em;
+  margin-top: -0.06em;
+}
+
+.hv2-glow-acid,
+.hv2-glow-brand {
+  box-shadow:
+    0 10px 30px -10px rgba(37, 99, 235, 0.65),
+    0 0 0 1px rgba(37, 99, 235, 0.18);
+}
+
+.hv2-sticker {
+  transform: rotate(-3deg);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.hv2-sticker:hover { transform: rotate(0deg) scale(1.04); }
+
+.hv2 :focus-visible {
+  outline: 2px solid var(--brand-600);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.hv2-noscroll::-webkit-scrollbar { display: none; }
+.hv2-noscroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hv2 *,
+  .hv2 *::before,
+  .hv2 *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .hv2-float,
+  .hv2-float-slow,
+  .hv2-ping::after,
+  .hv2-marquee-track,
+  .hv2-aurora-a,
+  .hv2-aurora-b,
+  .hv2-dot,
+  .hv2-dash,
+  .hv2-beam::after {
+    animation: none !important;
+  }
+}
