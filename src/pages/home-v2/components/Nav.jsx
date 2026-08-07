@@ -52,7 +52,7 @@ export function Nav() {
             : "mt-0 max-w-[1280px] border border-transparent px-5 py-4 sm:px-8",
         ].join(" ")}
       >
-        <Link to="/home-v2" aria-label="Roof AI Lead Recovery">
+        <Link to="/" aria-label="Roof AI Lead Recovery">
           <Logo />
         </Link>
 

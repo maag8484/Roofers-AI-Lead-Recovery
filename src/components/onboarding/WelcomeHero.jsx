@@ -7,13 +7,13 @@ import { FEATURES } from "./content";
 const TESTIMONIALS = [
   {
     quote: "We stopped losing weekend calls overnight. It books estimates while we're on a roof.",
-    name: "Placeholder — Owner",
-    company: "Roofing Co.",
+    name: "Joe",
+    company: "Alexander Roofing",
   },
   {
     quote: "Feels like hiring a receptionist who never sleeps, for a fraction of the cost.",
-    name: "Placeholder — GM",
-    company: "Exterior Pros",
+    name: "Mike",
+    company: "GM Exterior Pros",
   },
 ];
 

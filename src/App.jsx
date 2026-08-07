@@ -31,9 +31,10 @@ import AdminSettingsPage from "@/pages/admin/SettingsPage";
 export default function App() {
   return (
     <Routes>
-      {/* Public marketing + legal */}
-      <Route path="/" element={<LandingPage />} />
-      <Route path="/home-v2" element={<HomeV2Page />} />
+      {/* Public marketing + legal. HomeV2Page is the live landing page; the
+          previous one stays reachable at /home-v1 for comparison/rollback. */}
+      <Route path="/" element={<HomeV2Page />} />
+      <Route path="/home-v1" element={<LandingPage />} />
       <Route path="/privacy" element={<PrivacyPage />} />
       <Route path="/terms" element={<TermsPage />} />
 
