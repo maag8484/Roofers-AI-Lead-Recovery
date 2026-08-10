@@ -46,18 +46,20 @@ export function Footer() {
               roofing companies book more estimates.
             </p>
 
-            <a
-              href="mailto:support@roofaileadrecovery.com"
-              className="mt-7 inline-block text-[14.5px] font-bold text-[var(--acid)] transition-opacity hover:opacity-75"
-            >
-              support@roofaileadrecovery.com
-            </a>
-            <a
-              href="tel:+18149362291"
-              className="mt-2 inline-block text-[14.5px] font-bold text-[var(--acid)] transition-opacity hover:opacity-75"
-            >
-              (814) 936-2291
-            </a>
+            <div className="mt-7 flex flex-col gap-2">
+              <a
+                href="mailto:support@roofaileadrecovery.com"
+                className="text-[14.5px] font-bold text-[var(--acid)] transition-opacity hover:opacity-75"
+              >
+                support@roofaileadrecovery.com
+              </a>
+              <a
+                href="tel:+18149362291"
+                className="text-[14.5px] font-bold text-[var(--acid)] transition-opacity hover:opacity-75"
+              >
+                (814) 936-2291
+              </a>
+            </div>
           </div>
 
           {/* Sitemap */}
