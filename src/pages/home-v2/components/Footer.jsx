@@ -52,6 +52,12 @@ export function Footer() {
             >
               support@roofaileadrecovery.com
             </a>
+            <a
+              href="tel:+18149362291"
+              className="mt-2 inline-block text-[14.5px] font-bold text-[var(--acid)] transition-opacity hover:opacity-75"
+            >
+              (814) 936-2291
+            </a>
           </div>
 
           {/* Sitemap */}
@@ -83,11 +89,18 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-[var(--line)] py-7 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-[13.5px] text-[var(--text-faint)]">
-            © {new Date().getFullYear()} Roof AI Lead Recovery. All rights reserved.
+        <div className="flex flex-col gap-3 border-t border-[var(--line)] py-7">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-[13.5px] text-[var(--text-faint)]">
+              © {new Date().getFullYear()} Roof AI Lead Recovery. All rights reserved.
+            </p>
+            <p className="hv2-eyebrow text-[var(--text-faint)]">Recovering leads 24/7</p>
+          </div>
+          <p className="text-[12px] text-[var(--text-faint)]">
+            Text us at (814) 936-2291. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.{" "}
+            <Link to="/privacy" className="underline hover:text-[var(--text-dim)]">Privacy Policy</Link>{" "}·{" "}
+            <Link to="/terms" className="underline hover:text-[var(--text-dim)]">Terms of Service</Link>.
           </p>
-          <p className="hv2-eyebrow text-[var(--text-faint)]">Recovering leads 24/7</p>
         </div>
       </div>
     </footer>
