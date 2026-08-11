@@ -2,6 +2,7 @@
 import Stripe from "https://esm.sh/stripe@17?target=deno";
 import { corsHeaders, handleOptions, json } from "../_shared/cors.ts";
 import { getUser, serviceClient } from "../_shared/supabase.ts";
+import { getGoverningSubscription } from "../_shared/subscription.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
   apiVersion: "2024-12-18.acacia",
@@ -19,11 +20,14 @@ Deno.serve(async (req) => {
     if (!user) return json({ error: error ?? "Unauthorized" }, 401);
 
     const db = serviceClient();
-    const { data: sub } = await db
-      .from("subscriptions")
-      .select("stripe_subscription_id, stripe_customer_id, status")
-      .eq("user_id", user.id)
-      .maybeSingle();
+    // Multiple rows per user are possible (user_id is not UNIQUE) — maybeSingle()
+    // would error and look like "no subscription". Take the governing row.
+    const sub = await getGoverningSubscription(
+      db,
+      user.id,
+      "stripe_subscription_id, stripe_customer_id, status, created_at",
+      "stripe_subscription_id"
+    );
 
     if (!sub?.stripe_subscription_id) {
       return json({ error: "No subscription found." }, 404);
@@ -34,11 +38,12 @@ Deno.serve(async (req) => {
       pause_collection: "" as any,
     });
 
-    // Update DB status back to active
+    // Update DB status back to active. Scope by stripe_subscription_id, NOT
+    // user_id, so unrelated historical rows aren't stamped "active".
     await db
       .from("subscriptions")
       .update({ status: "active" })
-      .eq("user_id", user.id);
+      .eq("stripe_subscription_id", sub.stripe_subscription_id);
 
     // Get user profile for email
     const { data: profile } = await db

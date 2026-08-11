@@ -20,7 +20,16 @@
       "Bash(git push *)",
       "Bash(git checkout *)",
       "Bash(git merge *)",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "PowerShell(git pull origin main)",
+      "PowerShell(git add src/components/marketing/Footer.jsx src/pages/admin/IntegrationsEmailPage.jsx)",
+      "PowerShell(npm run build 2>&1)",
+      "mcp__claude_ai_Supabase__execute_sql",
+      "PowerShell(Copy-Item \"C:\\\\Users\\\\Zaid\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-Zaid-Downloads-Roofers-AI-Lead-Recovery-2-Roofers-AI-Lead-Recovery\\\\02c6b212-b9d7-440f-90c8-eda7bc89a9e6\\\\scratchpad\\\\unlock_dashboard.sql\" -Destination \"supabase\\\\migrations\\\\UNLOCK_DASHBOARD_TESTING.sql\")",
+      "PowerShell(if \\($?\\) { \"Copied OK\" })",
+      "PowerShell(try { $v = supabase --version 2>$null; if \\($v\\) { \"CLI INSTALLED: $v\" } else { \"CLI NOT FOUND\" } } catch { \"CLI NOT FOUND\" }; if \\(Test-Path \"supabase\\\\.temp\\\\project-ref\"\\) { \"LINKED TO: \" + \\(Get-Content \"supabase\\\\.temp\\\\project-ref\" -Raw\\).Trim\\(\\) } else { \"NOT LINKED \\(no supabase/.temp/project-ref\\)\" })",
+      "PowerShell(\"---BRANCH---\")",
+      "PowerShell(\"---REMOTE---\")"
     ]
   }
 }

@@ -4,6 +4,7 @@ import { CreditCard, LogOut, ChevronLeft, CheckCircle2, AlertCircle, Clock, Paus
 import { toast } from "sonner";
 import { supabase, invokeFunction } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
+import { pickActiveSubscription } from "@/lib/subscription";
 import { Logo } from "@/components/Logo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -25,10 +26,15 @@ export default function BillingPage() {
     if (!user) return;
     const { data } = await supabase
       .from("subscriptions")
-      .select("status, trial_ends_at, current_period_end, stripe_customer_id, cancel_reason, canceled_at, cancel_at_period_end")
+      .select(
+        "status, trial_ends_at, current_period_end, stripe_customer_id, stripe_subscription_id, cancel_reason, canceled_at, cancel_at_period_end, created_at"
+      )
       .eq("user_id", user.id)
-      .maybeSingle();
-    setSubscription(data ?? null);
+      .order("created_at", { ascending: false });
+    // Show the row Stripe actually operates on. Pause/resume only ever update
+    // the row carrying a stripe_subscription_id, so preferring any other row
+    // here would leave the page reading "Active" straight after a pause.
+    setSubscription(pickActiveSubscription(data, { requireField: "stripe_subscription_id" }));
   };
 
   useEffect(() => {

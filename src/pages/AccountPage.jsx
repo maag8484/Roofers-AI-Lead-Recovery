@@ -23,6 +23,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
+import { pickActiveSubscription } from "@/lib/subscription";
 import { Logo } from "@/components/Logo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -87,7 +88,7 @@ export default function AccountPage() {
         .from("subscriptions")
         .select("status, trial_ends_at, current_period_end, stripe_customer_id, created_at")
         .eq("user_id", user.id)
-        .maybeSingle(),
+        .order("created_at", { ascending: false }),
       supabase
         .from("status_history")
         .select("from_status, to_status, note, created_at")
@@ -95,7 +96,7 @@ export default function AccountPage() {
         .order("created_at", { ascending: false })
         .limit(8),
     ]).then(([sub, hist]) => {
-      setSubscription(sub.data ?? null);
+      setSubscription(pickActiveSubscription(sub.data));
       setHistory(hist.data ?? []);
       setLoading(false);
     });

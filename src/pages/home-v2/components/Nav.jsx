@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { useAuth } from "@/context/AuthContext";
+import { useResumePath } from "@/lib/useResumePath";
 import { CtaButton } from "./primitives";
 
 /**
@@ -28,6 +30,21 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const { scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, { stiffness: 150, damping: 28, restDelta: 0.001 });
+
+  // Session-aware actions. A signed-in visitor landing back on the homepage must
+  // never be shown "Login / Start free trial" — they get a single button that
+  // resumes wherever they actually left off (checkout → onboarding → dashboard,
+  // or the console for admins). Mirrors marketing/Navbar.jsx.
+  const { user, isAdmin, loading } = useAuth();
+  const { path: resumePath, ready } = useResumePath();
+
+  let resumeLabel = "Continue setup";
+  if (isAdmin) resumeLabel = "Admin";
+  else if (resumePath === "/dashboard") resumeLabel = "Go to dashboard";
+
+  // Hold the actions back until both auth and the subscription lookup settle, so
+  // the pill never flashes "Login" at a signed-in user or the wrong destination.
+  const authResolved = !loading && ready;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -68,16 +85,24 @@ export function Nav() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <Link
-            to="/login"
-            className="text-[14px] font-semibold text-[var(--text-dim)] transition-colors hover:text-[var(--text)]"
-          >
-            Login
-          </Link>
-          <CtaButton size="md" magnetic={false}>
-            Start free trial
-          </CtaButton>
+        <div className="hidden min-h-[38px] items-center gap-3 lg:flex">
+          {!authResolved ? null : user ? (
+            <CtaButton to={resumePath} size="md" magnetic={false}>
+              {resumeLabel}
+            </CtaButton>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="text-[14px] font-semibold text-[var(--text-dim)] transition-colors hover:text-[var(--text)]"
+              >
+                Login
+              </Link>
+              <CtaButton size="md" magnetic={false}>
+                Start free trial
+              </CtaButton>
+            </>
+          )}
         </div>
 
         <button
@@ -117,16 +142,28 @@ export function Nav() {
               </motion.a>
             ))}
             <div className="mt-2 flex flex-col gap-2 border-t border-[var(--line)] pt-3">
-              <Link
-                to="/login"
-                onClick={() => setOpen(false)}
-                className="rounded-full border border-[var(--line-2)] py-3 text-center text-[14px] font-bold text-[var(--text)]"
-              >
-                Login
-              </Link>
-              <CtaButton className="w-full" magnetic={false}>
-                Start free trial
-              </CtaButton>
+              {!authResolved ? null : user ? (
+                <Link
+                  to={resumePath}
+                  onClick={() => setOpen(false)}
+                  className="hv2-glow-acid flex items-center justify-center gap-2.5 rounded-full bg-[var(--brand-600)] py-3 text-center text-[14px] font-bold text-white transition-colors hover:bg-[var(--brand-700)]"
+                >
+                  {resumeLabel} <ArrowRight className="h-4 w-4" />
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={() => setOpen(false)}
+                    className="rounded-full border border-[var(--line-2)] py-3 text-center text-[14px] font-bold text-[var(--text)]"
+                  >
+                    Login
+                  </Link>
+                  <CtaButton className="w-full" magnetic={false}>
+                    Start free trial
+                  </CtaButton>
+                </>
+              )}
             </div>
           </motion.div>
         )}

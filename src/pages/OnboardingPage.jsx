@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
+import { pickActiveSubscription } from "@/lib/subscription";
 import { Logo } from "@/components/Logo";
 import { AccountMenu } from "@/components/AccountMenu";
 import { Card, CardContent } from "@/components/ui/card";
@@ -121,10 +122,10 @@ export default function OnboardingPage() {
     if (!user) return;
     supabase
       .from("subscriptions")
-      .select("status, trial_ends_at")
+      .select("status, trial_ends_at, created_at")
       .eq("user_id", user.id)
-      .maybeSingle()
-      .then(({ data }) => setSubscription(data ?? null));
+      .order("created_at", { ascending: false })
+      .then(({ data }) => setSubscription(pickActiveSubscription(data)));
   }, [user]);
 
   // Hydrate the form so a refresh doesn't wipe what the user typed. Priority:

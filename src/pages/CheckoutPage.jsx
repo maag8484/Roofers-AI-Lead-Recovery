@@ -4,6 +4,7 @@ import { HelpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { supabase, invokeFunction } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
+import { pickActiveSubscription, isSubscriptionActive } from "@/lib/subscription";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -29,11 +30,13 @@ export default function CheckoutPage() {
     if (!user) return;
     supabase
       .from("subscriptions")
-      .select("status")
+      .select("status, created_at")
       .eq("user_id", user.id)
-      .maybeSingle()
+      .order("created_at", { ascending: false })
       .then(({ data }) => {
-        if (data && ["active", "trialing"].includes(data.status)) {
+        // Multiple rows per user are possible; maybeSingle() would error here
+        // and strand an already-paid customer on the checkout page.
+        if (isSubscriptionActive(pickActiveSubscription(data))) {
           navigate("/onboarding", { replace: true });
         } else {
           setChecking(false);

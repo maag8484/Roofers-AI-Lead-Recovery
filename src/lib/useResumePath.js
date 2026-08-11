@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
+import { pickActiveSubscription } from "@/lib/subscription";
 
 /**
  * Resolves where a logged-in customer should "continue" to, based on how far
@@ -13,7 +14,7 @@ import { useAuth } from "@/context/AuthContext";
  * resolves, so callers can avoid flashing the wrong destination.
  */
 export function useResumePath() {
-  const { user, profile, isAdmin } = useAuth();
+  const { user, profile, isAdmin, loading: authLoading } = useAuth();
   const [subStatus, setSubStatus] = useState(undefined); // undefined = loading
 
   useEffect(() => {
@@ -22,20 +23,26 @@ export function useResumePath() {
       return;
     }
     let active = true;
+    // Several rows per user are possible — maybeSingle() would error on that
+    // and report "no subscription", sending a paid user back to /checkout.
     supabase
       .from("subscriptions")
-      .select("status")
+      .select("status, created_at")
       .eq("user_id", user.id)
-      .maybeSingle()
+      .order("created_at", { ascending: false })
       .then(({ data }) => {
-        if (active) setSubStatus(data?.status ?? null);
+        if (active) setSubStatus(pickActiveSubscription(data)?.status ?? null);
       });
     return () => {
       active = false;
     };
   }, [user]);
 
-  const ready = !user || subStatus !== undefined;
+  // `profile` comes from AuthContext on its own timeline. Reading
+  // details_submitted off a still-loading (null) profile would resolve to
+  // /onboarding for a customer who already finished the form, so the caller
+  // must not act until BOTH the subscription and the profile have settled.
+  const ready = !user || (subStatus !== undefined && !authLoading);
 
   let path = "/dashboard";
   if (isAdmin) {

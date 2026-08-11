@@ -2,6 +2,7 @@
 import Stripe from "https://esm.sh/stripe@17?target=deno";
 import { corsHeaders, handleOptions, json } from "../_shared/cors.ts";
 import { getUser, serviceClient } from "../_shared/supabase.ts";
+import { getGoverningSubscription } from "../_shared/subscription.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
   apiVersion: "2024-12-18.acacia",
@@ -19,11 +20,15 @@ Deno.serve(async (req) => {
     const { return_url } = await req.json();
 
     const db = serviceClient();
-    const { data: sub } = await db
-      .from("subscriptions")
-      .select("stripe_customer_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
+    // A user can hold several subscription rows (user_id is not UNIQUE), so
+    // maybeSingle() would error and read as "no subscription", 404'ing a paying
+    // customer out of the portal. Take the row that actually has a Stripe id.
+    const sub = await getGoverningSubscription(
+      db,
+      user.id,
+      "stripe_customer_id, status, created_at",
+      "stripe_customer_id"
+    );
 
     if (!sub?.stripe_customer_id) {
       return json({ error: "No subscription found." }, 404);

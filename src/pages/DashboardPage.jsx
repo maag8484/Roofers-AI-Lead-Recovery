@@ -21,6 +21,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { AccountMenu } from "@/components/AccountMenu";
 import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 import { formatPhone } from "@/lib/utils";
+import { pickActiveSubscription, isSubscriptionActive } from "@/lib/subscription";
 
 // Customer-facing wording for the admin's 13-value `current_status`. Deliberately
 // NOT the admin labels from config/customerStatus.js — internal stage names like
@@ -53,7 +54,14 @@ const CONFIG_STAGE_NOTE = {
 };
 
 export default function DashboardPage() {
-  const { user, profile, isAdmin, onboardingCompleted, markOnboardingComplete } = useAuth();
+  const {
+    user,
+    profile,
+    isAdmin,
+    onboardingCompleted,
+    markOnboardingComplete,
+    loading: authLoading,
+  } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -65,12 +73,16 @@ export default function DashboardPage() {
 
   const loadData = useCallback(async () => {
     if (!user) return;
+    // A user can accumulate several subscription rows (repeated checkouts, a
+    // paused/canceled one left behind by Stripe). `.maybeSingle()` ERRORS on
+    // more than one row and returns null, which used to read as "never paid"
+    // and bounced a paying customer back to /checkout. Take the live one.
     const { data } = await supabase
       .from("subscriptions")
       .select("status, trial_ends_at")
       .eq("user_id", user.id)
-      .maybeSingle();
-    setSubscription(data);
+      .order("created_at", { ascending: false });
+    setSubscription(pickActiveSubscription(data));
     setLoading(false);
   }, [user]);
 
@@ -80,16 +92,22 @@ export default function DashboardPage() {
 
   // New-flow gate: a customer must (1) have paid, then (2) have submitted the
   // onboarding details form before they can use the dashboard. Send them to
-  // whichever step is missing. Admins are exempt. Runs after data is loaded.
+  // whichever step is missing. Admins are exempt.
+  //
+  // MUST wait for authLoading too, not just this page's own `loading`. `profile`
+  // is fetched by AuthContext on a separate timeline; while that is in flight it
+  // is still null, and judging `details_submitted` against a not-yet-loaded
+  // profile bounced customers who HAD completed the form straight back to
+  // /onboarding. Only decide once both sources have settled.
   useEffect(() => {
-    if (loading || isAdmin) return;
-    const paid = ["active", "trialing"].includes(subscription?.status);
+    if (loading || authLoading || isAdmin) return;
+    const paid = isSubscriptionActive(subscription);
     if (!paid) {
       navigate("/checkout", { replace: true });
     } else if (!profile?.details_submitted) {
       navigate("/onboarding", { replace: true });
     }
-  }, [loading, isAdmin, subscription, profile, navigate]);
+  }, [loading, authLoading, isAdmin, subscription, profile, navigate]);
 
   useEffect(() => {
     if (searchParams.get("payment") === "success") {

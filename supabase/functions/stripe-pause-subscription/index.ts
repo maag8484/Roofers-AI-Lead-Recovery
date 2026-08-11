@@ -3,6 +3,7 @@
 import Stripe from "https://esm.sh/stripe@17?target=deno";
 import { corsHeaders, handleOptions, json } from "../_shared/cors.ts";
 import { getUser, serviceClient } from "../_shared/supabase.ts";
+import { getGoverningSubscription } from "../_shared/subscription.ts";
 
 const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
   apiVersion: "2024-12-18.acacia",
@@ -27,11 +28,14 @@ Deno.serve(async (req) => {
     });
 
     const db = serviceClient();
-    const { data: sub } = await db
-      .from("subscriptions")
-      .select("stripe_subscription_id, stripe_customer_id, status")
-      .eq("user_id", user.id)
-      .maybeSingle();
+    // Multiple rows per user are possible (user_id is not UNIQUE) — maybeSingle()
+    // would error and look like "no subscription". Take the governing row.
+    const sub = await getGoverningSubscription(
+      db,
+      user.id,
+      "stripe_subscription_id, stripe_customer_id, status, created_at",
+      "stripe_subscription_id"
+    );
 
     if (!sub?.stripe_subscription_id) {
       return json({ error: "No active subscription found." }, 404);
@@ -49,11 +53,13 @@ Deno.serve(async (req) => {
       },
     });
 
-    // Mirror paused state in DB
+    // Mirror paused state in DB. Scope by stripe_subscription_id, NOT user_id:
+    // a user can own several rows, and updating them all would stamp "paused"
+    // over unrelated historical rows.
     await db
       .from("subscriptions")
       .update({ status: "paused" })
-      .eq("user_id", user.id);
+      .eq("stripe_subscription_id", sub.stripe_subscription_id);
 
     // Get user profile for email
     const { data: profile } = await db
