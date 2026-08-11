@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Phone, CheckCircle2, Calendar, Home } from "lucide-react";
+import { Phone, CheckCircle2, Calendar } from "lucide-react";
 
 /**
  * Hero device.
@@ -26,6 +26,8 @@ const THREAD = [
     typing: true,
   },
 ];
+
+const LOGO_SRC = "/media/roof_ai_lead_recovery_logo_transparent.png";
 
 function Typing() {
   return (
@@ -131,9 +133,14 @@ export function PhoneShowcase() {
       >
         {/* Header */}
         <div className="hv2-beam relative flex items-center gap-3 overflow-hidden border-b border-[var(--line)] bg-gradient-to-r from-[var(--brand-deep)] via-[var(--brand)] to-[var(--brand-bright)] px-4 py-3.5 text-white">
-          {/* Same Home glyph the real logo uses, on the brand header. */}
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/20 backdrop-blur">
-            <Home className="h-5 w-5" strokeWidth={2.4} />
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/40 bg-white shadow-sm">
+            <img
+              src={LOGO_SRC}
+              alt=""
+              aria-hidden="true"
+              className="h-8 w-8 object-contain"
+              draggable="false"
+            />
           </span>
           <div className="min-w-0">
             <p className="truncate text-sm font-bold leading-tight">Roof AI Lead Recovery</p>

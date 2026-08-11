@@ -1,6 +1,8 @@
-import { Home, Phone, CheckCircle2 } from "lucide-react";
+import { Phone, CheckCircle2 } from "lucide-react";
 
 /** The hero chat mockup — mirrors the SMS conversation in the design. */
+const LOGO_SRC = "/media/roof_ai_lead_recovery_logo_transparent.png";
+
 export function PhoneMockup() {
   return (
     <div className="relative mx-auto w-full max-w-[340px]">
@@ -19,11 +21,17 @@ export function PhoneMockup() {
       <div className="overflow-hidden rounded-[2.25rem] border-[6px] border-ink-900 bg-white shadow-2xl">
         {/* Header */}
         <div className="flex items-center gap-3 bg-brand-600 px-4 py-3.5 text-white">
-          <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20">
-            <Home className="h-5 w-5" />
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/40 bg-white shadow-sm">
+            <img
+              src={LOGO_SRC}
+              alt=""
+              aria-hidden="true"
+              className="h-8 w-8 object-contain"
+              draggable="false"
+            />
           </span>
-          <div>
-            <p className="text-sm font-bold leading-tight">Roof AI</p>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-bold leading-tight">Roof AI Lead Recovery</p>
             <p className="text-xs text-white/80">Auto-replying now</p>
           </div>
         </div>
