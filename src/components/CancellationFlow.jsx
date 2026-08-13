@@ -39,21 +39,20 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
 
   const s = MOCK_STATS;
 
-  // ── Step 1: ROI ─────────────────────────────────────────────────────
   if (step === "roi") {
     return (
       <div className="space-y-5">
         <div className="text-center space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-widest text-brand-600">Before you leave…</p>
+          <p className="text-xs font-semibold uppercase tracking-widest text-brand-600">Before you leave</p>
           <h2 className="text-xl font-extrabold text-ink">Here's what Roof AI accomplished</h2>
           <p className="text-sm text-muted-foreground">In the last 30 days</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          <StatTile icon={PhoneCall}  color="brand"   label="Missed calls answered" value={s.callsAnswered} />
+          <StatTile icon={PhoneCall}  color="brand"   label="Missed calls answered"   value={s.callsAnswered} />
           <StatTile icon={TrendingUp} color="emerald" label="Qualified leads recovered" value={s.leadsRecovered} />
-          <StatTile icon={Calendar}   color="violet"  label="Inspections booked"    value={s.inspectionsBooked} />
-          <StatTile icon={Clock}      color="amber"   label="Avg response time"     value={`${s.avgResponseSeconds}s`} />
+          <StatTile icon={Calendar}   color="violet"  label="Inspections booked"       value={s.inspectionsBooked} />
+          <StatTile icon={Clock}      color="amber"   label="Avg response time"        value={s.avgResponseSeconds + "s"} />
         </div>
 
         <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4 space-y-2">
@@ -76,7 +75,7 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
 
         <div className="space-y-2">
           <Button className="w-full" size="lg" onClick={onKeep}>
-            🟢 Keep My Account Active
+            Keep My Account Active
           </Button>
           <Button variant="ghost" size="sm" className="w-full text-muted-foreground hover:text-red-600" onClick={() => setStep("reason")}>
             Continue Cancellation <ArrowRight className="h-4 w-4" />
@@ -86,7 +85,6 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
     );
   }
 
-  // ── Step 2: Reason ──────────────────────────────────────────────────
   if (step === "reason") {
     return (
       <div className="space-y-5">
@@ -113,29 +111,23 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
         </div>
 
         <div className="space-y-2">
-          <Button
-            className="w-full"
-            disabled={!reason}
-            onClick={() => setStep("offer")}
-          >
+          <Button className="w-full" disabled={!reason} onClick={() => setStep("offer")}>
             Next <ArrowRight className="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={() => setStep("roi")}>
-            ← Back
+            Back
           </Button>
         </div>
       </div>
     );
   }
 
-  // ── Step 3: Personalized Offer ──────────────────────────────────────
   if (step === "offer") {
-    const isExpensive   = reason === "too_expensive";
-    const notEnough     = reason === "not_enough_leads";
-    const seasonal      = reason === "business_slowed";
-    const technical     = reason === "technical_issues";
-    const switching     = reason === "switching_providers";
-    const sold          = reason === "sold_business";
+    const isExpensive = reason === "too_expensive";
+    const notEnough   = reason === "not_enough_leads";
+    const seasonal    = reason === "business_slowed";
+    const technical   = reason === "technical_issues";
+    const switching   = reason === "switching_providers";
 
     return (
       <div className="space-y-5">
@@ -145,22 +137,10 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
               <h2 className="text-xl font-extrabold text-ink">We understand.</h2>
               <p className="text-sm text-muted-foreground">If price is the only concern, we'd love to keep helping you.</p>
             </div>
-            <OfferCard
-              icon={DollarSign}
-              color="emerald"
-              title="Special Loyalty Offer — $249/month"
-              subtitle="For the next 90 days, then back to $299/month."
-              cta="Claim Discount"
-              onClick={() => { window.location.href = "mailto:support@roofaileadrecovery.com?subject=Loyalty Discount Request"; }}
-            />
-            <OfferCard
-              icon={Pause}
-              color="brand"
-              title="Pause your account for up to 60 days"
-              subtitle="No billing. Your settings stay intact. Resume anytime."
-              cta="Pause My Account"
-              onClick={() => setStep("pause")}
-            />
+            <OfferCard icon={DollarSign} color="emerald" title="Special Loyalty Offer — $249/month" subtitle="For the next 90 days, then back to $299/month." cta="Claim Discount"
+              onClick={() => { window.location.href = "mailto:support@roofaileadrecovery.com?subject=Loyalty Discount Request"; }} />
+            <OfferCard icon={Pause} color="brand" title="Pause your account for up to 60 days" subtitle="No billing. Your settings stay intact. Resume anytime." cta="Pause My Account"
+              onClick={() => setStep("pause")} />
           </>
         )}
 
@@ -168,16 +148,10 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
           <>
             <div className="text-center space-y-1">
               <h2 className="text-xl font-extrabold text-ink">Roof AI performs best with volume</h2>
-              <p className="text-sm text-muted-foreground">If your lead volume is temporarily lower than normal, we recommend pausing instead of canceling.</p>
+              <p className="text-sm text-muted-foreground">If your lead volume is temporarily lower, we recommend pausing instead of canceling.</p>
             </div>
-            <OfferCard
-              icon={Pause}
-              color="brand"
-              title="Pause your account for up to 60 days"
-              subtitle="Keep your settings, AI training, call flows, and business info. Reactivate anytime with one click."
-              cta="Pause My Account"
-              onClick={() => setStep("pause")}
-            />
+            <OfferCard icon={Pause} color="brand" title="Pause your account for up to 60 days" subtitle="Keep your settings, AI training, call flows, and business info. Reactivate anytime." cta="Pause My Account"
+              onClick={() => setStep("pause")} />
           </>
         )}
 
@@ -187,14 +161,8 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
               <h2 className="text-xl font-extrabold text-ink">We understand roofing can be seasonal.</h2>
               <p className="text-sm text-muted-foreground">Pause billing for up to 90 days. No setup required when you're ready to return.</p>
             </div>
-            <OfferCard
-              icon={Pause}
-              color="brand"
-              title="Seasonal Pause — up to 90 days"
-              subtitle="No billing. All your settings and workflows stay ready."
-              cta="Pause My Account"
-              onClick={() => setStep("pause")}
-            />
+            <OfferCard icon={Pause} color="brand" title="Seasonal Pause — up to 90 days" subtitle="No billing. All your settings and workflows stay ready." cta="Pause My Account"
+              onClick={() => setStep("pause")} />
           </>
         )}
 
@@ -202,28 +170,20 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
           <>
             <div className="text-center space-y-1">
               <h2 className="text-xl font-extrabold text-ink">Let's fix it.</h2>
-              <p className="text-sm text-muted-foreground">Schedule a complimentary 15-minute account review. We'll help optimize your setup.</p>
+              <p className="text-sm text-muted-foreground">Schedule a complimentary 15-minute account review with our team.</p>
             </div>
             <div className="rounded-xl border border-border p-4 space-y-2">
-              <p className="text-sm font-semibold text-ink">We'll review:</p>
+              <p className="text-sm font-semibold text-ink">We'll help optimize:</p>
               <ul className="space-y-1 text-sm text-muted-foreground">
-                <li>✓ AI responses</li>
-                <li>✓ Call routing</li>
-                <li>✓ Appointment booking</li>
-                <li>✓ Notifications & integrations</li>
+                <li>AI responses &amp; call routing</li>
+                <li>Appointment booking</li>
+                <li>Notifications &amp; integrations</li>
               </ul>
             </div>
             <Button className="w-full" onClick={() => { window.location.href = "mailto:support@roofaileadrecovery.com?subject=15-Minute Account Review Request"; }}>
               <LifeBuoy className="h-4 w-4" /> Schedule Free Review
             </Button>
-            <OfferCard
-              icon={Pause}
-              color="brand"
-              title="Pause instead"
-              subtitle="No billing while we sort things out."
-              cta="Pause My Account"
-              onClick={() => setStep("pause")}
-            />
+            <OfferCard icon={Pause} color="brand" title="Pause instead" subtitle="No billing while we sort things out." cta="Pause My Account" onClick={() => setStep("pause")} />
           </>
         )}
 
@@ -236,56 +196,38 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
             <Button className="w-full" onClick={() => { window.location.href = "mailto:support@roofaileadrecovery.com?subject=Comparison Review Request"; }}>
               Schedule Comparison Review
             </Button>
-            <OfferCard
-              icon={Pause}
-              color="brand"
-              title="Pause for 60 days"
-              subtitle="No billing. Resume anytime with one click."
-              cta="Pause My Account"
-              onClick={() => setStep("pause")}
-            />
+            <OfferCard icon={Pause} color="brand" title="Pause for 60 days" subtitle="No billing. Resume anytime with one click." cta="Pause My Account" onClick={() => setStep("pause")} />
           </>
         )}
 
-        {(sold || reason === "other") && (
+        {(reason === "sold_business" || reason === "other") && (
           <>
             <div className="text-center space-y-1">
               <h2 className="text-xl font-extrabold text-ink">We're sorry to hear that.</h2>
               <p className="text-sm text-muted-foreground">Before you go — pause instead of cancel. No billing, everything stays set up.</p>
             </div>
-            <OfferCard
-              icon={Pause}
-              color="brand"
-              title="Pause for 60 days"
-              subtitle="No billing. Resume anytime with one click."
-              cta="Pause My Account"
-              onClick={() => setStep("pause")}
-            />
+            <OfferCard icon={Pause} color="brand" title="Pause for 60 days" subtitle="No billing. Resume anytime with one click." cta="Pause My Account" onClick={() => setStep("pause")} />
           </>
         )}
 
         <div className="space-y-2 pt-1">
           <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={() => setStep("reason")}>
-            ← Back
+            Back
           </Button>
-          <button
-            className="w-full text-center text-xs text-muted-foreground hover:text-red-600 underline underline-offset-2 transition-colors"
-            onClick={() => setStep("social")}
-          >
-            Continue to cancel →
+          <button className="w-full text-center text-xs text-muted-foreground hover:text-red-600 underline underline-offset-2 transition-colors" onClick={() => setStep("social")}>
+            Continue to cancel
           </button>
         </div>
       </div>
     );
   }
 
-  // ── Step 4: Pause selector ──────────────────────────────────────────
   if (step === "pause") {
     return (
       <div className="space-y-5">
         <div className="text-center space-y-1">
           <h2 className="text-xl font-extrabold text-ink">Pause Instead of Cancel</h2>
-          <p className="text-sm text-muted-foreground">Many roofing companies experience seasonal slowdowns. Choose your pause duration.</p>
+          <p className="text-sm text-muted-foreground">Choose your pause duration.</p>
         </div>
 
         <div className="space-y-2">
@@ -308,10 +250,9 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
         <div className="rounded-xl border border-border bg-secondary/40 p-4 space-y-1">
           <p className="text-xs font-semibold text-ink">While paused, we'll retain:</p>
           <ul className="space-y-1 text-xs text-muted-foreground">
-            <li>✓ AI settings & training</li>
-            <li>✓ Business information</li>
-            <li>✓ Call flows & FAQs</li>
-            <li>✓ Scheduling preferences</li>
+            <li>AI settings &amp; training</li>
+            <li>Business information &amp; call flows</li>
+            <li>FAQs &amp; scheduling preferences</li>
           </ul>
           <p className="text-xs text-muted-foreground pt-1">No setup required when you return.</p>
         </div>
@@ -320,19 +261,15 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
           <Pause className="h-4 w-4" /> Pause for {pauseDays} Days
         </Button>
         <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={() => setStep("offer")}>
-          ← Back
+          Back
         </Button>
-        <button
-          className="w-full text-center text-xs text-muted-foreground hover:text-red-600 underline underline-offset-2 transition-colors"
-          onClick={() => setStep("social")}
-        >
-          Continue to cancel →
+        <button className="w-full text-center text-xs text-muted-foreground hover:text-red-600 underline underline-offset-2 transition-colors" onClick={() => setStep("social")}>
+          Continue to cancel
         </button>
       </div>
     );
   }
 
-  // ── Step 5: Social Proof ────────────────────────────────────────────
   if (step === "social") {
     return (
       <div className="space-y-5">
@@ -359,19 +296,15 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
           Keep My Account Active
         </Button>
         <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={() => setStep("offer")}>
-          ← Back
+          Back
         </Button>
-        <button
-          className="w-full text-center text-xs text-muted-foreground hover:text-red-600 underline underline-offset-2 transition-colors"
-          onClick={() => setStep("founder")}
-        >
-          Still want to cancel →
+        <button className="w-full text-center text-xs text-muted-foreground hover:text-red-600 underline underline-offset-2 transition-colors" onClick={() => setStep("founder")}>
+          Still want to cancel
         </button>
       </div>
     );
   }
 
-  // ── Step 6: Founder Review ──────────────────────────────────────────
   if (step === "founder") {
     return (
       <div className="space-y-5">
@@ -386,30 +319,25 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
         <div className="rounded-xl border border-border p-4 space-y-2">
           <p className="text-sm font-semibold text-ink">We'll review:</p>
           <ul className="space-y-1 text-sm text-muted-foreground">
-            <li>✓ Missed calls & lead recovery</li>
-            <li>✓ AI performance</li>
-            <li>✓ Missed opportunities</li>
+            <li>Missed calls &amp; lead recovery</li>
+            <li>AI performance &amp; missed opportunities</li>
           </ul>
-          <p className="text-xs text-muted-foreground pt-1">No obligation. Sometimes a few small adjustments can dramatically improve results.</p>
+          <p className="text-xs text-muted-foreground pt-1">No obligation. Small adjustments can dramatically improve results.</p>
         </div>
 
         <Button className="w-full" onClick={() => { window.location.href = "mailto:support@roofaileadrecovery.com?subject=Founder Strategy Review Request"; }}>
           Schedule Free 15-Min Review
         </Button>
         <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={() => setStep("social")}>
-          ← Back
+          Back
         </Button>
-        <button
-          className="w-full text-center text-xs text-muted-foreground hover:text-red-600 underline underline-offset-2 transition-colors"
-          onClick={() => setStep("final")}
-        >
-          No thanks, proceed to cancel →
+        <button className="w-full text-center text-xs text-muted-foreground hover:text-red-600 underline underline-offset-2 transition-colors" onClick={() => setStep("final")}>
+          No thanks, proceed to cancel
         </button>
       </div>
     );
   }
 
-  // ── Step 7: Final Feedback ──────────────────────────────────────────
   if (step === "final") {
     return (
       <div className="space-y-5">
@@ -426,14 +354,11 @@ export function CancellationFlow({ onKeep, onConfirmCancel, onPause }) {
           className="flex w-full rounded-lg border border-border bg-white px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-1"
         />
 
-        <Button
-          className="w-full bg-red-600 hover:bg-red-700"
-          onClick={onConfirmCancel}
-        >
+        <Button className="w-full bg-red-600 hover:bg-red-700" onClick={onConfirmCancel}>
           Confirm Cancellation
         </Button>
         <Button variant="ghost" size="sm" className="w-full text-muted-foreground" onClick={() => setStep("founder")}>
-          ← Back
+          Back
         </Button>
       </div>
     );
