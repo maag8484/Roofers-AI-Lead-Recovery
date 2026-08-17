@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
+import { EMAIL_REDIRECT_TO } from "@/lib/authRedirect";
 
 const AuthContext = createContext(null);
 
@@ -120,8 +121,14 @@ export function AuthProvider({ children }) {
     refreshProfile: () => loadProfile(session?.user?.id),
     signIn: (email, password) =>
       supabase.auth.signInWithPassword({ email, password }),
+    // emailRedirectTo only matters when "Confirm email" is ON: it's where the
+    // link in the confirmation email lands the user. Harmless when it's OFF.
     signUp: (email, password, metadata) =>
-      supabase.auth.signUp({ email, password, options: { data: metadata } }),
+      supabase.auth.signUp({
+        email,
+        password,
+        options: { data: metadata, emailRedirectTo: EMAIL_REDIRECT_TO },
+      }),
     signOut: () => supabase.auth.signOut(),
     resetPassword: (email) =>
       supabase.auth.resetPasswordForEmail(email, {

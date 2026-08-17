@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { AuthLayout } from "@/components/auth/AuthLayout";
+import { ConfirmEmailNotice } from "@/components/auth/ConfirmEmailNotice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +17,8 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [showPw, setShowPw] = useState(false);
+  // Set when sign-in fails purely because the email is unconfirmed.
+  const [unconfirmedEmail, setUnconfirmedEmail] = useState(null);
   const {
     register,
     handleSubmit,
@@ -26,6 +29,13 @@ export default function LoginPage() {
   const onSubmit = async ({ email, password }) => {
     const { error } = await signIn(email, password);
     if (error) {
+      // A user who signed up but hasn't clicked the confirmation link gets
+      // "Email not confirmed" from Supabase. Show the confirmation screen
+      // (with its resend button) instead of a dead-end error.
+      if (/email not confirmed|not confirmed/i.test(error.message || "")) {
+        setUnconfirmedEmail(email.trim());
+        return;
+      }
       toast.error(error.message || "Could not sign in.");
       return;
     }
@@ -49,6 +59,29 @@ export default function LoginPage() {
     if (error) toast.error(error.message);
     else toast.success("Password reset email sent.");
   };
+
+  // Signed up but never confirmed — reuse the signup confirmation screen so the
+  // user gets the same explanation and the resend button.
+  if (unconfirmedEmail) {
+    return (
+      <AuthLayout
+        footer={
+          <button
+            type="button"
+            onClick={() => setUnconfirmedEmail(null)}
+            className="font-semibold text-brand-600 hover:underline"
+          >
+            Back to Sign In
+          </button>
+        }
+      >
+        <ConfirmEmailNotice
+          email={unconfirmedEmail}
+          onConfirmed={() => navigate("/checkout", { replace: true })}
+        />
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout

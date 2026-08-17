@@ -5,19 +5,30 @@ import { Eye, EyeOff, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext";
 import { AuthLayout } from "@/components/auth/AuthLayout";
+import { ConfirmEmailNotice } from "@/components/auth/ConfirmEmailNotice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 
-// New flow: signup is now email + password ONLY. Email confirmation is OFF in
-// Supabase, so signUp returns a live session immediately. Business details are
-// collected AFTER payment on the /onboarding form — not here. On success we send
-// the user straight to /checkout to pay.
+// Signup is email + password ONLY. Business details are collected AFTER payment
+// on the /onboarding form — not here.
+//
+// This page supports BOTH Supabase email-confirmation modes, because signUp()
+// behaves differently in each and only one of them returns a session:
+//
+//   Confirm email OFF -> { user, session }  -> straight to /checkout
+//   Confirm email ON  -> { user, session: null } -> ConfirmEmailNotice
+//
+// The ON path is a SUCCESS (the confirmation email went out), so it must never
+// render as an error.
 export default function SignupPage() {
   const { signUp } = useAuth();
   const [showPw, setShowPw] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  // Non-null once signup succeeded but needs email confirmation — swaps the
+  // form out for the "check your inbox" screen.
+  const [pendingEmail, setPendingEmail] = useState(null);
 
   const {
     register,
@@ -48,14 +59,41 @@ export default function SignupPage() {
       return;
     }
 
-    // Fallback: if confirmation somehow got re-enabled, there's a user but no
-    // session. Tell the user rather than silently stalling.
-    if (result?.user && !result?.session) {
-      toast.error(
-        "Check your email to confirm your account, then sign in. (Disable 'Confirm email' in Supabase for the instant flow.)"
-      );
+    // With email confirmation ON, signUp succeeds and sends the confirmation
+    // email but returns NO session. This is the expected happy path — show the
+    // "check your inbox" screen, never an error.
+    if (result?.user) {
+      // Except: for an email that's ALREADY registered, Supabase deliberately
+      // returns a fake user (empty `identities`) instead of an error so signup
+      // can't be used to probe which emails have accounts. No email is sent in
+      // that case, so showing "check your inbox" would leave them waiting for
+      // something that never arrives. Send them to sign in instead.
+      if (result.user.identities?.length === 0) {
+        toast.error("That email is already registered. Please sign in instead.");
+        return;
+      }
+      setPendingEmail(values.email.trim());
+      return;
     }
+
+    // Neither a session nor a user came back — genuinely unexpected.
+    toast.error("Could not create account. Please try again.");
   };
+
+  // Confirmation pending: replace the form entirely so there's no ambiguity
+  // about whether the signup worked.
+  if (pendingEmail) {
+    return (
+      <AuthLayout>
+        <ConfirmEmailNotice
+          email={pendingEmail}
+          onConfirmed={() => {
+            window.location.href = "/checkout";
+          }}
+        />
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout
