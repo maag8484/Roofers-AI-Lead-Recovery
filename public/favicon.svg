@@ -1,4 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" rx="8" fill="#2563eb" />
-  <path d="M16 7l8 6.5V25h-4.5v-6h-7v6H8V13.5L16 7z" fill="#fff" />
+  <!-- Roof AI Lead Recovery brand mark: navy shield + orange roof + phone.
+       Simplified from /media/roof_ai_lead_recovery_logo_transparent.png to stay
+       legible at 16px: the wordmark, window panes and inner shield outline are
+       dropped, and the three signal waves are reduced to one arc.
+       Colours sampled from the source logo: navy #0F2B54, orange #F97316. -->
+
+  <!-- Shield silhouette, bled to the edges so the mark fills the favicon box. -->
+  <path d="M16 1.2 2.6 6v11.6C2.6 24.4 8.1 29 16 31.3 23.9 29 29.4 24.4 29.4 17.6V6L16 1.2Z"
+        fill="#0F2B54" />
+
+  <!-- Upper white field, inset so navy always frames it (no bleed to the edge). -->
+  <path d="M16 4.6 5.6 8.3v7.9h20.8V8.3L16 4.6Z" fill="#fff" />
+
+  <!-- Orange roofline: a chevron STROKE, not a filled mass, so the pitch of the
+       roof stays readable instead of flooding the white field. -->
+  <path d="M7.6 14.2 16 8.2l8.4 6" stroke="#F97316" stroke-width="1.9"
+        stroke-linecap="round" stroke-linejoin="round" fill="none" />
+
+  <!-- Phone handset on the navy lower field. Deliberately chunky: thin strokes
+       vanish at tab size. -->
+  <path d="M12.1 18.6c-.8.2-1.4 1-1.4 1.9 0 3.6 2.9 6.5 6.5 6.5.9 0 1.7-.6 1.9-1.4l.3-1.3a1.1 1.1 0 0 0-.6-1.2l-1.8-.9a1.1 1.1 0 0 0-1.2.2l-.6.6a7.6 7.6 0 0 1-1.9-1.9l.6-.6a1.1 1.1 0 0 0 .2-1.2l-.9-1.8a1.1 1.1 0 0 0-1.2-.6l-1.3.3Z"
+        fill="#fff" />
+
+  <!-- Signal arcs, concentric on the handset mouthpiece. Two reads as "waves";
+       a lone arc reads as a stray orange mark. -->
+  <path d="M19.1 19.4a3.1 3.1 0 0 1 1.7 1.7" stroke="#F97316" stroke-width="1.7"
+        stroke-linecap="round" fill="none" />
+  <path d="M20.4 17.3a6.2 6.2 0 0 1 3.3 3.3" stroke="#F97316" stroke-width="1.7"
+        stroke-linecap="round" fill="none" />
 </svg>
