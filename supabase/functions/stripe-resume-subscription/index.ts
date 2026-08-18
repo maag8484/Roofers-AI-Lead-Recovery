@@ -1,13 +1,8 @@
 // Resumes a paused Stripe subscription immediately.
-import Stripe from "https://esm.sh/stripe@17?target=deno";
 import { corsHeaders, handleOptions, json } from "../_shared/cors.ts";
 import { getUser, serviceClient } from "../_shared/supabase.ts";
 import { getGoverningSubscription } from "../_shared/subscription.ts";
-
-const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-  apiVersion: "2024-12-18.acacia",
-  httpClient: Stripe.createFetchHttpClient(),
-});
+import { stripe } from "../_shared/stripe.ts";
 
 const ADMIN_EMAIL = Deno.env.get("ADMIN_NOTIFICATION_EMAIL") ?? "support@roofaileadrecovery.com";
 

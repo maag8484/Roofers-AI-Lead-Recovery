@@ -1,16 +1,9 @@
 // Creates a Stripe Checkout Session for the $299/month plan with a 7-day trial.
 // Called from the signup wizard (step 3).
-import Stripe from "https://esm.sh/stripe@17?target=deno";
 import { corsHeaders, handleOptions, json } from "../_shared/cors.ts";
 import { getUser, serviceClient } from "../_shared/supabase.ts";
 import { getGoverningSubscription } from "../_shared/subscription.ts";
-
-const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-  apiVersion: "2024-12-18.acacia",
-  httpClient: Stripe.createFetchHttpClient(),
-});
-
-const PRICE_ID = Deno.env.get("STRIPE_PRICE_ID")!; // $299/month recurring price
+import { stripe, STRIPE_PRICE_ID as PRICE_ID } from "../_shared/stripe.ts";
 
 Deno.serve(async (req) => {
   const pre = handleOptions(req);

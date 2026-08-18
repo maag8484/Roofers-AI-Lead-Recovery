@@ -1,14 +1,9 @@
 // Stripe webhook → keeps the subscriptions table in sync.
 // IMPORTANT: deploy with --no-verify-jwt (Stripe can't send a Supabase JWT).
 //   supabase functions deploy stripe-webhook --no-verify-jwt
-import Stripe from "https://esm.sh/stripe@17?target=deno";
+import type Stripe from "https://esm.sh/stripe@17?target=deno";
 import { serviceClient } from "../_shared/supabase.ts";
-
-const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-  apiVersion: "2024-12-18.acacia",
-  httpClient: Stripe.createFetchHttpClient(),
-});
-const WEBHOOK_SECRET = Deno.env.get("STRIPE_WEBHOOK_SECRET")!;
+import { stripe, STRIPE_WEBHOOK_SECRET as WEBHOOK_SECRET } from "../_shared/stripe.ts";
 
 function toIso(unix?: number | null) {
   return unix ? new Date(unix * 1000).toISOString() : null;
