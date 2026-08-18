@@ -123,12 +123,12 @@ export function Hero() {
               </motion.div>
 
               <h1 className="hv2-display hv2-hero-title hv2-hero-gap text-[var(--text)]">
-                <SplitText text="Recover just one roofing job, and the service can" delay={0.1} />{" "}
+                <SplitText text="Roof AI Lead Recovery helps roofing companies" delay={0.1} />{" "}
                 {/* The accent voice — serif italic inside the grotesque. */}
                 <span className="hv2-accent hv2-grad-text relative inline-block pr-1">
-                  pay for itself
+                  recover missed calls
                 </span>{" "}
-                <SplitText text="many times over" delay={0.84} />
+                <SplitText text="and book more estimates" delay={0.84} />
               </h1>
 
               <motion.p

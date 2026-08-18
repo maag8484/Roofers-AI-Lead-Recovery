@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /dashboard
+Disallow: /account
+Disallow: /billing
+Disallow: /checkout
+Disallow: /onboarding
+Disallow: /login
+Disallow: /signup
+Disallow: /reset-password
+Disallow: /home-v1
+
+Sitemap: https://www.roofaileadrecovery.com/sitemap.xml
