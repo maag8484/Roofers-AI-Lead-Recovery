@@ -286,7 +286,7 @@ function OnboardingChecklist({ status, currentStatus, subscription }) {
     { label: "Subscription active", state: paid ? "done" : "todo" },
     { label: "Business information submitted", state: detailsDone ? "done" : "todo" },
     {
-      label: "Our team is configuring your AI receptionist",
+      label: "Our team is configuring your AI receptionist and will be in touch to schedule a quick onboarding call",
       note: live ? undefined : stageNote,
       state: configState,
     },
@@ -327,7 +327,11 @@ function ChecklistRow({ label, note, state }) {
     );
     textClass = "font-medium text-brand-700";
   } else {
-    icon = <span className="h-6 w-6 rounded-full border-2 border-border bg-white" />;
+    icon = (
+      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-400">
+        <span className="h-2 w-2 rounded-full bg-white" />
+      </span>
+    );
     textClass = "text-muted-foreground";
   }
   return (

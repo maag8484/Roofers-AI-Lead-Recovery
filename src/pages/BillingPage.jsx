@@ -348,7 +348,7 @@ export default function BillingPage() {
                 Need a break or want to cancel? We have options that may work better than cancelling outright.
               </p>
               <div className="flex flex-col gap-2 sm:flex-row">
-                <Button variant="secondary" className="flex-1" onClick={handlePause} disabled={redirecting}>
+                <Button variant="secondary" className="flex-1" onClick={() => setShowCancelFlow(true)} disabled={redirecting}>
                   {redirecting ? <Spinner /> : <><Pause className="h-4 w-4" /> Pause Account</>}
                 </Button>
                 <Button
