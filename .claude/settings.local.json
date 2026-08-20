@@ -29,7 +29,8 @@
       "PowerShell(if \\($?\\) { \"Copied OK\" })",
       "PowerShell(try { $v = supabase --version 2>$null; if \\($v\\) { \"CLI INSTALLED: $v\" } else { \"CLI NOT FOUND\" } } catch { \"CLI NOT FOUND\" }; if \\(Test-Path \"supabase\\\\.temp\\\\project-ref\"\\) { \"LINKED TO: \" + \\(Get-Content \"supabase\\\\.temp\\\\project-ref\" -Raw\\).Trim\\(\\) } else { \"NOT LINKED \\(no supabase/.temp/project-ref\\)\" })",
       "PowerShell(\"---BRANCH---\")",
-      "PowerShell(\"---REMOTE---\")"
+      "PowerShell(\"---REMOTE---\")",
+      "Bash(supabase functions *)"
     ]
   }
 }
