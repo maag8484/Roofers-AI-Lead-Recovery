@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+
+const SMITH_CALENDLY = "https://calendly.com/smith-ai-client-success/account-check-in-with-tony";
 import { useForm } from "react-hook-form";
 import {
   ArrowRight,
@@ -9,6 +11,8 @@ import {
   PhoneForwarded,
   Clock,
   CheckCircle2,
+  X,
+  CalendarDays,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -35,7 +39,7 @@ const CONVERSION_OPTIONS = [
   {
     value: "scheduled_appointment",
     label: "Schedule appointment",
-    hint: "Book the estimate on your calendar. Requires a scheduling link.",
+    hint: "Book the estimate on your calendar. Our team sets this up for you.",
   },
   {
     value: "warm_transfer",
@@ -69,6 +73,7 @@ export default function OnboardingPage() {
   const [subscription, setSubscription] = useState(null);
   const [hydrated, setHydrated] = useState(false);
   const [step, setStep] = useState(1); // 1..TOTAL_STEPS
+  const [showCalendly, setShowCalendly] = useState(false);
 
   const {
     register,
@@ -102,8 +107,9 @@ export default function OnboardingPage() {
   const fieldsForStep = (n) => {
     const base = [...STEPS[n - 1].fields];
     if (n === 3) {
-      if (conversion === "scheduled_appointment") base.push("calendly_link");
-      else if (conversion === "warm_transfer") base.push("transfer_number");
+      // calendly_link removed — Smith.ai handles scheduling via their own link.
+      // Only warm_transfer needs an extra field (the number to transfer to).
+      if (conversion === "warm_transfer") base.push("transfer_number");
     }
     return base;
   };
@@ -280,14 +286,64 @@ export default function OnboardingPage() {
       /* non-fatal */
     }
     await refreshProfile();
-    toast.success("Thanks! One last step — schedule your onboarding call with our team.");
-    // Redirect to Smith.ai Calendly to schedule the onboarding call, then to dashboard.
-    window.location.href =
-      "https://calendly.com/smith-ai-client-success/account-check-in-with-tony";
+    toast.success("Details saved! Schedule your onboarding call to get started.");
+    // Show the Calendly scheduling modal. Closing it takes the user to /dashboard.
+    setShowCalendly(true);
   };
 
   return (
     <div className="min-h-screen bg-secondary/30">
+      {/* Calendly scheduling modal — shown after form submit. Closing goes to dashboard. */}
+      {showCalendly && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="relative flex w-full max-w-2xl flex-col rounded-2xl bg-white shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+              <div className="flex items-center gap-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50">
+                  <CalendarDays className="h-5 w-5 text-brand-600" />
+                </span>
+                <div>
+                  <p className="font-bold text-ink">Schedule your onboarding call</p>
+                  <p className="text-xs text-muted-foreground">
+                    Our Smith.ai team will walk you through everything
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => { setShowCalendly(false); navigate("/dashboard", { replace: true }); }}
+                className="rounded-lg p-1.5 text-muted-foreground hover:bg-secondary"
+                aria-label="Skip for now"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            {/* Body */}
+            <div className="space-y-4 p-6">
+              <p className="text-sm text-muted-foreground">
+                Pick a time that works for you. This call lets our team collect the details
+                needed to configure your AI receptionist quickly.
+              </p>
+              <a
+                href={SMITH_CALENDLY}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-6 py-3.5 text-base font-semibold text-white shadow hover:bg-brand-700 transition-colors"
+              >
+                <CalendarDays className="h-5 w-5" />
+                Open Calendly to schedule
+              </a>
+              <button
+                onClick={() => { setShowCalendly(false); navigate("/dashboard", { replace: true }); }}
+                className="w-full text-center text-sm text-muted-foreground underline-offset-2 hover:underline"
+              >
+                Skip for now — I'll schedule later from the dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="border-b border-border bg-white">
         <div className="container flex h-16 items-center justify-between">
           <Link to="/" aria-label="Roof AI Lead Recovery home">
@@ -451,14 +507,10 @@ export default function OnboardingPage() {
 
             {/* Conditional input based on the chosen conversion goal. */}
             {conversion === "scheduled_appointment" && (
-              <Field
-                label="Scheduling link (Calendly or your system)"
-                name="calendly_link"
-                placeholder="https://calendly.com/your-company"
-                register={register}
-                rules={{ required: "A scheduling link is required for this option" }}
-                error={errors.calendly_link}
-              />
+              <p className="rounded-lg border border-dashed border-brand-200 bg-brand-50 px-3.5 py-3 text-sm text-brand-700">
+                Our Smith.ai team will use your business details to set up appointment scheduling
+                on your behalf — no link needed from you.
+              </p>
             )}
             {conversion === "warm_transfer" && (
               <Field

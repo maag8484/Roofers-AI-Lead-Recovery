@@ -10,6 +10,7 @@ import {
   HelpCircle,
   UserCircle,
   Loader2,
+  CalendarDays,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
@@ -258,6 +259,35 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Onboarding call card — visible until the account goes live */}
+        {!isLive && (
+          <Card className="border-brand-200 bg-brand-50/40">
+            <CardContent className="flex flex-col gap-3 p-6 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100">
+                  <CalendarDays className="h-5 w-5 text-brand-600" />
+                </span>
+                <div>
+                  <p className="font-bold text-ink">Schedule your onboarding call</p>
+                  <p className="text-sm text-muted-foreground">
+                    Book a call with our Smith.ai team so they can finish configuring your AI
+                    receptionist.
+                  </p>
+                </div>
+              </div>
+              <a
+                href="https://calendly.com/smith-ai-client-success/account-check-in-with-tony"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-brand-700 transition-colors"
+              >
+                <CalendarDays className="h-4 w-4" />
+                Schedule call
+              </a>
+            </CardContent>
+          </Card>
+        )}
       </main>
     </div>
   );
