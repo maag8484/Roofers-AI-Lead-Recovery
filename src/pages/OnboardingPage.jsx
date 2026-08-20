@@ -280,8 +280,10 @@ export default function OnboardingPage() {
       /* non-fatal */
     }
     await refreshProfile();
-    toast.success("Thanks! Our team is taking it from here.");
-    navigate("/dashboard", { replace: true });
+    toast.success("Thanks! One last step — schedule your onboarding call with our team.");
+    // Redirect to Smith.ai Calendly to schedule the onboarding call, then to dashboard.
+    window.location.href =
+      "https://calendly.com/smith-ai-client-success/account-check-in-with-tony";
   };
 
   return (
