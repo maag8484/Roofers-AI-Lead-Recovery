@@ -10,7 +10,7 @@ export function AdminShell() {
     <div className="flex min-h-screen bg-secondary/30">
       <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} />
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col lg:pl-64">
         <Topbar onOpenMenu={() => setMenuOpen(true)} />
         <main className="flex-1 p-4 lg:p-6">
           <div className="mx-auto max-w-7xl">

@@ -55,12 +55,14 @@ export function Sidebar({ open, onClose }) {
   return (
     <>
       {/* Desktop: permanent rail */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-white lg:flex">
-        <div className="flex h-16 items-center border-b border-border px-5">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-64 shrink-0 flex-col border-r border-border bg-white lg:flex">
+        <div className="flex h-16 shrink-0 items-center border-b border-border px-5">
           <Logo />
         </div>
-        <NavItems />
-        <div className="border-t border-border px-5 py-3 text-xs text-muted-foreground">
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <NavItems />
+        </div>
+        <div className="shrink-0 border-t border-border px-5 py-3 text-xs text-muted-foreground">
           Admin console
         </div>
       </aside>

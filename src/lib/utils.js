@@ -47,3 +47,26 @@ export function formatDateTime(iso) {
     return iso;
   }
 }
+
+/** Compact date/time for dense panels, e.g. "Aug 20, 6:00 PM". */
+export function formatDateTimeShort(iso) {
+  if (!iso) return "—";
+  try {
+    return new Date(iso).toLocaleString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  } catch {
+    return iso;
+  }
+}
+
+/** Initials for an avatar chip, e.g. "Maag's Roof Business" -> "MR". */
+export function initials(name) {
+  if (!name) return "?";
+  const parts = String(name).trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "?";
+  return (parts[0][0] + (parts[1]?.[0] ?? "")).toUpperCase();
+}

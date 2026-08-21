@@ -1,44 +1,49 @@
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, ShieldCheck } from "lucide-react";
 import { useRecentErrors } from "@/hooks/admin/useRecentErrors";
 import { PanelShell, truncate } from "./PanelShell";
-import { formatDateTime } from "@/lib/utils";
-
-const TH = "px-5 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-muted-foreground";
-const TD = "px-5 py-2.5 text-sm";
+import { formatDateTimeShort } from "@/lib/utils";
 
 export function RecentErrorsPanel() {
   const { data, loading, error } = useRecentErrors();
+
   return (
     <PanelShell
       title="Recent Errors"
+      icon={AlertTriangle}
       loading={loading}
       error={error}
       empty={data.length === 0}
-      emptyIcon={AlertTriangle}
-      emptyText="No errors recorded."
+      emptyIcon={ShieldCheck}
+      emptyText="No errors recorded — everything looks healthy."
     >
-      <table className="w-full">
-        <thead className="border-b border-border">
-          <tr>
-            <th className={TH}>When</th>
-            <th className={TH}>Action</th>
-            <th className={TH}>Customer</th>
-            <th className={TH}>Message</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((r) => (
-            <tr key={r.id} className="border-b border-border/60 last:border-0 hover:bg-secondary/40">
-              <td className={TD + " text-muted-foreground"}>{formatDateTime(r.created_at)}</td>
-              <td className={TD + " font-medium text-ink"}>{r.action}</td>
-              <td className={TD + " text-muted-foreground"}>{r.customer || "—"}</td>
-              <td className={TD + " text-red-600"} title={r.message}>
-                {truncate(r.message, 60)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {data.map((r) => (
+        <div
+          key={r.id}
+          className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-secondary/50"
+        >
+          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-600">
+            <AlertTriangle className="h-4 w-4" />
+          </span>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-baseline gap-2">
+              {/* Action codes are long SCREAMING_SNAKE strings — let them break. */}
+              <p className="min-w-0 flex-1 break-all font-mono text-xs font-semibold text-ink">
+                {r.action}
+              </p>
+              <span className="shrink-0 whitespace-nowrap text-xs text-muted-foreground">
+                {formatDateTimeShort(r.created_at)}
+              </span>
+            </div>
+            <p className="mt-1 text-sm text-red-600" title={r.message}>
+              {truncate(r.message, 120)}
+            </p>
+            {r.customer && (
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">{r.customer}</p>
+            )}
+          </div>
+        </div>
+      ))}
     </PanelShell>
   );
 }
