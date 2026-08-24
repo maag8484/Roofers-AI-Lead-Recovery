@@ -3,6 +3,7 @@ import {
   Database,
   Search,
   Mail,
+  MailX,
   MessageSquare,
   Reply,
   Ban,
@@ -34,6 +35,7 @@ const OUTREACH_OPTIONS = [
   { value: "no_outreach", label: "No outreach yet" },
   { value: "sms_sent", label: "SMS sent" },
   { value: "email_sent", label: "Email sent" },
+  { value: "no_email", label: "No email on file" },
   { value: "replied", label: "Replied" },
   { value: "opted_out", label: "Opted out" },
 ];
@@ -75,18 +77,27 @@ function StatusPill({ status }) {
   );
 }
 
-// Sequence badge: day1 / day2 / day4 progress
+// Sequence badge: day1 / day2 / day4 progress.
+//
+// A scraped lead often has no owner email — Outscraper found the business but
+// not a contact address. The email legs of the sequence can never run for those
+// rows, so showing greyed-out "D1/D2/D4 Email" chips reads as "not sent yet"
+// when the truth is "not sendable at all". Those rows drop the email chips
+// entirely and get a single "No email" tag instead.
 function OutreachSequence({ row }) {
+  const hasEmail = Boolean((row.owner_email || "").trim());
+
   const steps = [
     { label: "D1 SMS", done: row.sms_sent },
-    { label: "D1 Email", done: row.email_sent },
+    { label: "D1 Email", done: row.email_sent, email: true },
     { label: "D2 SMS", done: row.day2_sms_sent },
-    { label: "D2 Email", done: row.day2_email_sent },
+    { label: "D2 Email", done: row.day2_email_sent, email: true },
     { label: "D4 SMS", done: row.day4_sms_sent },
-    { label: "D4 Email", done: row.day4_email_sent },
-  ];
+    { label: "D4 Email", done: row.day4_email_sent, email: true },
+  ].filter((s) => hasEmail || !s.email);
+
   return (
-    <div className="flex flex-wrap gap-1">
+    <div className="flex flex-wrap items-center gap-1">
       {steps.map((s) => (
         <span
           key={s.label}
@@ -100,6 +111,15 @@ function OutreachSequence({ row }) {
           {s.label}
         </span>
       ))}
+      {!hasEmail && (
+        <span
+          className="inline-flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-700"
+          title="No owner email on this lead — the email steps can't run"
+        >
+          <MailX className="h-3 w-3" />
+          No email
+        </span>
+      )}
     </div>
   );
 }
@@ -341,7 +361,9 @@ export default function ScrapedLeadsPage() {
                                 value={
                                   row.email_sent
                                     ? `Sent ${fmt(row.email_sent_at)}`
-                                    : "Not sent"
+                                    : row.owner_email
+                                      ? "Not sent"
+                                      : "No email on file"
                                 }
                               />
                               <Detail
@@ -357,7 +379,9 @@ export default function ScrapedLeadsPage() {
                                 value={
                                   row.day2_email_sent
                                     ? `Sent ${fmt(row.day2_email_sent_at)}`
-                                    : "Not sent"
+                                    : row.owner_email
+                                      ? "Not sent"
+                                      : "No email on file"
                                 }
                               />
                               <Detail
@@ -373,7 +397,9 @@ export default function ScrapedLeadsPage() {
                                 value={
                                   row.day4_email_sent
                                     ? `Sent ${fmt(row.day4_email_sent_at)}`
-                                    : "Not sent"
+                                    : row.owner_email
+                                      ? "Not sent"
+                                      : "No email on file"
                                 }
                               />
                               {row.reply_received && (

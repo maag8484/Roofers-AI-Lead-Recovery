@@ -52,6 +52,10 @@ export function useScrapedLeads({ page = 1, search = "", statusFilter = "", outr
       q = q.eq("sms_sent", true);
     } else if (outreachFilter === "email_sent") {
       q = q.eq("email_sent", true);
+    } else if (outreachFilter === "no_email") {
+      // Outscraper found the business but no contact address — the email legs
+      // of the sequence can never run for these.
+      q = q.or("owner_email.is.null,owner_email.eq.");
     } else if (outreachFilter === "no_outreach") {
       q = q.eq("sms_sent", false).eq("email_sent", false);
     }
