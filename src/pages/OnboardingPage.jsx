@@ -95,6 +95,12 @@ const STEPS = [
 const STEP_LABELS = STEPS.map((s) => s.title);
 const TOTAL_STEPS = STEPS.length;
 
+// Columns the form hydrates from. The 0019 ones (phone_provider, employees, …)
+// are selected optimistically with a fallback — see the hydrate effect.
+const HYDRATE_COLS_BASE =
+  "company_name, address, business_phone, phone_country, contact_name, contact_email, service_areas, services, conversion_preference, calendly_link, transfer_number, business_hours, after_hours_preference";
+const HYDRATE_COLS = `${HYDRATE_COLS_BASE}, phone_provider, phone_provider_other, employees, summary_emails`;
+
 const EMAIL_RE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
 
 // "a@x.com, b@y.com" -> ["a@x.com", "b@y.com"]. Also splits on newlines and
@@ -220,13 +226,22 @@ export default function OnboardingPage() {
     let cancelled = false;
 
     (async () => {
-      const { data: row } = await supabase
+      let { data: row, error: rowError } = await supabase
         .from("roofing_companies")
-        .select(
-          "company_name, address, business_phone, phone_country, phone_provider, phone_provider_other, contact_name, contact_email, service_areas, services, conversion_preference, calendly_link, transfer_number, employees, summary_emails, business_hours, after_hours_preference"
-        )
+        .select(HYDRATE_COLS)
         .eq("user_id", user.id)
         .maybeSingle();
+
+      // Migration 0019 not applied yet → PostgREST 400s the whole select, which
+      // would wipe the form instead of just omitting the new fields. Retry with
+      // the pre-0019 columns so the rest of the draft still hydrates.
+      if (rowError && /does not exist/i.test(rowError.message ?? "")) {
+        ({ data: row } = await supabase
+          .from("roofing_companies")
+          .select(HYDRATE_COLS_BASE)
+          .eq("user_id", user.id)
+          .maybeSingle());
+      }
       if (cancelled) return;
 
       let draft = null;

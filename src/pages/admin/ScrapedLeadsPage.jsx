@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { Fragment, useState, useCallback } from "react";
 import {
   Database,
   Search,
@@ -222,7 +222,7 @@ export default function ScrapedLeadsPage() {
             <select
               value={statusFilter}
               onChange={handleFilterChange(setStatusFilter)}
-              className="h-9 rounded-lg border border-input bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="h-9 min-w-0 flex-1 rounded-lg border border-input bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 sm:flex-none"
             >
               {STATUS_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -234,7 +234,7 @@ export default function ScrapedLeadsPage() {
             <select
               value={outreachFilter}
               onChange={handleFilterChange(setOutreachFilter)}
-              className="h-9 rounded-lg border border-input bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="h-9 min-w-0 flex-1 rounded-lg border border-input bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 sm:flex-none"
             >
               {OUTREACH_OPTIONS.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -245,7 +245,7 @@ export default function ScrapedLeadsPage() {
 
             <button
               type="submit"
-              className="h-9 rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700 transition-colors"
+              className="h-9 w-full rounded-lg bg-brand-600 px-4 text-sm font-semibold text-white hover:bg-brand-700 transition-colors sm:w-auto"
             >
               Search
             </button>
@@ -273,54 +273,64 @@ export default function ScrapedLeadsPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border bg-secondary/40">
-                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Company</th>
-                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">City</th>
-                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Owner</th>
-                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Status</th>
-                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Outreach sequence</th>
-                    <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Reply</th>
-                    <th className="px-4 py-3 text-center font-semibold text-muted-foreground">Opt-out</th>
-                    <th className="px-4 py-3 text-left font-semibold text-muted-foreground">Scraped</th>
-                    <th className="px-4 py-3" />
+                    <th className="px-3 py-3 text-left font-semibold text-muted-foreground sm:px-4">Company</th>
+                    <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground md:table-cell">City</th>
+                    <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground lg:table-cell">Owner</th>
+                    <th className="px-3 py-3 text-left font-semibold text-muted-foreground sm:px-4">Status</th>
+                    <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground md:table-cell">Outreach sequence</th>
+                    <th className="hidden px-4 py-3 text-center font-semibold text-muted-foreground lg:table-cell">Reply</th>
+                    <th className="hidden px-4 py-3 text-center font-semibold text-muted-foreground lg:table-cell">Opt-out</th>
+                    <th className="hidden px-4 py-3 text-left font-semibold text-muted-foreground xl:table-cell">Scraped</th>
+                    <th className="px-2 py-3 sm:px-4" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {data.map((row) => (
-                    <>
+                    <Fragment key={row.id}>
                       <tr
-                        key={row.id}
                         className="hover:bg-secondary/30 cursor-pointer transition-colors"
                         onClick={() => setExpanded(expanded === row.id ? null : row.id)}
                       >
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3 sm:px-4">
                           <p className="font-medium text-ink">{row.company_name}</p>
                           {row.phone && (
                             <p className="text-xs text-muted-foreground">{row.phone}</p>
                           )}
+                          {/* Columns hidden at this breakpoint fold into the
+                              company cell so a narrow screen still identifies
+                              the lead without horizontal scrolling. */}
+                          <p className="text-xs text-muted-foreground md:hidden">
+                            {row.city || "—"}
+                          </p>
+                          <div className="mt-1.5 md:hidden">
+                            <OutreachSequence row={row} />
+                          </div>
                         </td>
-                        <td className="px-4 py-3 text-muted-foreground">{row.city || "—"}</td>
-                        <td className="px-4 py-3">
+                        <td className="hidden px-4 py-3 text-muted-foreground md:table-cell">
+                          {row.city || "—"}
+                        </td>
+                        <td className="hidden px-4 py-3 lg:table-cell">
                           <p className="text-ink">{row.owner_name || "—"}</p>
                           {row.owner_email && (
                             <p className="text-xs text-muted-foreground">{row.owner_email}</p>
                           )}
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="px-3 py-3 sm:px-4">
                           <StatusPill status={row.status} />
                         </td>
-                        <td className="px-4 py-3">
+                        <td className="hidden px-4 py-3 md:table-cell">
                           <OutreachSequence row={row} />
                         </td>
-                        <td className="px-4 py-3 text-center">
+                        <td className="hidden px-4 py-3 text-center lg:table-cell">
                           <BoolIcon value={row.reply_received} />
                         </td>
-                        <td className="px-4 py-3 text-center">
+                        <td className="hidden px-4 py-3 text-center lg:table-cell">
                           <BoolIcon value={row.opted_out} />
                         </td>
-                        <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
+                        <td className="hidden px-4 py-3 text-xs text-muted-foreground whitespace-nowrap xl:table-cell">
                           {fmt(row.sourced_at || row.created_at)}
                         </td>
-                        <td className="px-4 py-3 text-right">
+                        <td className="px-2 py-3 text-right sm:px-4">
                           <span className="text-xs text-muted-foreground">
                             {expanded === row.id ? "▲" : "▼"}
                           </span>
@@ -329,9 +339,9 @@ export default function ScrapedLeadsPage() {
 
                       {/* Expanded detail row */}
                       {expanded === row.id && (
-                        <tr key={row.id + "_detail"} className="bg-secondary/20">
-                          <td colSpan={9} className="px-6 py-4">
-                            <div className="grid grid-cols-2 gap-x-8 gap-y-2 text-sm sm:grid-cols-3 lg:grid-cols-4">
+                        <tr className="bg-secondary/20">
+                          <td colSpan={9} className="px-4 py-4 sm:px-6">
+                            <div className="grid grid-cols-1 gap-x-8 gap-y-2 text-sm sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                               <Detail label="Address" value={row.address} />
                               <Detail label="Website" value={row.website} link />
                               <Detail label="Source" value={row.source} />
@@ -418,7 +428,7 @@ export default function ScrapedLeadsPage() {
                           </td>
                         </tr>
                       )}
-                    </>
+                    </Fragment>
                   ))}
                 </tbody>
               </table>
@@ -429,7 +439,7 @@ export default function ScrapedLeadsPage() {
 
       {/* Pagination */}
       {!loading && total > pageSize && (
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <div className="flex flex-col items-center gap-3 text-sm text-muted-foreground sm:flex-row sm:justify-between">
           <span>
             Showing {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} of{" "}
             {total.toLocaleString()} leads

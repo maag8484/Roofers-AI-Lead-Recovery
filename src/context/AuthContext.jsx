@@ -16,8 +16,16 @@ export function AuthProvider({ children }) {
   // `status` is the legacy 4-value column the customer UI renders; `current_status`
   // is the admin console's 13-value lifecycle. 0016 keeps the two in sync, and we
   // pull both so the portal can show the precise stage the admin actually set.
-  const COMPANY_COLS =
-    "id, company_name, business_phone, phone_country, phone_provider, phone_provider_other, website, address, contact_name, contact_email, service_area, service_areas, services, calendly_link, transfer_number, conversion_preference, employees, summary_emails, business_hours, after_hours_preference, monthly_leads_segment, setup_step, is_live, status, current_status, details_submitted";
+  const COMPANY_COLS_BASE =
+    "id, company_name, business_phone, phone_country, website, address, contact_name, contact_email, service_area, service_areas, services, calendly_link, transfer_number, conversion_preference, business_hours, after_hours_preference, monthly_leads_segment, setup_step, is_live, status, current_status, details_submitted";
+
+  // Columns added by migration 0019 (Smith.ai build fields). PostgREST rejects
+  // the WHOLE select with a 400 if any one column is unknown, so until 0019 has
+  // been run these would null out the entire profile — breaking the dashboard
+  // gate and status display, not just the new fields. We select them
+  // optimistically and fall back to the base list on "does not exist".
+  const COMPANY_COLS_0019 = "phone_provider, phone_provider_other, employees, summary_emails";
+  const COMPANY_COLS = `${COMPANY_COLS_BASE}, ${COMPANY_COLS_0019}`;
 
   const loadProfile = useCallback(async (userId) => {
     if (!userId) {
@@ -28,12 +36,27 @@ export function AuthProvider({ children }) {
     }
     // Pull the user's company + setup status, the profiles row (for the
     // onboarding flag), and the admin flag together.
-    const [{ data, error }, profileRes, adminRes] = await Promise.all([
+    let [{ data, error }, profileRes, adminRes] = await Promise.all([
       supabase.from("roofing_companies").select(COMPANY_COLS).eq("user_id", userId).maybeSingle(),
       supabase.from("profiles").select("onboarding_completed").eq("id", userId).maybeSingle(),
       // is_admin() is a SECURITY DEFINER RPC; returns false for non-admins.
       supabase.rpc("is_admin"),
     ]);
+
+    // Migration 0019 not applied yet → retry with only the pre-0019 columns so
+    // the rest of the app keeps working instead of seeing a null profile.
+    if (error && /does not exist/i.test(error.message ?? "")) {
+      console.warn(
+        "[auth] roofing_companies is missing the 0019 columns — run " +
+          "supabase/migrations/0019_smith_build_fields.up.sql. Loading without them."
+      );
+      ({ data, error } = await supabase
+        .from("roofing_companies")
+        .select(COMPANY_COLS_BASE)
+        .eq("user_id", userId)
+        .maybeSingle());
+    }
+
     if (error) {
       console.error("[auth] failed to load profile", error.message);
     }
