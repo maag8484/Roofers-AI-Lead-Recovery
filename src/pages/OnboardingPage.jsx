@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 const SMITH_CALENDLY = "https://calendly.com/smith-ai-client-success/account-check-in-with-tony";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import {
   ArrowRight,
   ArrowLeft,
@@ -13,6 +13,9 @@ import {
   CheckCircle2,
   X,
   CalendarDays,
+  Users,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -26,8 +29,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectValue,
+  SelectGroup,
+  SelectLabel,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { PhoneField } from "@/components/ui/phone-field";
 import { ProgressStepper } from "@/components/onboarding/ProgressStepper";
+import {
+  PHONE_PROVIDER_GROUPS,
+  PHONE_PROVIDER_OTHER,
+} from "@/config/phoneProviders";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { cn } from "@/lib/utils";
 
@@ -56,13 +72,49 @@ const CONVERSION_OPTIONS = [
 // Wizard steps. `fields` drives per-step validation (trigger before advancing);
 // the conversion-goal conditional field is added dynamically in fieldsForStep().
 const STEPS = [
-  { title: "Business Information", icon: Building2, fields: ["company_name", "address", "business_phone", "contact_name", "contact_email"] },
+  {
+    title: "Business Information",
+    icon: Building2,
+    fields: [
+      "company_name",
+      "address",
+      "business_phone",
+      "phone_provider",
+      "contact_name",
+      "contact_email",
+    ],
+  },
   { title: "Service Details", icon: Wrench, fields: ["service_areas", "services"] },
   { title: "Call Handling", icon: PhoneForwarded, fields: ["conversion_preference"] },
+  // The employee directory Smith.ai builds the AI receptionist's transfer tree
+  // from: who's on the team, the line each one is reached on, and which
+  // addresses get the call summaries.
+  { title: "Your Team", icon: Users, fields: ["employees", "summary_emails"] },
   { title: "Hours of Operation", icon: Clock, fields: ["business_hours", "after_hours_preference"] },
 ];
 const STEP_LABELS = STEPS.map((s) => s.title);
 const TOTAL_STEPS = STEPS.length;
+
+const EMAIL_RE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
+
+// "a@x.com, b@y.com" -> ["a@x.com", "b@y.com"]. Also splits on newlines and
+// semicolons so a pasted list works however it was formatted.
+const parseEmailList = (raw) =>
+  (raw || "")
+    .split(/[,;\n]/)
+    .map((e) => e.trim())
+    .filter(Boolean);
+
+// Drop rows the user left completely blank (the directory always renders at
+// least one empty row) and trim what's left before it hits jsonb.
+const serializeEmployees = (rows) =>
+  (rows || [])
+    .map((r) => ({
+      name: (r?.name || "").trim(),
+      transfer_line: (r?.transfer_line || "").trim(),
+      email: (r?.email || "").trim(),
+    }))
+    .filter((r) => r.name || r.transfer_line || r.email);
 
 export default function OnboardingPage() {
   const { user, refreshProfile } = useAuth();
@@ -77,15 +129,34 @@ export default function OnboardingPage() {
 
   const {
     register,
+    control,
     handleSubmit,
     setValue,
     watch,
     reset,
     trigger,
     formState: { errors },
-  } = useForm({ defaultValues: { conversion_preference: "scheduled_appointment" }, mode: "onTouched" });
+  } = useForm({
+    defaultValues: {
+      conversion_preference: "scheduled_appointment",
+      // One blank row so the directory renders an editable line immediately
+      // instead of an empty box the user has to discover an "Add" button for.
+      employees: [{ name: "", transfer_line: "", email: "" }],
+      summary_emails: "",
+    },
+    mode: "onTouched",
+  });
 
   const conversion = watch("conversion_preference");
+  const phoneProvider = watch("phone_provider");
+
+  // Employee directory rows (name / transfer line / email), stored as a jsonb
+  // array on roofing_companies.
+  const {
+    fields: employeeFields,
+    append: appendEmployee,
+    remove: removeEmployee,
+  } = useFieldArray({ control, name: "employees" });
 
   // The phone + country are controlled by <PhoneField> via setValue, but we
   // register them so RHF tracks/validates them (trigger works in step 1) and
@@ -98,6 +169,10 @@ export default function OnboardingPage() {
   });
   register("phone_country");
 
+  // The provider <Select> is controlled through setValue, so register it here to
+  // keep RHF validating it as part of step 1.
+  register("phone_provider", { required: "Select your phone provider" });
+
   // Per-user keys so two accounts on the same browser don't collide.
   const draftKey = user ? `onboarding_draft_${user.id}` : null;
   const stepKey = user ? `onboarding_step_${user.id}` : null;
@@ -106,6 +181,7 @@ export default function OnboardingPage() {
   // conditional field (scheduling link / transfer number).
   const fieldsForStep = (n) => {
     const base = [...STEPS[n - 1].fields];
+    if (n === 1 && phoneProvider === PHONE_PROVIDER_OTHER) base.push("phone_provider_other");
     if (n === 3) {
       // calendly_link removed — Smith.ai handles scheduling via their own link.
       // Only warm_transfer needs an extra field (the number to transfer to).
@@ -147,7 +223,7 @@ export default function OnboardingPage() {
       const { data: row } = await supabase
         .from("roofing_companies")
         .select(
-          "company_name, address, business_phone, phone_country, contact_name, contact_email, service_areas, services, conversion_preference, calendly_link, transfer_number, business_hours, after_hours_preference"
+          "company_name, address, business_phone, phone_country, phone_provider, phone_provider_other, contact_name, contact_email, service_areas, services, conversion_preference, calendly_link, transfer_number, employees, summary_emails, business_hours, after_hours_preference"
         )
         .eq("user_id", user.id)
         .maybeSingle();
@@ -164,6 +240,21 @@ export default function OnboardingPage() {
       const merged = { conversion_preference: "scheduled_appointment" };
       if (row) Object.assign(merged, row);
       if (draft) Object.assign(merged, draft);
+
+      // The DB stores employees as jsonb[] and summary_emails as text[]; the
+      // form wants an always-non-empty row array and a comma-separated string.
+      merged.employees =
+        Array.isArray(merged.employees) && merged.employees.length
+          ? merged.employees.map((e) => ({
+              name: e?.name ?? "",
+              transfer_line: e?.transfer_line ?? "",
+              email: e?.email ?? "",
+            }))
+          : [{ name: "", transfer_line: "", email: "" }];
+      merged.summary_emails = Array.isArray(merged.summary_emails)
+        ? merged.summary_emails.join(", ")
+        : merged.summary_emails || "";
+
       reset(merged);
 
       // Restore the step the user was on before the refresh.
@@ -251,6 +342,13 @@ export default function OnboardingPage() {
         address: values.address,
         business_phone: values.business_phone,
         phone_country: values.phone_country || null,
+        phone_provider: values.phone_provider || null,
+        // Only meaningful for the "Other" choice — cleared otherwise so a stale
+        // free-text value can't contradict a later concrete selection.
+        phone_provider_other:
+          values.phone_provider === PHONE_PROVIDER_OTHER
+            ? values.phone_provider_other || null
+            : null,
         contact_name: values.contact_name,
         contact_email: values.contact_email,
         service_areas: values.service_areas,
@@ -264,6 +362,8 @@ export default function OnboardingPage() {
           values.conversion_preference === "warm_transfer"
             ? values.transfer_number || null
             : null,
+        employees: serializeEmployees(values.employees),
+        summary_emails: parseEmailList(values.summary_emails),
         business_hours: values.business_hours,
         after_hours_preference: values.after_hours_preference,
         details_submitted: true,
@@ -423,6 +523,59 @@ export default function OnboardingPage() {
               hint="This will forward to Smith.ai."
               error={errors.business_phone?.message}
             />
+
+            {/* Who carries the business line. Smith.ai's forwarding setup differs
+                per provider, so this is required before the build can start. */}
+            <div className="space-y-1.5">
+              <Label htmlFor="phone_provider">Phone provider</Label>
+              <Select
+                value={phoneProvider || ""}
+                onValueChange={(v) =>
+                  setValue("phone_provider", v, { shouldValidate: true, shouldDirty: true })
+                }
+              >
+                <SelectTrigger id="phone_provider">
+                  <SelectValue placeholder="Select your phone or VoIP provider" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PHONE_PROVIDER_GROUPS.map((group) => (
+                    <SelectGroup key={group.label}>
+                      <SelectLabel>{group.label}</SelectLabel>
+                      {group.options.map((name) => (
+                        <SelectItem key={name} value={name}>
+                          {name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  ))}
+                  <SelectGroup>
+                    <SelectItem value={PHONE_PROVIDER_OTHER}>
+                      Other (not listed)
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {!errors.phone_provider && (
+                <p className="text-xs text-muted-foreground">
+                  Who your business line is with. We use this to set up call forwarding.
+                </p>
+              )}
+              {errors.phone_provider && (
+                <p className="text-xs text-destructive">{errors.phone_provider.message}</p>
+              )}
+            </div>
+
+            {phoneProvider === PHONE_PROVIDER_OTHER && (
+              <Field
+                label="Provider name"
+                name="phone_provider_other"
+                placeholder="e.g. Local Telecom Co."
+                register={register}
+                rules={{ required: "Tell us who your provider is" }}
+                error={errors.phone_provider_other}
+              />
+            )}
+
             <div className="grid gap-4 sm:grid-cols-2">
               <Field
                 label="Primary contact name"
@@ -531,8 +684,136 @@ export default function OnboardingPage() {
           </Section>
           </div>
 
-          {/* ---- Step 4: Hours of Operation ---- */}
+          {/* ---- Step 4: Your Team (employee transfer directory) ---- */}
           <div className={step === 4 ? "" : "hidden"}>
+          <Section icon={Users} title="Your Team">
+            <div className="space-y-3">
+              <div>
+                <Label>Employee directory</Label>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Who callers can be transferred to. Add a line for each person — the
+                  AI receptionist uses this as its transfer directory.
+                </p>
+              </div>
+
+              {employeeFields.map((field, index) => (
+                <div
+                  key={field.id}
+                  className="rounded-lg border border-border bg-secondary/30 p-3.5"
+                >
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Employee {index + 1}
+                    </span>
+                    {employeeFields.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeEmployee(index)}
+                        className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-muted-foreground hover:bg-white hover:text-destructive"
+                        aria-label={`Remove employee ${index + 1}`}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Remove
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`employees.${index}.name`} className="text-xs">
+                        Name
+                      </Label>
+                      <Input
+                        id={`employees.${index}.name`}
+                        placeholder="Jane Doe"
+                        {...register(`employees.${index}.name`, {
+                          // Required only once the row has any other content —
+                          // a fully blank row is dropped on submit.
+                          validate: (v, all) => {
+                            const row = all.employees?.[index] || {};
+                            const touched = row.transfer_line || row.email;
+                            if (touched && !(v || "").trim()) return "Name is required";
+                            return true;
+                          },
+                        })}
+                      />
+                      {errors.employees?.[index]?.name && (
+                        <p className="text-xs text-destructive">
+                          {errors.employees[index].name.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`employees.${index}.transfer_line`} className="text-xs">
+                        Transfer line
+                      </Label>
+                      <Input
+                        id={`employees.${index}.transfer_line`}
+                        type="tel"
+                        placeholder="(555) 123-4567"
+                        {...register(`employees.${index}.transfer_line`)}
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label htmlFor={`employees.${index}.email`} className="text-xs">
+                        Email
+                      </Label>
+                      <Input
+                        id={`employees.${index}.email`}
+                        type="email"
+                        placeholder="jane@apexroofing.com"
+                        {...register(`employees.${index}.email`, {
+                          validate: (v) =>
+                            !(v || "").trim() || EMAIL_RE.test(v.trim())
+                              ? true
+                              : "Enter a valid email",
+                        })}
+                      />
+                      {errors.employees?.[index]?.email && (
+                        <p className="text-xs text-destructive">
+                          {errors.employees[index].email.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <button
+                type="button"
+                onClick={() => appendEmployee({ name: "", transfer_line: "", email: "" })}
+                className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-border px-3.5 py-2.5 text-sm font-medium text-brand-600 hover:bg-brand-50"
+              >
+                <Plus className="h-4 w-4" />
+                Add another employee
+              </button>
+            </div>
+
+            <TextAreaField
+              label="Summary email recipients"
+              name="summary_emails"
+              rows={2}
+              placeholder="owner@apexroofing.com, office@apexroofing.com"
+              register={register}
+              rules={{
+                required: "At least one summary email is required",
+                validate: (v) => {
+                  const list = parseEmailList(v);
+                  if (!list.length) return "At least one summary email is required";
+                  const bad = list.find((e) => !EMAIL_RE.test(e));
+                  return bad ? `"${bad}" is not a valid email` : true;
+                },
+              }}
+              error={errors.summary_emails}
+              hint="Comma-separated. These addresses receive the call summaries."
+            />
+          </Section>
+          </div>
+
+          {/* ---- Step 5: Hours of Operation ---- */}
+          <div className={step === 5 ? "" : "hidden"}>
           <Section icon={Clock} title="Hours of Operation">
             <TextAreaField
               label="Business hours (when calls should be handled live)"
@@ -614,7 +895,7 @@ function Field({ label, name, type = "text", placeholder, hint, register, rules,
   );
 }
 
-function TextAreaField({ label, name, rows = 2, placeholder, register, rules, error }) {
+function TextAreaField({ label, name, rows = 2, placeholder, hint, register, rules, error }) {
   return (
     <div className="space-y-1.5">
       <Label htmlFor={name}>{label}</Label>
@@ -625,6 +906,7 @@ function TextAreaField({ label, name, rows = 2, placeholder, register, rules, er
         className="flex w-full rounded-lg border border-border bg-white px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-1"
         {...register(name, rules)}
       />
+      {hint && !error && <p className="text-xs text-muted-foreground">{hint}</p>}
       {error && <p className="text-xs text-destructive">{error.message}</p>}
     </div>
   );

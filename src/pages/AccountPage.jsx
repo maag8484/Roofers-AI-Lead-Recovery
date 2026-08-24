@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import {
   ArrowLeft,
   Building2,
@@ -19,6 +19,9 @@ import {
   Pencil,
   X,
   Save,
+  Users,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -32,6 +35,19 @@ import { Spinner } from "@/components/ui/spinner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectValue,
+  SelectGroup,
+  SelectLabel,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import {
+  PHONE_PROVIDER_GROUPS,
+  PHONE_PROVIDER_OTHER,
+} from "@/config/phoneProviders";
 import { PhoneField } from "@/components/ui/phone-field";
 import { AccountMenu } from "@/components/AccountMenu";
 import { formatPhone, formatDateTime, cn } from "@/lib/utils";
@@ -42,6 +58,23 @@ const CONVERSION_OPTIONS = [
   { value: "warm_transfer", label: "Warm transfer", hint: "Requires a transfer number." },
   { value: "take_message", label: "Take a message", hint: "We capture details and email them." },
 ];
+const EMAIL_RE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
+
+const parseEmailList = (raw) =>
+  (raw || "")
+    .split(/[,;\n]/)
+    .map((e) => e.trim())
+    .filter(Boolean);
+
+const serializeEmployees = (rows) =>
+  (rows || [])
+    .map((r) => ({
+      name: (r?.name || "").trim(),
+      transfer_line: (r?.transfer_line || "").trim(),
+      email: (r?.email || "").trim(),
+    }))
+    .filter((r) => r.name || r.transfer_line || r.email);
+
 const CONVERSION_LABEL = {
   scheduled_appointment: "Scheduled appointment",
   warm_transfer: "Warm transfer",
@@ -71,6 +104,7 @@ export default function AccountPage() {
     setValue,
     watch,
     reset,
+    control,
     formState: { errors },
   } = useForm({ mode: "onTouched" });
 
@@ -80,6 +114,13 @@ export default function AccountPage() {
   register("phone_country");
 
   const conversion = watch("conversion_preference");
+  const phoneProvider = watch("phone_provider");
+
+  const {
+    fields: employeeFields,
+    append: appendEmployee,
+    remove: removeEmployee,
+  } = useFieldArray({ control, name: "employees" });
 
   useEffect(() => {
     if (!user) return;
@@ -108,6 +149,8 @@ export default function AccountPage() {
       address: profile?.address || "",
       business_phone: profile?.business_phone || "",
       phone_country: profile?.phone_country || "US",
+      phone_provider: profile?.phone_provider || "",
+      phone_provider_other: profile?.phone_provider_other || "",
       contact_name: profile?.contact_name || "",
       contact_email: profile?.contact_email || "",
       service_areas: profile?.service_areas || "",
@@ -115,6 +158,17 @@ export default function AccountPage() {
       conversion_preference: profile?.conversion_preference || "scheduled_appointment",
       calendly_link: profile?.calendly_link || "",
       transfer_number: profile?.transfer_number || "",
+      employees:
+        Array.isArray(profile?.employees) && profile.employees.length
+          ? profile.employees.map((e) => ({
+              name: e?.name ?? "",
+              transfer_line: e?.transfer_line ?? "",
+              email: e?.email ?? "",
+            }))
+          : [{ name: "", transfer_line: "", email: "" }],
+      summary_emails: Array.isArray(profile?.summary_emails)
+        ? profile.summary_emails.join(", ")
+        : profile?.summary_emails || "",
       business_hours: profile?.business_hours || "",
       after_hours_preference: profile?.after_hours_preference || "",
     });
@@ -131,6 +185,9 @@ export default function AccountPage() {
         address: values.address,
         business_phone: values.business_phone,
         phone_country: values.phone_country || null,
+        phone_provider: values.phone_provider || null,
+        phone_provider_other:
+          values.phone_provider === PHONE_PROVIDER_OTHER ? values.phone_provider_other || null : null,
         contact_name: values.contact_name,
         contact_email: values.contact_email,
         service_areas: values.service_areas,
@@ -138,6 +195,8 @@ export default function AccountPage() {
         conversion_preference: values.conversion_preference,
         calendly_link: values.conversion_preference === "scheduled_appointment" ? values.calendly_link || null : null,
         transfer_number: values.conversion_preference === "warm_transfer" ? values.transfer_number || null : null,
+        employees: serializeEmployees(values.employees),
+        summary_emails: parseEmailList(values.summary_emails),
         business_hours: values.business_hours,
         after_hours_preference: values.after_hours_preference,
       },
@@ -318,6 +377,43 @@ export default function AccountPage() {
                     defaultCountry={watch("phone_country") || "US"}
                     error={errors.business_phone?.message}
                   />
+                  <div className="space-y-1.5">
+                    <Label htmlFor="phone_provider">Phone provider</Label>
+                    <Select
+                      value={phoneProvider || ""}
+                      onValueChange={(v) =>
+                        setValue("phone_provider", v, { shouldValidate: true, shouldDirty: true })
+                      }
+                    >
+                      <SelectTrigger id="phone_provider">
+                        <SelectValue placeholder="Select your phone or VoIP provider" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {PHONE_PROVIDER_GROUPS.map((group) => (
+                          <SelectGroup key={group.label}>
+                            <SelectLabel>{group.label}</SelectLabel>
+                            {group.options.map((name) => (
+                              <SelectItem key={name} value={name}>
+                                {name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        ))}
+                        <SelectGroup>
+                          <SelectItem value={PHONE_PROVIDER_OTHER}>Other (not listed)</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {phoneProvider === PHONE_PROVIDER_OTHER && (
+                    <EditField
+                      label="Provider name"
+                      name="phone_provider_other"
+                      register={register}
+                      rules={{ required: "Required" }}
+                      error={errors.phone_provider_other}
+                    />
+                  )}
                   <div className="grid gap-4 sm:grid-cols-2">
                     <EditField label="Contact name" name="contact_name" register={register} rules={{ required: "Required" }} error={errors.contact_name} />
                     <EditField label="Contact email" name="contact_email" type="email" register={register} rules={{ required: "Required" }} error={errors.contact_email} />
@@ -349,6 +445,101 @@ export default function AccountPage() {
                     )}
                   </div>
 
+                  <div className="space-y-3">
+                    <div>
+                      <Label>Employee directory</Label>
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        Who callers can be transferred to.
+                      </p>
+                    </div>
+                    {employeeFields.map((field, index) => (
+                      <div key={field.id} className="rounded-lg border border-border bg-secondary/30 p-3.5">
+                        <div className="mb-2 flex items-center justify-between">
+                          <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Employee {index + 1}
+                          </span>
+                          {employeeFields.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeEmployee(index)}
+                              className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-muted-foreground hover:bg-white hover:text-destructive"
+                              aria-label={`Remove employee ${index + 1}`}
+                            >
+                              <Trash2 className="h-3.5 w-3.5" /> Remove
+                            </button>
+                          )}
+                        </div>
+                        <div className="grid gap-3 sm:grid-cols-3">
+                          <div className="space-y-1.5">
+                            <Label htmlFor={`employees.${index}.name`} className="text-xs">Name</Label>
+                            <Input
+                              id={`employees.${index}.name`}
+                              placeholder="Jane Doe"
+                              {...register(`employees.${index}.name`, {
+                                validate: (v, all) => {
+                                  const row = all.employees?.[index] || {};
+                                  if ((row.transfer_line || row.email) && !(v || "").trim())
+                                    return "Name is required";
+                                  return true;
+                                },
+                              })}
+                            />
+                            {errors.employees?.[index]?.name && (
+                              <p className="text-xs text-destructive">{errors.employees[index].name.message}</p>
+                            )}
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label htmlFor={`employees.${index}.transfer_line`} className="text-xs">Transfer line</Label>
+                            <Input
+                              id={`employees.${index}.transfer_line`}
+                              type="tel"
+                              placeholder="(555) 123-4567"
+                              {...register(`employees.${index}.transfer_line`)}
+                            />
+                          </div>
+                          <div className="space-y-1.5">
+                            <Label htmlFor={`employees.${index}.email`} className="text-xs">Email</Label>
+                            <Input
+                              id={`employees.${index}.email`}
+                              type="email"
+                              placeholder="jane@apexroofing.com"
+                              {...register(`employees.${index}.email`, {
+                                validate: (v) =>
+                                  !(v || "").trim() || EMAIL_RE.test(v.trim()) ? true : "Enter a valid email",
+                              })}
+                            />
+                            {errors.employees?.[index]?.email && (
+                              <p className="text-xs text-destructive">{errors.employees[index].email.message}</p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => appendEmployee({ name: "", transfer_line: "", email: "" })}
+                      className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-border px-3.5 py-2.5 text-sm font-medium text-brand-600 hover:bg-brand-50"
+                    >
+                      <Plus className="h-4 w-4" /> Add another employee
+                    </button>
+                  </div>
+
+                  <EditTextArea
+                    label="Summary email recipients"
+                    name="summary_emails"
+                    register={register}
+                    rules={{
+                      required: "Required",
+                      validate: (v) => {
+                        const list = parseEmailList(v);
+                        if (!list.length) return "At least one summary email is required";
+                        const bad = list.find((e) => !EMAIL_RE.test(e));
+                        return bad ? `"${bad}" is not a valid email` : true;
+                      },
+                    }}
+                    error={errors.summary_emails}
+                  />
+
                   <EditTextArea label="Business hours" name="business_hours" register={register} rules={{ required: "Required" }} error={errors.business_hours} />
                   <EditTextArea label="After-hours preference" name="after_hours_preference" register={register} rules={{ required: "Required" }} error={errors.after_hours_preference} />
 
@@ -366,11 +557,46 @@ export default function AccountPage() {
                   <Row icon={Building2} label="Business name" value={profile?.company_name} />
                   <Row icon={MapPin} label="Address" value={profile?.address} />
                   <Row icon={Phone} label="Business phone" value={formatPhone(profile?.business_phone)} />
+                  <Row
+                    icon={Phone}
+                    label="Phone provider"
+                    value={
+                      profile?.phone_provider === PHONE_PROVIDER_OTHER
+                        ? profile?.phone_provider_other || PHONE_PROVIDER_OTHER
+                        : profile?.phone_provider
+                    }
+                  />
                   <Row icon={User} label="Contact name" value={profile?.contact_name} />
                   <Row icon={Mail} label="Contact email" value={profile?.contact_email} />
                   <Row icon={MapPin} label="Service area" value={profile?.service_areas} />
                   <Row icon={Wrench} label="Services" value={profile?.services} />
                   <Row icon={Phone} label="Conversion goal" value={CONVERSION_LABEL[profile?.conversion_preference] ?? profile?.conversion_preference} />
+                  <Row
+                    icon={Users}
+                    label="Team directory"
+                    value={
+                      Array.isArray(profile?.employees) && profile.employees.length ? (
+                        <ul className="space-y-0.5">
+                          {profile.employees.map((e, i) => (
+                            <li key={i} className="break-words">
+                              {[e?.name, formatPhone(e?.transfer_line), e?.email]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : null
+                    }
+                  />
+                  <Row
+                    icon={Mail}
+                    label="Summary emails"
+                    value={
+                      Array.isArray(profile?.summary_emails) && profile.summary_emails.length
+                        ? profile.summary_emails.join(", ")
+                        : null
+                    }
+                  />
                   <Row icon={Clock} label="Business hours" value={profile?.business_hours} />
                   <Row icon={Clock} label="After hours" value={profile?.after_hours_preference} />
                 </div>

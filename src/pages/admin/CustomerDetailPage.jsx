@@ -12,6 +12,7 @@ import {
   Wrench,
   Clock,
   PhoneForwarded,
+  Users,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
@@ -112,6 +113,14 @@ export default function CustomerDetailPage() {
             <Row label="Address" value={c.address} />
             <Row label="Business phone" value={formatPhone(c.business_phone)} />
             <Row label="Country code" value={c.phone_country} />
+            <Row
+              label="Phone provider"
+              value={
+                c.phone_provider === "Other"
+                  ? c.phone_provider_other || "Other"
+                  : c.phone_provider
+              }
+            />
             <Row label="Website" value={c.website} isLink />
           </InfoCard>
 
@@ -135,6 +144,32 @@ export default function CustomerDetailPage() {
             {c.conversion_preference === "warm_transfer" && (
               <Row label="Transfer number" value={c.transfer_number} />
             )}
+          </InfoCard>
+
+          <InfoCard icon={Users} title="Team & Transfer Directory">
+            {Array.isArray(c.employees) && c.employees.length > 0 ? (
+              <div className="space-y-2.5">
+                {c.employees.map((e, i) => (
+                  <div key={i} className="rounded-lg border border-border bg-secondary/30 p-2.5">
+                    <p className="text-sm font-medium text-ink">{e?.name || "—"}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatPhone(e?.transfer_line) || "No transfer line"}
+                      {e?.email ? ` · ${e.email}` : ""}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <Row label="Employees" value={null} />
+            )}
+            <Row
+              label="Summary emails"
+              value={
+                Array.isArray(c.summary_emails) && c.summary_emails.length
+                  ? c.summary_emails.join(", ")
+                  : null
+              }
+            />
           </InfoCard>
 
           <InfoCard icon={Clock} title="Hours of Operation">

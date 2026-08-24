@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
   // is the admin console's 13-value lifecycle. 0016 keeps the two in sync, and we
   // pull both so the portal can show the precise stage the admin actually set.
   const COMPANY_COLS =
-    "id, company_name, business_phone, phone_country, website, address, contact_name, contact_email, service_area, service_areas, services, calendly_link, transfer_number, conversion_preference, business_hours, after_hours_preference, monthly_leads_segment, setup_step, is_live, status, current_status, details_submitted";
+    "id, company_name, business_phone, phone_country, phone_provider, phone_provider_other, website, address, contact_name, contact_email, service_area, service_areas, services, calendly_link, transfer_number, conversion_preference, employees, summary_emails, business_hours, after_hours_preference, monthly_leads_segment, setup_step, is_live, status, current_status, details_submitted";
 
   const loadProfile = useCallback(async (userId) => {
     if (!userId) {
