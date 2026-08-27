@@ -1,5 +1,10 @@
+# robots.txt — roofaileadrecovery.com
+# Allow all search engines to crawl the public marketing pages.
+
 User-agent: *
 Allow: /
+
+# Private / authenticated app routes — no search value, keep them out of the index.
 Disallow: /admin
 Disallow: /admin/
 Disallow: /dashboard
@@ -8,8 +13,10 @@ Disallow: /billing
 Disallow: /checkout
 Disallow: /onboarding
 Disallow: /login
-Disallow: /signup
 Disallow: /reset-password
+
+# Superseded landing page — kept reachable, but not indexed (duplicate of /).
 Disallow: /home-v1
 
+# Sitemap location
 Sitemap: https://www.roofaileadrecovery.com/sitemap.xml

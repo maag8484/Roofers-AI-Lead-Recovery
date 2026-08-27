@@ -52,6 +52,10 @@ export function useScrapedLeads({ page = 1, search = "", statusFilter = "", outr
       q = q.eq("sms_sent", true);
     } else if (outreachFilter === "email_sent") {
       q = q.eq("email_sent", true);
+    } else if (outreachFilter === "has_email") {
+      // Inverse of "no_email" — leads that are actually emailable, whether or
+      // not the email legs have run yet.
+      q = q.not("owner_email", "is", null).neq("owner_email", "");
     } else if (outreachFilter === "no_email") {
       // Outscraper found the business but no contact address — the email legs
       // of the sequence can never run for these.

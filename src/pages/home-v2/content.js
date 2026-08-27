@@ -137,8 +137,20 @@ export const COMPARISON_ROWS = [
 
 export const FAQS = [
   {
-    q: "How does it work?",
-    a: "When you miss a call or get a web lead, Roof AI instantly sends a personalized text, qualifies the homeowner, answers their questions, and books an inspection straight onto your Google Calendar — all automatically, usually within 30 seconds.",
+    q: "How does Roof AI Lead Recovery work?",
+    a: "When a homeowner calls your roofing company and nobody answers, Roof AI instantly sends a personalized text within 30 seconds. It qualifies the lead by asking what kind of roofing work is needed, answers their questions, and books an inspection straight onto your Google Calendar — all automatically.",
+  },
+  {
+    q: "How much does it cost?",
+    a: "$299 per month with a 7-day free trial. No long-term contracts, no setup fees, and no sales call required. Cancel anytime from your dashboard.",
+  },
+  {
+    q: "What percentage of missed calls do roofers actually lose?",
+    a: "Industry data shows 62% of callers who reach voicemail hang up without leaving a message, and 80% never call back. For roofing companies where an average job is $5,000–$30,000, even 2–3 missed calls per week can mean $50,000 or more in lost annual revenue.",
+  },
+  {
+    q: "How is this different from an answering service?",
+    a: "Traditional answering services cost $200–$500/month and take messages — they don't qualify leads or book estimates. Roof AI Lead Recovery qualifies the homeowner, determines urgency, and books the inspection automatically. It's faster, cheaper per recovered lead, and works 24/7 without hold times.",
   },
   {
     q: "Will this replace my receptionist?",
@@ -153,8 +165,12 @@ export const FAQS = [
     a: "Yes. Your dashboard shows every recovered lead, every response, and every booked estimate in one clean view, updated in real time.",
   },
   {
-    q: "What happens after hours?",
-    a: "Roof AI works 24/7. Late-night and weekend inquiries get the same instant response and booking experience as calls during business hours.",
+    q: "Do I need to change my phone number?",
+    a: "No. You keep your existing business phone and your current workflow — Roof AI handles only the calls you miss.",
+  },
+  {
+    q: "Does it work after business hours?",
+    a: "Yes. Roof AI works 24/7. Most roofing emergencies — storm damage, leaks, blow-offs — happen outside business hours, and those late-night and weekend inquiries get the same instant response and booking experience as calls during the day.",
   },
   {
     q: "Can I cancel anytime?",

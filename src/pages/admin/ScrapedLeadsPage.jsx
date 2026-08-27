@@ -35,6 +35,7 @@ const OUTREACH_OPTIONS = [
   { value: "no_outreach", label: "No outreach yet" },
   { value: "sms_sent", label: "SMS sent" },
   { value: "email_sent", label: "Email sent" },
+  { value: "has_email", label: "Has email on file" },
   { value: "no_email", label: "No email on file" },
   { value: "replied", label: "Replied" },
   { value: "opted_out", label: "Opted out" },
