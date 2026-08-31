@@ -25,16 +25,13 @@ export function Footer() {
               <a href="mailto:support@roofaileadrecovery.com" className="text-brand-500 hover:text-brand-400">
                 support@roofaileadrecovery.com
               </a>
-              <a href="tel:+18149362291" className="text-brand-500 hover:text-brand-400">
-                (814) 936-2291
-              </a>
             </div>
             <p className="text-slate-500">
               © {new Date().getFullYear()} Roof AI Lead Recovery. All rights reserved.
             </p>
           </div>
           <p className="text-xs text-slate-500">
-            Text us at (814) 936-2291. Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.{" "}
+            Msg &amp; data rates may apply. Reply STOP to cancel, HELP for help.{" "}
             <Link to="/privacy" className="underline hover:text-slate-300">Privacy Policy</Link>{" "}·{" "}
             <Link to="/terms" className="underline hover:text-slate-300">Terms of Service</Link>.
           </p>
