@@ -252,14 +252,25 @@ export default function BillingPage() {
               </div>
             )}
 
-            {subscription?.stripe_customer_id && (
+            {/* Only show Stripe portal for updating payment method — NOT for cancellation.
+                Active/trialing subscribers go through CancellationFlow (retention steps)
+                before they can cancel. Paused/canceled accounts can still open the portal. */}
+            {subscription?.stripe_customer_id && (isPaused || isCanceled || cancelAtPeriodEnd) && (
               <Button className="w-full" onClick={openPortal} disabled={redirecting}>
                 {redirecting ? <Spinner className="text-white" /> : <><CreditCard className="h-4 w-4" /> Manage Subscription & Billing</>}
               </Button>
             )}
 
+            {subscription?.stripe_customer_id && isActive && !cancelAtPeriodEnd && (
+              <Button variant="secondary" className="w-full" onClick={openPortal} disabled={redirecting}>
+                {redirecting ? <Spinner /> : <><CreditCard className="h-4 w-4" /> Update Payment Method</>}
+              </Button>
+            )}
+
             <p className="text-xs text-center text-muted-foreground">
-              You'll be redirected to Stripe's secure billing portal to update your card or view invoices.
+              {isActive && !cancelAtPeriodEnd
+                ? "To cancel your subscription, use the \"Cancel Subscription\" option below."
+                : "You'll be redirected to Stripe's secure billing portal."}
             </p>
           </CardContent>
         </Card>
