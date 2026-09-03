@@ -39,7 +39,8 @@ function warmDemoChunk() {
  * TYPOGRAPHY: the signature gesture is the Instrument Serif italic set inside
  * the Bricolage Grotesque headline — one phrase in a different voice.
  *
- * Copy unchanged from the live page.
+ * The headline leads with the missed-call revenue problem so the product's
+ * position is clear before the visitor reaches feature detail.
  */
 export function Hero() {
   const ref = useRef(null);
@@ -123,27 +124,29 @@ export function Hero() {
               </motion.div>
 
               <h1 className="hv2-display hv2-hero-title hv2-hero-gap text-[var(--text)]">
-                <SplitText text="Roof AI Lead Recovery helps roofing companies" delay={0.1} />{" "}
-                {/* The accent voice — serif italic inside the grotesque. */}
+                <SplitText text="Stop Losing Roofing Jobs to" delay={0.1} />{" "}
                 <span className="hv2-accent hv2-grad-text relative inline-block pr-1">
-                  recover missed calls
-                </span>{" "}
-                <SplitText text="and book more estimates" delay={0.84} />
+                  Missed Calls
+                </span>
               </h1>
 
               <motion.p
                 {...rise(1.05)}
                 className="hv2-hero-sub hv2-hero-gap max-w-xl leading-[1.65] text-[var(--text-dim)]"
               >
-                Roof AI Lead Recovery instantly responds to missed calls, web leads, and
-                after-hours inquiries to help roofing companies book more estimates.
+                Roof AI Lead Recovery helps roofing companies respond to missed and
+                after-hours callers, qualify new opportunities and move homeowners toward
+                an appointment—so more of the leads you already paid for get a chance to
+                become revenue.
               </motion.p>
 
               <motion.div
                 {...rise(1.14)}
                 className="hv2-hero-gap flex flex-col gap-3 sm:flex-row sm:items-center"
               >
-                <CtaButton>Start Free Trial</CtaButton>
+                <CtaButton to="/what-happens-when-a-roofer-misses-a-homeowners-call/">
+                  See How a Missed Call Gets Recovered
+                </CtaButton>
                 <Magnetic strength={0.2}>
                   <button
                     type="button"

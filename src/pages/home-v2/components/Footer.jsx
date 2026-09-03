@@ -11,6 +11,8 @@ const COLS = [
     label: "Product",
     links: [
       { text: "How it works", href: "#how-it-works" },
+      { text: "Revenue Recovery Hub", href: "/roofing-revenue-recovery/" },
+      { text: "Missed Revenue Calculator", href: "/how-much-are-missed-calls-costing-your-roofing-company/" },
       { text: "Pricing", href: "#pricing" },
       { text: "FAQ", href: "#faq" },
     ],
