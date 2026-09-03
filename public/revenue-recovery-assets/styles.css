@@ -5,8 +5,8 @@
   --blue-dark: #0f2b54;
   --sky: #eff6ff;
   --sky-2: #f8fafc;
-  --orange: #f97316;
-  --orange-dark: #ea580c;
+  --orange: #c2410c;
+  --orange-dark: #9a3412;
   --white: #ffffff;
   --muted: #5c6b78;
   --line: #d7e2e8;
@@ -32,6 +32,14 @@ a { color: var(--blue-dark); text-decoration-thickness: 1px; text-underline-offs
 a:hover { color: var(--orange-dark); }
 button, input { font: inherit; }
 button { cursor: pointer; }
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #60a5fa;
+  outline-offset: 3px;
+}
 
 .skip-link {
   position: fixed;
@@ -436,4 +444,3 @@ h3 { font-size: 1.32rem; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
 }
-
