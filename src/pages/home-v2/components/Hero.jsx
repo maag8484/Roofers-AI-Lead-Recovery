@@ -144,7 +144,10 @@ export function Hero() {
                 {...rise(1.14)}
                 className="hv2-hero-gap flex flex-col gap-3 sm:flex-row sm:items-center"
               >
-                <CtaButton to="/what-happens-when-a-roofer-misses-a-homeowners-call/">
+                <CtaButton
+                  to="/what-happens-when-a-roofer-misses-a-homeowners-call/"
+                  reloadDocument
+                >
                   See How a Missed Call Gets Recovered
                 </CtaButton>
                 <Magnetic strength={0.2}>

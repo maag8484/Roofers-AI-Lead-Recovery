@@ -229,6 +229,7 @@ export function CtaButton({
   className = "",
   size = "lg",
   magnetic = true,
+  reloadDocument = false,
 }) {
   const sizes = {
     lg: "px-7 py-4 text-[15px]",
@@ -248,6 +249,7 @@ export function CtaButton({
   const btn = (
     <Link
       to={to}
+      reloadDocument={reloadDocument}
       className={[
         "group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full font-bold tracking-[-0.01em] transition-all duration-300",
         sizes[size],
