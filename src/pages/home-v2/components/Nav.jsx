@@ -17,6 +17,7 @@ import { CtaButton } from "./primitives";
 
 const LINKS = [
   { label: "How it works", href: "#how-it-works" },
+  { label: "Revenue Hub", href: "/roofing-revenue-recovery/" },
   { label: "Pricing", href: "#pricing" },
   { label: "FAQ", href: "#faq" },
 ];

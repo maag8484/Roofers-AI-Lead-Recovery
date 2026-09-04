@@ -1,6 +1,15 @@
 {
   "routes": [
     { "handle": "filesystem" },
+    {
+      "src": "/(roofing-revenue-recovery|how-much-are-missed-calls-costing-your-roofing-company|ai-receptionist-for-roofing-companies|roofing-answering-service-vs-ai-lead-recovery|what-happens-when-a-roofer-misses-a-homeowners-call|after-hours-answering-for-roofing-companies)/?",
+      "dest": "/$1/index.html"
+    },
+    { "src": "/resources/?", "dest": "/resources/index.html" },
+    {
+      "src": "/resources/(roofing-lead-response-time|roofing-missed-call-text-back|roofing-lead-qualification-questions|roofing-appointment-scheduling|storm-lead-follow-up|roofing-marketing-roi|google-ads-roofing-lead-recovery|cost-per-roofing-lead-vs-booked-estimate)/?",
+      "dest": "/resources/$1/index.html"
+    },
     { "src": "/(.*)", "dest": "/index.html" }
   ],
   "headers": [
