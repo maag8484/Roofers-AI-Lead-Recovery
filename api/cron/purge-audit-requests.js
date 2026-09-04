@@ -9,13 +9,15 @@ export default async function handler(req, res) {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return res.status(503).json({ ok: false });
+  const supabaseHeaders = { apikey: key, "Content-Type": "application/json" };
+  if (key.startsWith("eyJ")) supabaseHeaders.Authorization = `Bearer ${key}`;
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
     const response = await fetch(`${url.replace(/\/$/, "")}/rest/v1/rpc/purge_expired_audit_requests`, {
       method: "POST",
-      headers: { apikey: key, Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      headers: supabaseHeaders,
       body: "{}",
       signal: controller.signal,
     });
