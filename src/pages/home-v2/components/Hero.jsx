@@ -124,7 +124,7 @@ export function Hero() {
               </motion.div>
 
               <h1 className="hv2-display hv2-hero-title hv2-hero-gap text-[var(--text)]">
-                <SplitText text="Stop Losing Roofing Jobs to" delay={0.1} />{" "}
+                <SplitText text="Recover More Roofing Opportunities From" delay={0.1} />{" "}
                 <span className="hv2-accent hv2-grad-text relative inline-block pr-1">
                   Missed Calls
                 </span>
