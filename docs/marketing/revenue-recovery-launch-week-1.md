@@ -2,9 +2,24 @@
 
 Status: Drafts approved for review only. Do not publish until the Revenue Recovery Hub is live and every link has been tested.
 
-Primary audience: U.S. roofing company owners and operators  
-Primary offer: Free Missed Revenue Audit  
+Primary audience: U.S. roofing company owners and operators
+Primary offer: Free Missed Revenue Audit
 Positioning: Revenue recovery, not lead generation
+
+## Week 1 Measurement Map
+
+Before publishing, append `utm_campaign=revenue_recovery_launch` plus the source, medium and unique content value below. The site preserves these parameters with calculator and audit-form events. Community links remain conditional on the venue's rules.
+
+| Asset | UTM source / medium | `utm_content` | Primary measurable outcome |
+|---|---|---|---|
+| Day 1 founder post | `linkedin` / `organic_social` | `day_01_founder_calculator` | Calculator completion |
+| Day 2 company post | `linkedin` / `organic_social` | `day_02_company_hub` | Hub resource click or audit CTA click |
+| Day 3 Short | `youtube` / `organic_video` | `day_03_short_calculator` | Calculator completion |
+| Day 4 community response | Venue name / `community` | `day_04_community_calculator` | Approved-link click or substantive roofing-owner reply |
+| Day 5 founder post | `linkedin` / `organic_social` | `day_05_founder_calculator` | Calculator completion |
+| Day 6 company post | `linkedin` / `organic_social` | `day_06_company_after_hours` | After-hours guide visit or audit CTA click |
+| Day 6 bonus Short | `youtube` / `organic_video` | `day_06_short_after_hours` | After-hours guide visit or audit CTA click |
+| Day 7 email | `email_newsletter` / `email` | `day_07_email_calculator` | Calculator completion or audit-request reply |
 
 ## Day 1 — LinkedIn Founder Post
 
@@ -143,7 +158,7 @@ Build your after-hours plan: https://www.roofaileadrecovery.com/after-hours-answ
 
 #RoofingContractor #RoofingOperations #CustomerExperience #AfterHours
 
-## Day 6 — YouTube Short 2
+## Bonus Asset (Publish with Day 6) — YouTube Short 2
 
 **Title:** What Should Happen After an After-Hours Roofing Call?
 
@@ -202,11 +217,11 @@ The result is a planning estimate of gross revenue potentially connected to miss
 
 If you would rather review the assumptions with someone, reply to this email and request a free Missed Revenue Audit. We will help separate raw missed calls from possible roofing opportunities and identify where follow-up becomes unclear.
 
-Cory Maag  
-Roof AI Lead Recovery  
+Cory Maag
+Roof AI Lead Recovery
 Revenue recovery—not another source of leads.
 
-**Primary button:** Calculate Revenue at Risk  
+**Primary button:** Calculate Revenue at Risk
 **Secondary CTA:** Reply for a Free Missed Revenue Audit
 
 ## Publishing Checklist
