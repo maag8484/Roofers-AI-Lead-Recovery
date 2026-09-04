@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import handler, { validateAuditRequest } from "../api/audit-request.js";
+import cleanupHandler from "../api/cron/purge-audit-requests.js";
 
 const valid = {
   fullName: "Jamie Roofer",
@@ -66,7 +67,15 @@ test("valid request calls the Supabase RPC and returns its request id", async (t
   assert.equal(rpcBody.p_limit, 5);
   assert.equal(rpcBody.p_request.company, "Example Roofing");
   assert.match(rpcBody.p_rate_key, /^[a-f0-9]{64}$/);
+  assert.match(rpcBody.p_email_key, /^[a-f0-9]{64}$/);
   assert.equal(JSON.stringify(rpcBody).includes("203.0.113.5"), false);
+});
+
+test("cross-origin browser submission is rejected", async () => {
+  const res = responseDouble();
+  await handler({ method: "POST", body: valid, headers: { origin: "https://evil.example", host: "www.roofaileadrecovery.com" }, socket: {} }, res);
+  assert.equal(res.statusCode, 403);
+  assert.equal(res.body.error, "ORIGIN_NOT_ALLOWED");
 });
 
 test("method and malformed requests fail closed", async () => {
@@ -77,4 +86,14 @@ test("method and malformed requests fail closed", async () => {
   await handler({ method: "POST", body: {}, headers: {}, socket: {} }, malformed);
   assert.equal(malformed.statusCode, 400);
   assert.equal(malformed.body.error, "VALIDATION_ERROR");
+});
+
+test("retention cleanup requires the cron bearer secret", async () => {
+  const oldSecret = process.env.CRON_SECRET;
+  process.env.CRON_SECRET = "expected-secret";
+  const res = responseDouble();
+  await cleanupHandler({ method: "GET", headers: { authorization: "Bearer wrong-secret" } }, res);
+  assert.equal(res.statusCode, 401);
+  if (oldSecret === undefined) delete process.env.CRON_SECRET;
+  else process.env.CRON_SECRET = oldSecret;
 });

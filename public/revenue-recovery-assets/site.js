@@ -167,6 +167,12 @@
   const auditForm = dialog?.querySelector("[data-audit-form]");
   const contactChoice = auditForm?.querySelector("[name=preferredContact]");
   const phoneInput = auditForm?.querySelector("[name=phone]");
+  const syncPhoneChoice = () => {
+    if (!contactChoice || !phoneInput) return;
+    const phoneSelected = contactChoice.value === "Phone";
+    dialog.querySelector("[data-phone-note]").hidden = !phoneSelected;
+    phoneInput.required = phoneSelected;
+  };
   let auditCtaLocation = "unknown";
   const riskBand = (value) => value >= 100000 ? "100k_plus" : value >= 50000 ? "50k_100k" : value >= 10000 ? "10k_50k" : "under_10k";
 
@@ -188,6 +194,7 @@
     }
     const status = auditForm?.querySelector("[data-audit-status]");
     if (status) { status.textContent = ""; status.className = "audit-status"; }
+    syncPhoneChoice();
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "");
     dialog.querySelector("input")?.focus();
@@ -199,11 +206,8 @@
   });
   dialog?.querySelector("[data-audit-close]")?.addEventListener("click", () => dialog.close());
   dialog?.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); });
-  contactChoice?.addEventListener("change", () => {
-    const phoneSelected = contactChoice.value === "Phone";
-    dialog.querySelector("[data-phone-note]").hidden = !phoneSelected;
-    phoneInput.required = phoneSelected;
-  });
+  contactChoice?.addEventListener("change", syncPhoneChoice);
+  auditForm?.addEventListener("reset", () => setTimeout(syncPhoneChoice, 0));
 
   let auditFormStarted = false;
   auditForm?.addEventListener("input", () => {
@@ -252,6 +256,8 @@
     status.textContent = "";
 
     try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10_000);
       const response = await fetch("/api/audit-request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -270,7 +276,8 @@
           attribution,
           calculator: calculatorModel || null,
         }),
-      });
+        signal: controller.signal,
+      }).finally(() => clearTimeout(timeout));
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
         if (response.status === 429) {

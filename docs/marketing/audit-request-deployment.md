@@ -9,9 +9,11 @@ The hub now posts audit requests to `/api/audit-request`. The Vercel function va
    - `SUPABASE_URL`
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `AUDIT_RATE_LIMIT_SALT` (generate a random value with `openssl rand -hex 32`)
+   - `CRON_SECRET` (generate a separate random value with `openssl rand -hex 32`)
 3. Redeploy a preview and submit one test request. Verify a row exists in `audit_requests` and an `AUDIT_REQUEST` item appears in `admin_notifications`.
 4. Confirm the browser success state, then test failure fallback in a preview with the API temporarily unavailable.
-5. After production deployment, monitor 4xx/5xx function logs and the audit-request queue daily for the first week.
+5. Add `{ "path": "/api/cron/purge-audit-requests", "schedule": "17 6 * * *" }` to the existing `crons` array in `vercel.json` (or have the Vercel configuration owner add that array), then confirm one authenticated cron run returns `ok: true`.
+6. After production deployment, monitor 4xx/5xx function logs and the audit-request queue daily for the first week.
 
 Never expose the service-role key or rate-limit salt through a `VITE_PUBLIC_*` variable.
 
@@ -19,8 +21,10 @@ Never expose the service-role key or rate-limit salt through a `VITE_PUBLIC_*` v
 
 Contact-consent and marketing-consent are separate. The record stores the consent version and timestamp, attribution, submission page, and optional calculator assumptions. Analytics events contain funnel dimensions only; name, email, phone, company, service area, and free text are not sent to the data layer.
 
-Raw IP addresses are not stored. The API creates a salted one-way rate key; rotate the salt if it is exposed. The database RPC uses an advisory transaction lock to prevent concurrent requests from bypassing the hourly limit. A hidden honeypot absorbs basic bots without writing a record.
+Raw IP addresses are not stored. The API creates salted one-way IP and email rate keys; rotate the salt if it is exposed. The database RPC uses advisory transaction locks to prevent concurrent requests from bypassing the limits (five submissions per connection/hour and three per email/day). A same-origin check and hidden honeypot handle common automated abuse without writing a record. Client and server requests fail into the prepared-email fallback after 10 and 8 seconds respectively.
 
 ## Admin notification and follow-up
 
-Each accepted request creates an admin notification containing only the audit request ID. Admin users retrieve the PII from the RLS-protected `audit_requests` table. An email or Slack alert can later subscribe to `AUDIT_REQUEST` notifications, but no automatic outbound message is enabled in this change. Define retention and deletion policy before accumulating production submissions.
+Each accepted request creates an admin notification containing only the audit request ID and a secure link to `/admin/audit-requests`. The admin-only queue shows contact details, consent, calculator inputs and attribution, and lets an administrator move each request through `new`, `contacted`, `qualified`, `closed` or `spam`. An email or Slack alert can later subscribe to `AUDIT_REQUEST` notifications, but no automatic outbound message is enabled in this change.
+
+Retention is explicit and enforced by `purge_expired_audit_requests`: one-way rate keys are cleared after 24 hours, spam is deleted after 30 days, and all audit-request records are deleted after 18 months. The Vercel cron endpoint runs this RPC daily. Keep the cron configured and review this policy with counsel before changing the periods.

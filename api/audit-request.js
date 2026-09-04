@@ -2,6 +2,7 @@ import crypto from "node:crypto";
 
 const MAX_BODY_BYTES = 16_384;
 const MAX_REQUESTS_PER_HOUR = 5;
+const SUPABASE_TIMEOUT_MS = 8_000;
 
 const text = (value, max) => typeof value === "string" ? value.trim().slice(0, max) : "";
 
@@ -58,6 +59,18 @@ function clientIp(req) {
   return text(Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0] || req.socket?.remoteAddress, 100);
 }
 
+function requestOriginAllowed(req) {
+  const origin = text(req.headers.origin, 500);
+  if (!origin) return true;
+  try {
+    const originHost = new URL(origin).host;
+    const requestHost = text(req.headers["x-forwarded-host"] || req.headers.host, 255);
+    return Boolean(requestHost) && originHost === requestHost;
+  } catch {
+    return false;
+  }
+}
+
 function json(res, status, body) {
   res.status(status).setHeader("Content-Type", "application/json").setHeader("Cache-Control", "no-store").json(body);
 }
@@ -67,6 +80,7 @@ export default async function handler(req, res) {
     res.setHeader("Allow", "POST");
     return json(res, 405, { ok: false, error: "METHOD_NOT_ALLOWED" });
   }
+  if (!requestOriginAllowed(req)) return json(res, 403, { ok: false, error: "ORIGIN_NOT_ALLOWED" });
 
   const bodySize = Buffer.byteLength(JSON.stringify(req.body || {}));
   if (bodySize > MAX_BODY_BYTES) return json(res, 413, { ok: false, error: "PAYLOAD_TOO_LARGE" });
@@ -85,8 +99,11 @@ export default async function handler(req, res) {
     return json(res, 503, { ok: false, error: "SERVICE_UNAVAILABLE" });
   }
 
-  const rateKey = crypto.createHash("sha256").update(`${salt}:${clientIp(req)}`).digest("hex");
+  const rateKey = crypto.createHmac("sha256", salt).update(`ip:${clientIp(req)}`).digest("hex");
+  const emailKey = crypto.createHmac("sha256", salt).update(`email:${payload.email}`).digest("hex");
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), SUPABASE_TIMEOUT_MS);
     const response = await fetch(`${supabaseUrl.replace(/\/$/, "")}/rest/v1/rpc/submit_public_audit_request`, {
       method: "POST",
       headers: {
@@ -94,8 +111,9 @@ export default async function handler(req, res) {
         Authorization: `Bearer ${serviceKey}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ p_request: payload, p_rate_key: rateKey, p_limit: MAX_REQUESTS_PER_HOUR }),
-    });
+      body: JSON.stringify({ p_request: payload, p_rate_key: rateKey, p_email_key: emailKey, p_limit: MAX_REQUESTS_PER_HOUR }),
+      signal: controller.signal,
+    }).finally(() => clearTimeout(timeout));
     const result = await response.json().catch(() => ({}));
     if (response.status === 429 || result?.error === "RATE_LIMITED") {
       return json(res, 429, { ok: false, error: "RATE_LIMITED" });
