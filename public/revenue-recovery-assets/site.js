@@ -91,6 +91,7 @@
         <h2 id="audit-title">Get Your Missed Revenue Audit</h2>
         <p class="audit-intro">Share a few details and we’ll review where unanswered roofing calls may be losing their next step.</p>
         <form data-audit-form>
+          <div class="audit-trap" aria-hidden="true"><label for="audit-website">Website</label><input id="audit-website" name="website" tabindex="-1" autocomplete="off"></div>
           <div class="audit-fields">
             <div class="field"><label for="audit-name">Full name</label><input id="audit-name" name="fullName" autocomplete="name" maxlength="100" required></div>
             <div class="field"><label for="audit-email">Work email</label><input id="audit-email" name="email" type="email" autocomplete="email" maxlength="254" required></div>
@@ -104,8 +105,9 @@
           <label class="audit-check"><input name="contactConsent" type="checkbox" required> <span>By submitting, I agree that Roof AI Lead Recovery may contact me about my requested audit and acknowledge the <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
           <label class="audit-check"><input name="marketingConsent" type="checkbox"> <span>Send me occasional roofing revenue-recovery tips and product updates. Optional.</span></label>
           <p class="audit-phone-note" data-phone-note hidden>By choosing phone follow-up, you agree to receive a call about this audit. Consent is not a condition of purchase.</p>
-          <button class="button audit-submit" type="submit">Prepare My Free Audit Request</button>
-          <p class="disclaimer">Submitting opens your email app with the request ready to send. If it does not open, email <a href="${auditUrl}">cory@roofaileadrecovery.com</a>.</p>
+          <button class="button audit-submit" type="submit">Request My Free Audit</button>
+          <p class="audit-status" data-audit-status role="status" aria-live="polite"></p>
+          <p class="disclaimer">Your request will be sent securely. If it cannot be submitted, we’ll prepare an email as a fallback.</p>
         </form>
       </div>
     </dialog>`);
@@ -178,6 +180,14 @@
       summary.hidden = true;
     }
     pushEvent("audit_cta_clicked", { page_path: window.location.pathname, cta_location: auditCtaLocation });
+    const submitButton = auditForm?.querySelector(".audit-submit");
+    if (submitButton) {
+      submitButton.hidden = false;
+      submitButton.disabled = false;
+      submitButton.textContent = "Request My Free Audit";
+    }
+    const status = auditForm?.querySelector("[data-audit-status]");
+    if (status) { status.textContent = ""; status.className = "audit-status"; }
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "");
     dialog.querySelector("input")?.focus();
@@ -202,7 +212,7 @@
       pushEvent("audit_form_started", { page_path: window.location.pathname, cta_location: auditCtaLocation });
     }
   });
-  auditForm?.addEventListener("submit", (event) => {
+  auditForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!auditForm.reportValidity()) {
       pushEvent("audit_form_error", { page_path: window.location.pathname, error_type: "validation" });
@@ -223,9 +233,9 @@
     );
     lines.push("", "Attribution:", `Submission page: ${window.location.href}`, `Landing page: ${attribution.landing_page || "Unknown"}`,
       `Referrer: ${attribution.referrer || "direct"}`, ...attributionKeys.map((key) => `${key}: ${attribution[key] || ""}`),
-      "", "Audit contact consent: Yes", "Consent version: audit-form-v1", `Consent timestamp: ${new Date().toISOString()}`,
+      "", "Audit contact consent: Yes", "Consent version: audit-form-v2", `Consent timestamp: ${new Date().toISOString()}`,
       `Marketing updates: ${values.marketingConsent ? "Yes" : "No"}`);
-    pushEvent("audit_form_submitted", {
+    const analytics = {
       page_path: window.location.pathname,
       cta_location: auditCtaLocation,
       preferred_contact: values.preferredContact.toLowerCase().replace(" ", "_"),
@@ -234,8 +244,60 @@
       traffic_source: attribution.utm_source || "direct",
       traffic_medium: attribution.utm_medium || "none",
       traffic_campaign: attribution.utm_campaign || "none",
-    });
-    window.location.href = `${auditUrl}&body=${encodeURIComponent(lines.join("\n"))}`;
+    };
+    const submitButton = auditForm.querySelector(".audit-submit");
+    const status = auditForm.querySelector("[data-audit-status]");
+    submitButton.disabled = true;
+    submitButton.textContent = "Sending request…";
+    status.textContent = "";
+
+    try {
+      const response = await fetch("/api/audit-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: values.fullName,
+          email: values.email,
+          company: values.company,
+          serviceArea: values.serviceArea,
+          phone: values.phone || "",
+          preferredContact: values.preferredContact,
+          currentProcess: values.currentProcess || "",
+          contactConsent: values.contactConsent === "on",
+          marketingConsent: values.marketingConsent === "on",
+          website: values.website || "",
+          submissionPage: window.location.href,
+          attribution,
+          calculator: calculatorModel || null,
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        if (response.status === 429) {
+          status.textContent = "We’ve received several requests from this connection. Please wait an hour or email us directly.";
+          status.className = "audit-status error";
+          pushEvent("audit_form_error", { page_path: window.location.pathname, error_type: "rate_limited" });
+          return;
+        }
+        throw new Error(result.error || "SUBMISSION_FAILED");
+      }
+      pushEvent("audit_form_submitted", analytics);
+      auditForm.reset();
+      dialog.querySelector("[data-audit-calculator-summary]").hidden = true;
+      status.textContent = "Thank you—your audit request was received. We’ll follow up using your preferred contact method.";
+      status.className = "audit-status success";
+      submitButton.hidden = true;
+    } catch (_error) {
+      pushEvent("audit_form_error", { page_path: window.location.pathname, error_type: "service_unavailable" });
+      status.textContent = "Secure submission is temporarily unavailable. Opening your email app with the request prepared…";
+      status.className = "audit-status error";
+      window.location.href = `${auditUrl}&body=${encodeURIComponent(lines.join("\n"))}`;
+    } finally {
+      if (!submitButton.hidden) {
+        submitButton.disabled = false;
+        submitButton.textContent = "Request My Free Audit";
+      }
+    }
   });
 
   document.querySelectorAll('a[href*="/signup"]').forEach((link) => link.addEventListener("click", () => {
