@@ -101,16 +101,19 @@ export default async function handler(req, res) {
 
   const rateKey = crypto.createHmac("sha256", salt).update(`ip:${clientIp(req)}`).digest("hex");
   const emailKey = crypto.createHmac("sha256", salt).update(`email:${payload.email}`).digest("hex");
+  const supabaseHeaders = {
+    apikey: serviceKey,
+    "Content-Type": "application/json",
+  };
+  // New sb_secret_* keys are opaque API keys, not JWTs. Legacy service_role
+  // keys are JWTs and may still be sent as a bearer token for compatibility.
+  if (serviceKey.startsWith("eyJ")) supabaseHeaders.Authorization = `Bearer ${serviceKey}`;
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), SUPABASE_TIMEOUT_MS);
     const response = await fetch(`${supabaseUrl.replace(/\/$/, "")}/rest/v1/rpc/submit_public_audit_request`, {
       method: "POST",
-      headers: {
-        apikey: serviceKey,
-        Authorization: `Bearer ${serviceKey}`,
-        "Content-Type": "application/json",
-      },
+      headers: supabaseHeaders,
       body: JSON.stringify({ p_request: payload, p_rate_key: rateKey, p_email_key: emailKey, p_limit: MAX_REQUESTS_PER_HOUR }),
       signal: controller.signal,
     }).finally(() => clearTimeout(timeout));
