@@ -12,7 +12,7 @@ The hub now posts audit requests to `/api/audit-request`. The Vercel function va
    - `CRON_SECRET` (generate a separate random value with `openssl rand -hex 32`)
 3. Redeploy a preview and submit one test request. Verify a row exists in `audit_requests` and an `AUDIT_REQUEST` item appears in `admin_notifications`.
 4. Confirm the browser success state, then test failure fallback in a preview with the API temporarily unavailable.
-5. Add `{ "path": "/api/cron/purge-audit-requests", "schedule": "17 6 * * *" }` to the existing `crons` array in `vercel.json` (or have the Vercel configuration owner add that array), then confirm one authenticated cron run returns `ok: true`.
+5. Confirm the audit-retention cron entry in `vercel.json` is enabled, then verify one authenticated run returns `ok: true`.
 6. After production deployment, monitor 4xx/5xx function logs and the audit-request queue daily for the first week.
 
 Never expose the service-role key or rate-limit salt through a `VITE_PUBLIC_*` variable.

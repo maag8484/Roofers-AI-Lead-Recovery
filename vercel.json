@@ -22,6 +22,12 @@
       "headers": { "X-Robots-Tag": "noindex" }
     }
   ],
+  "crons": [
+    {
+      "path": "/api/cron/purge-audit-requests",
+      "schedule": "17 6 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/sitemap.xml",
