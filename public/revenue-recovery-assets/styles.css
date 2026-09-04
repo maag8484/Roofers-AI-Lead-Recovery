@@ -427,6 +427,11 @@ h3 { font-size: 1.32rem; }
 .audit-calculator-summary { margin-top: 18px; padding: 14px 16px; border-left: 4px solid var(--orange); border-radius: 8px; background: #fff7eb; font-size: .9rem; }
 .audit-phone-note { margin: 10px 0 0 28px; color: var(--muted); font-size: .8rem; }
 .audit-submit { width: 100%; margin-top: 20px; }
+.audit-submit:disabled { cursor: wait; opacity: .7; transform: none; }
+.audit-status { min-height: 1.5em; margin: 12px 0 0; font-size: .9rem; text-align: center; }
+.audit-status.success { color: var(--green); font-weight: 750; }
+.audit-status.error { color: #9a3412; }
+.audit-trap { position: absolute !important; left: -10000px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
 .audit-modal .disclaimer { margin: 12px 0 0; text-align: center; }
 body:has(.audit-dialog[open]) { overflow: hidden; }
 
