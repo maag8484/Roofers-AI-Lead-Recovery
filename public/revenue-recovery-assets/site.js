@@ -278,9 +278,9 @@
         }),
         signal: controller.signal,
       });
-      const result = await response.json().catch(() => ({}));
-      clearTimeout(timeout);
       if (!response.ok) {
+        const result = await response.json().catch(() => ({}));
+        clearTimeout(timeout);
         if (response.status === 429) {
           status.textContent = "We’ve received several requests from this connection. Please wait an hour or email us directly.";
           status.className = "audit-status error";
@@ -289,6 +289,7 @@
         }
         throw new Error(result.error || "SUBMISSION_FAILED");
       }
+      clearTimeout(timeout);
       pushEvent("audit_form_submitted", analytics);
       auditForm.reset();
       dialog.querySelector("[data-audit-calculator-summary]").hidden = true;
