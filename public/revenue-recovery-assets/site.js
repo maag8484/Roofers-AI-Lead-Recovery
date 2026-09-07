@@ -277,8 +277,9 @@
           calculator: calculatorModel || null,
         }),
         signal: controller.signal,
-      }).finally(() => clearTimeout(timeout));
+      });
       const result = await response.json().catch(() => ({}));
+      clearTimeout(timeout);
       if (!response.ok) {
         if (response.status === 429) {
           status.textContent = "We’ve received several requests from this connection. Please wait an hour or email us directly.";
