@@ -2,7 +2,7 @@ import { LegalLayout, LegalSection } from "@/components/marketing/LegalLayout";
 
 export default function PrivacyPage() {
   return (
-    <LegalLayout title="Privacy Policy" updated="July 28, 2026">
+    <LegalLayout title="Privacy Policy" updated="September 4, 2026">
       <p>
         Welcome to Roof AI Lead Recovery ("Roof AI," "we," "our," or "us"). We value your privacy and
         are committed to protecting your personal and business information. This Privacy Policy explains
@@ -91,6 +91,12 @@ export default function PrivacyPage() {
         <p>
           We retain information only as long as necessary to provide our services, comply with legal
           obligations, resolve disputes, and enforce our agreements.
+        </p>
+        <p className="mt-3">
+          Missed Revenue Audit requests are retained for up to 18 months. Requests identified as spam are
+          deleted after 30 days, and one-way identifiers used only for submission rate limiting are removed
+          after 24 hours. You may request earlier deletion using the contact information below, subject to
+          legal obligations that require us to keep particular records.
         </p>
       </LegalSection>
 

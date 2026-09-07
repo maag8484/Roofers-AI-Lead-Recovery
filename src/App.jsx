@@ -25,6 +25,7 @@ import AdminCustomerDetailPage from "@/pages/admin/CustomerDetailPage";
 import AdminOnboardingPage from "@/pages/admin/OnboardingPage";
 import AdminScrapedLeadsPage from "@/pages/admin/ScrapedLeadsPage";
 import AdminAuditPage from "@/pages/admin/AuditPage";
+import AdminAuditRequestsPage from "@/pages/admin/AuditRequestsPage";
 import AdminNotificationsPage from "@/pages/admin/NotificationsPage";
 import AdminBillingPage from "@/pages/admin/BillingPage";
 import AdminSettingsPage from "@/pages/admin/SettingsPage";
@@ -129,6 +130,7 @@ export default function App() {
         <Route path="onboarding" element={<AdminOnboardingPage />} />
         <Route path="scraped-leads" element={<AdminScrapedLeadsPage />} />
         <Route path="audit" element={<AdminAuditPage />} />
+        <Route path="audit-requests" element={<AdminAuditRequestsPage />} />
         <Route path="notifications" element={<AdminNotificationsPage />} />
         <Route path="billing" element={<AdminBillingPage />} />
         <Route path="settings" element={<AdminSettingsPage />} />

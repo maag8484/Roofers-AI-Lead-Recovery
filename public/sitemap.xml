@@ -3,31 +3,9 @@
   <!-- Homepage (highest priority) -->
   <url>
     <loc>https://www.roofaileadrecovery.com/</loc>
-    <lastmod>2026-08-27</lastmod>
+    <lastmod>2026-09-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-  </url>
-
-  <!-- Signup / conversion page -->
-  <url>
-    <loc>https://www.roofaileadrecovery.com/signup</loc>
-    <lastmod>2026-08-27</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Legal pages (trust signals) -->
-  <url>
-    <loc>https://www.roofaileadrecovery.com/privacy</loc>
-    <lastmod>2026-08-27</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
-  </url>
-  <url>
-    <loc>https://www.roofaileadrecovery.com/terms</loc>
-    <lastmod>2026-08-27</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
   </url>
 
   <!-- Roofing Revenue Recovery Hub and cornerstone pages -->

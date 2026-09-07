@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 const SITE_URL = "https://www.roofaileadrecovery.com";
 const HOME_TITLE = "Roof AI Lead Recovery | Recover Missed Roofing Leads & Book Estimates";
 const HOME_DESCRIPTION =
-  "Roof AI Lead Recovery helps roofing companies recover missed calls and lost leads with AI-powered follow-up that books more roofing estimates.";
+  "Roof AI helps roofing companies respond to missed and after-hours calls, qualify opportunities, and move homeowners toward an approved next step.";
 
 function updateMeta(selector, attribute, value) {
   const element = document.head.querySelector(selector);
