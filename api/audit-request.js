@@ -72,7 +72,12 @@ function requestOriginAllowed(req) {
 }
 
 function json(res, status, body) {
-  res.status(status).setHeader("Content-Type", "application/json").setHeader("Cache-Control", "no-store").json(body);
+  const payload = JSON.stringify(body);
+  res.statusCode = status;
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Content-Length", Buffer.byteLength(payload));
+  res.end(payload);
 }
 
 export default async function handler(req, res) {
