@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 const MAX_BODY_BYTES = 16_384;
 const MAX_REQUESTS_PER_HOUR = 5;
 const SUPABASE_TIMEOUT_MS = 8_000;
+const EMAIL_TIMEOUT_MS = 2_500;
 
 const text = (value, max) => typeof value === "string" ? value.trim().slice(0, max) : "";
 
@@ -80,6 +81,75 @@ function json(res, status, body) {
   res.end(payload);
 }
 
+function notificationText(payload, requestId) {
+  const calculator = payload.calculator || {};
+  const money = (value) => new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(Number(value) || 0);
+  return [
+    "New missed revenue audit request",
+    "",
+    `Request ID: ${requestId}`,
+    `Name: ${payload.full_name}`,
+    `Work email: ${payload.email}`,
+    `Roofing company: ${payload.company}`,
+    `Service area: ${payload.service_area}`,
+    `Phone: ${payload.phone || "Not provided"}`,
+    `Preferred follow-up: ${payload.preferred_contact}`,
+    `Current missed-call process: ${payload.current_process || "Not provided"}`,
+    "",
+    "Calculator scenario:",
+    `Missed calls/month: ${calculator.missed_calls || 0}`,
+    `Modeled monthly gross revenue at risk: ${money(calculator.monthly_risk)}`,
+    `Modeled annual gross revenue at risk: ${money(calculator.annual_risk)}`,
+    "",
+    "Attribution:",
+    `Source: ${payload.attribution?.utm_source || "direct"}`,
+    `Medium: ${payload.attribution?.utm_medium || "none"}`,
+    `Campaign: ${payload.attribution?.utm_campaign || "none"}`,
+    `Content: ${payload.attribution?.utm_content || "none"}`,
+    `Submission page: ${payload.submission_page || "Unknown"}`,
+  ].join("\n");
+}
+
+async function sendAuditNotification(payload, requestId) {
+  const apiKey = process.env.SENDGRID_API_KEY;
+  if (!apiKey) return { sent: false, reason: "NOT_CONFIGURED" };
+
+  const to = process.env.AUDIT_NOTIFICATION_TO || "cory@roofaileadrecovery.com";
+  const from = process.env.AUDIT_NOTIFICATION_FROM || process.env.SENDGRID_FROM_EMAIL || "support@roofaileadrecovery.com";
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), EMAIL_TIMEOUT_MS);
+  try {
+    const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email: to }], subject: `[Roof AI] New audit request — ${payload.company}` }],
+        from: { email: from, name: "Roof AI Lead Recovery" },
+        reply_to: { email: payload.email, name: payload.full_name },
+        content: [{ type: "text/plain", value: notificationText(payload, requestId) }],
+      }),
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      console.error("[audit-request] Notification email failed", response.status);
+      return { sent: false, reason: "PROVIDER_ERROR" };
+    }
+    return { sent: true };
+  } catch (error) {
+    console.error("[audit-request] Notification email failed", error instanceof Error ? error.message : "unknown");
+    return { sent: false, reason: "PROVIDER_ERROR" };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", "POST");
@@ -130,7 +200,8 @@ export default async function handler(req, res) {
       console.error("[audit-request] Supabase RPC failed", response.status, result?.message || result?.error || "unknown");
       return json(res, 502, { ok: false, error: "SUBMISSION_FAILED" });
     }
-    return json(res, 201, { ok: true, requestId: result.id });
+    const notification = await sendAuditNotification(payload, result.id);
+    return json(res, 201, { ok: true, requestId: result.id, notificationSent: notification.sent });
   } catch (error) {
     console.error("[audit-request] Submission failed", error instanceof Error ? error.message : "unknown");
     return json(res, 502, { ok: false, error: "SUBMISSION_FAILED" });

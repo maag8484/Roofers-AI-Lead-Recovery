@@ -428,6 +428,7 @@ h3 { font-size: 1.32rem; }
 .audit-phone-note { margin: 10px 0 0 28px; color: var(--muted); font-size: .8rem; }
 .audit-submit { width: 100%; margin-top: 20px; }
 .audit-submit:disabled { cursor: wait; opacity: .7; transform: none; }
+.audit-submit.is-success:disabled { cursor: default; opacity: 1; background: var(--green); }
 .audit-status { min-height: 1.5em; margin: 12px 0 0; font-size: .9rem; text-align: center; }
 .audit-status.success { color: var(--green); font-weight: 750; }
 .audit-status.error { color: #9a3412; }

@@ -75,6 +75,10 @@ test("audit submission is attributed only after an accepted API response", async
   assert.equal(submissions[0].traffic_content, "0909_calculator");
   assert.equal(submissions[0].calculator_included, true);
   assert.equal(events(dom.window, "audit_form_submitted").length, 1);
+  const submitButton = form.querySelector(".audit-submit");
+  assert.equal(submitButton.textContent, "Request received");
+  assert.equal(submitButton.disabled, true);
+  assert.equal(submitButton.classList.contains("is-success"), true);
   dom.window.close();
 });
 

@@ -36,6 +36,8 @@ Raw IP addresses are not stored. The API creates salted one-way IP and email rat
 
 ## Admin notification and follow-up
 
-Each accepted request creates an admin notification containing only the audit request ID and a secure link to `/admin/audit-requests`. The admin-only queue shows contact details, consent, calculator inputs and attribution, and lets an administrator move each request through `new`, `contacted`, `qualified`, `closed` or `spam`. An email or Slack alert can later subscribe to `AUDIT_REQUEST` notifications, but no automatic outbound message is enabled in this change.
+Each accepted request creates an admin notification containing only the audit request ID and a secure link to `/admin/audit-requests`. The admin-only queue shows contact details, consent, calculator inputs and attribution, and lets an administrator move each request through `new`, `contacted`, `qualified`, `closed` or `spam`.
+
+When `SENDGRID_API_KEY` is configured for the Vercel deployment, each accepted request also sends a non-blocking internal email alert. Set `AUDIT_NOTIFICATION_FROM` to a verified SendGrid sender and `AUDIT_NOTIFICATION_TO` to the inbox that should receive new-request alerts. Email delivery failures do not reject or discard a request; the admin notification and audit queue remain the source of truth.
 
 Retention is explicit and enforced by `purge_expired_audit_requests`: one-way rate keys are cleared after 24 hours, spam is deleted after 30 days, and all audit-request records are deleted after 18 months. The Vercel cron endpoint runs this RPC daily. Keep the cron configured and review this policy with counsel before changing the periods.

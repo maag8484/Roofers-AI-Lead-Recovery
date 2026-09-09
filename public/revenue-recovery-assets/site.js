@@ -233,6 +233,7 @@
       submitButton.hidden = false;
       submitButton.disabled = false;
       submitButton.textContent = "Request My Free Audit";
+      submitButton.classList.remove("is-success");
     }
     const status = auditForm?.querySelector("[data-audit-status]");
     if (status) { status.textContent = ""; status.className = "audit-status"; }
@@ -339,14 +340,16 @@
       dialog.querySelector("[data-audit-calculator-summary]").hidden = true;
       status.textContent = "Thank you—your audit request was received. We’ll follow up using your preferred contact method.";
       status.className = "audit-status success";
-      submitButton.hidden = true;
+      submitButton.disabled = true;
+      submitButton.textContent = "Request received";
+      submitButton.classList.add("is-success");
     } catch (_error) {
       pushEvent("audit_form_error", { page_path: window.location.pathname, error_type: "service_unavailable" });
       status.textContent = "Secure submission is temporarily unavailable. Opening your email app with the request prepared…";
       status.className = "audit-status error";
       window.location.href = `${auditUrl}&body=${encodeURIComponent(lines.join("\n"))}`;
     } finally {
-      if (!submitButton.hidden) {
+      if (!submitButton.classList.contains("is-success")) {
         submitButton.disabled = false;
         submitButton.textContent = "Request My Free Audit";
       }
