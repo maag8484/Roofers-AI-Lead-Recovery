@@ -21,10 +21,23 @@ Never expose the service-role key or rate-limit salt through a `VITE_PUBLIC_*` v
 
 Contact-consent and marketing-consent are separate. The record stores the consent version and timestamp, attribution, submission page, and optional calculator assumptions. Analytics events contain funnel dimensions only; name, email, phone, company, service area, and free text are not sent to the data layer.
 
+## Conversion analytics
+
+The shared revenue-hub script loads the existing Google Tag Manager container (`GTM-WKMDN97L`) on the static hub pages and emits two qualified-intent events:
+
+- `calculator_complete` fires once per page view after all four calculator inputs contain valid positive values and the visitor commits the completed scenario by changing focus or submitting the form.
+- `audit_submit` fires only after `/api/audit-request` returns a successful response. Validation errors, rate limits, API failures, and prepared-email fallbacks do not count as submissions.
+
+Both events include `page_path`, `traffic_source`, `traffic_medium`, `traffic_campaign`, `traffic_content`, and a non-identifying `revenue_risk_band`. `calculator_complete` also includes `calculator_version`; `audit_submit` includes CTA location, preferred contact, and whether a calculator scenario was attached. The existing `audit_form_submitted` event remains temporarily for backwards-compatible reporting.
+
+In Google Tag Manager, create Custom Event triggers for the exact event names `calculator_complete` and `audit_submit`, send them through the existing GA4 configuration, and mark both as key events in GA4. Register the traffic and funnel fields as event-scoped custom dimensions if they are not already available. Verify in Tag Assistant and GA4 DebugView before treating dashboard counts as production data.
+
 Raw IP addresses are not stored. The API creates salted one-way IP and email rate keys; rotate the salt if it is exposed. The database RPC uses advisory transaction locks to prevent concurrent requests from bypassing the limits (five submissions per connection/hour and three per email/day). A same-origin check and hidden honeypot handle common automated abuse without writing a record. Client and server requests fail into the prepared-email fallback after 10 and 8 seconds respectively.
 
 ## Admin notification and follow-up
 
-Each accepted request creates an admin notification containing only the audit request ID and a secure link to `/admin/audit-requests`. The admin-only queue shows contact details, consent, calculator inputs and attribution, and lets an administrator move each request through `new`, `contacted`, `qualified`, `closed` or `spam`. An email or Slack alert can later subscribe to `AUDIT_REQUEST` notifications, but no automatic outbound message is enabled in this change.
+Each accepted request creates an admin notification containing only the audit request ID and a secure link to `/admin/audit-requests`. The admin-only queue shows contact details, consent, calculator inputs and attribution, and lets an administrator move each request through `new`, `contacted`, `qualified`, `closed` or `spam`.
+
+When `SENDGRID_API_KEY` is configured for the Vercel deployment, each accepted request also sends a non-blocking internal email alert. Set `AUDIT_NOTIFICATION_FROM` to a verified SendGrid sender and `AUDIT_NOTIFICATION_TO` to the inbox that should receive new-request alerts. Email delivery failures do not reject or discard a request; the admin notification and audit queue remain the source of truth.
 
 Retention is explicit and enforced by `purge_expired_audit_requests`: one-way rate keys are cleared after 24 hours, spam is deleted after 30 days, and all audit-request records are deleted after 18 months. The Vercel cron endpoint runs this RPC daily. Keep the cron configured and review this policy with counsel before changing the periods.
