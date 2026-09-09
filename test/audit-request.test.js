@@ -104,6 +104,34 @@ test("accepted requests send an internal notification when SendGrid is configure
   assert.match(email.content[0].value, /Example Roofing/);
 });
 
+test("notification trims copied keys and retries the EU endpoint after a regional 401", async (t) => {
+  const oldFetch = global.fetch;
+  const oldEnv = { ...process.env };
+  process.env.SUPABASE_URL = "https://project.supabase.co";
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "test-service-key";
+  process.env.AUDIT_RATE_LIMIT_SALT = "test-salt";
+  process.env.SENDGRID_API_KEY = '  "SG.region-key"  ';
+  process.env.AUDIT_NOTIFICATION_FROM = "verified@roofaileadrecovery.com";
+  process.env.AUDIT_NOTIFICATION_TO = "cory@roofaileadrecovery.com";
+  const calls = [];
+  global.fetch = async (url, options) => {
+    calls.push({ url, options });
+    if (url.includes("/rest/v1/rpc/")) {
+      return { ok: true, status: 200, json: async () => ({ id: "request-eu" }) };
+    }
+    if (url.startsWith("https://api.sendgrid.com/")) return { ok: false, status: 401 };
+    return { ok: true, status: 202 };
+  };
+  t.after(() => { global.fetch = oldFetch; process.env = oldEnv; });
+
+  const res = responseDouble();
+  await handler({ method: "POST", body: valid, headers: { "x-forwarded-for": "203.0.113.7" }, socket: {} }, res);
+
+  assert.equal(res.body.notificationSent, true);
+  assert.equal(calls[2].url, "https://api.eu.sendgrid.com/v3/mail/send");
+  assert.equal(calls[1].options.headers.Authorization, "Bearer SG.region-key");
+});
+
 test("cross-origin browser submission is rejected", async () => {
   const res = responseDouble();
   await handler({ method: "POST", body: valid, headers: { origin: "https://evil.example", host: "www.roofaileadrecovery.com" }, socket: {} }, res);

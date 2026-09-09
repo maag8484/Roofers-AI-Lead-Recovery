@@ -115,33 +115,48 @@ function notificationText(payload, requestId) {
 }
 
 async function sendAuditNotification(payload, requestId) {
-  const apiKey = process.env.SENDGRID_API_KEY;
+  const rawApiKey = process.env.SENDGRID_API_KEY || "";
+  const trimmedKey = rawApiKey.trim();
+  const quoted = trimmedKey.match(/^(["'])(.*)\1$/s);
+  const apiKey = quoted ? quoted[2].trim() : trimmedKey;
   if (!apiKey) return { sent: false, reason: "NOT_CONFIGURED" };
 
   const to = process.env.AUDIT_NOTIFICATION_TO || "cory@roofaileadrecovery.com";
   const from = process.env.AUDIT_NOTIFICATION_FROM || process.env.SENDGRID_FROM_EMAIL || "support@roofaileadrecovery.com";
+  const configuredBase = (process.env.SENDGRID_API_BASE_URL || "").trim().replace(/\/$/, "");
+  const baseUrls = configuredBase
+    ? [configuredBase]
+    : ["https://api.sendgrid.com", "https://api.eu.sendgrid.com"];
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), EMAIL_TIMEOUT_MS);
   try {
-    const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        personalizations: [{ to: [{ email: to }], subject: `[Roof AI] New audit request — ${payload.company}` }],
-        from: { email: from, name: "Roof AI Lead Recovery" },
-        reply_to: { email: payload.email, name: payload.full_name },
-        content: [{ type: "text/plain", value: notificationText(payload, requestId) }],
-      }),
-      signal: controller.signal,
+    const body = JSON.stringify({
+      personalizations: [{ to: [{ email: to }], subject: `[Roof AI] New audit request — ${payload.company}` }],
+      from: { email: from, name: "Roof AI Lead Recovery" },
+      reply_to: { email: payload.email, name: payload.full_name },
+      content: [{ type: "text/plain", value: notificationText(payload, requestId) }],
     });
-    if (!response.ok) {
-      console.error("[audit-request] Notification email failed", response.status);
-      return { sent: false, reason: "PROVIDER_ERROR" };
+    const statuses = [];
+    for (const baseUrl of baseUrls) {
+      const response = await fetch(`${baseUrl}/v3/mail/send`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body,
+        signal: controller.signal,
+      });
+      statuses.push(response.status);
+      if (response.ok) return { sent: true };
+      if (response.status !== 401) break;
     }
-    return { sent: true };
+    console.error("[audit-request] Notification email failed", statuses.join(","), {
+      keyPrefixValid: apiKey.startsWith("SG."),
+      keyLength: apiKey.length,
+      whitespaceRemoved: rawApiKey !== trimmedKey || Boolean(quoted),
+    });
+    return { sent: false, reason: "PROVIDER_ERROR" };
   } catch (error) {
     console.error("[audit-request] Notification email failed", error instanceof Error ? error.message : "unknown");
     return { sent: false, reason: "PROVIDER_ERROR" };
