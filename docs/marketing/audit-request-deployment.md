@@ -21,6 +21,17 @@ Never expose the service-role key or rate-limit salt through a `VITE_PUBLIC_*` v
 
 Contact-consent and marketing-consent are separate. The record stores the consent version and timestamp, attribution, submission page, and optional calculator assumptions. Analytics events contain funnel dimensions only; name, email, phone, company, service area, and free text are not sent to the data layer.
 
+## Conversion analytics
+
+The shared revenue-hub script loads the existing Google Tag Manager container (`GTM-WKMDN97L`) on the static hub pages and emits two qualified-intent events:
+
+- `calculator_complete` fires once per page view after all four calculator inputs contain valid positive values and the visitor commits the completed scenario by changing focus or submitting the form.
+- `audit_submit` fires only after `/api/audit-request` returns a successful response. Validation errors, rate limits, API failures, and prepared-email fallbacks do not count as submissions.
+
+Both events include `page_path`, `traffic_source`, `traffic_medium`, `traffic_campaign`, `traffic_content`, and a non-identifying `revenue_risk_band`. `calculator_complete` also includes `calculator_version`; `audit_submit` includes CTA location, preferred contact, and whether a calculator scenario was attached. The existing `audit_form_submitted` event remains temporarily for backwards-compatible reporting.
+
+In Google Tag Manager, create Custom Event triggers for the exact event names `calculator_complete` and `audit_submit`, send them through the existing GA4 configuration, and mark both as key events in GA4. Register the traffic and funnel fields as event-scoped custom dimensions if they are not already available. Verify in Tag Assistant and GA4 DebugView before treating dashboard counts as production data.
+
 Raw IP addresses are not stored. The API creates salted one-way IP and email rate keys; rotate the salt if it is exposed. The database RPC uses advisory transaction locks to prevent concurrent requests from bypassing the limits (five submissions per connection/hour and three per email/day). A same-origin check and hidden honeypot handle common automated abuse without writing a record. Client and server requests fail into the prepared-email fallback after 10 and 8 seconds respectively.
 
 ## Admin notification and follow-up

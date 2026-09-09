@@ -20,6 +20,7 @@ function responseDouble() {
     status(code) { this.statusCode = code; return this; },
     setHeader(key, value) { this.headers[key] = value; return this; },
     json(body) { this.body = body; return this; },
+    end(body) { this.body = body ? JSON.parse(body) : null; return this; },
   };
 }
 
@@ -54,7 +55,7 @@ test("valid request calls the Supabase RPC and returns its request id", async (t
   let rpcBody;
   global.fetch = async (url, options) => {
     assert.equal(url, "https://project.supabase.co/rest/v1/rpc/submit_public_audit_request");
-    assert.equal(options.headers.Authorization, "Bearer test-service-key");
+    assert.equal(options.headers.Authorization, undefined);
     rpcBody = JSON.parse(options.body);
     return { ok: true, status: 200, json: async () => ({ id: "request-123" }) };
   };

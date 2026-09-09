@@ -1,11 +1,21 @@
 (() => {
   const auditUrl = "mailto:cory@roofaileadrecovery.com?subject=Free%20Missed%20Revenue%20Audit";
   const homeUrl = "/roofing-revenue-recovery/";
+  const tagManagerId = "GTM-WKMDN97L";
   const attributionKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "fbclid"];
   const query = new URLSearchParams(window.location.search);
   const pushEvent = (event, details = {}) => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ event, ...details });
+  };
+  const ensureTagManager = () => {
+    window.dataLayer = window.dataLayer || [];
+    if (document.querySelector(`script[src*="googletagmanager.com/gtm.js?id=${tagManagerId}"]`)) return;
+    window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtm.js?id=${tagManagerId}`;
+    document.head.appendChild(script);
   };
   const readStoredAttribution = () => {
     try { return JSON.parse(localStorage.getItem("roof_ai_first_touch") || "null"); }
@@ -22,12 +32,20 @@
     if (!readStoredAttribution()) localStorage.setItem("roof_ai_first_touch", JSON.stringify(firstTouch));
   } catch { /* Attribution still works for this page when storage is unavailable. */ }
 
-  pushEvent("hub_page_view", {
-    page_path: window.location.pathname,
-    page_type: window.location.pathname.includes("/resources/") ? "resource" : "cornerstone",
+  const eventAttribution = () => ({
     traffic_source: currentAttribution.utm_source || firstTouch.utm_source || "direct",
     traffic_medium: currentAttribution.utm_medium || firstTouch.utm_medium || "none",
     traffic_campaign: currentAttribution.utm_campaign || firstTouch.utm_campaign || "none",
+    traffic_content: currentAttribution.utm_content || firstTouch.utm_content || "none",
+  });
+  const riskBand = (value) => value >= 100000 ? "100k_plus" : value >= 50000 ? "50k_100k" : value >= 10000 ? "10k_50k" : "under_10k";
+
+  ensureTagManager();
+
+  pushEvent("hub_page_view", {
+    page_path: window.location.pathname,
+    page_type: window.location.pathname.includes("/resources/") ? "resource" : "cornerstone",
+    ...eventAttribution(),
   });
   const header = `
     <a class="skip-link" href="#main">Skip to content</a>
@@ -152,14 +170,39 @@
     };
 
     let calculatorStarted = false;
+    let calculatorCompleted = false;
+    const completeScenario = () => {
+      const inputs = [missed, legitimate, closeRate, jobValue];
+      return calculator.checkValidity()
+        && inputs.every((input) => input.value.trim() !== "" && Number(input.value) > 0)
+        && calculatorModel?.monthlyRisk > 0;
+    };
+    const trackCalculatorComplete = () => {
+      if (calculatorCompleted || !completeScenario()) return;
+      calculatorCompleted = true;
+      pushEvent("calculator_complete", {
+        page_path: window.location.pathname,
+        ...eventAttribution(),
+        revenue_risk_band: riskBand(calculatorModel.monthlyRisk),
+        calculator_version: "missed_revenue_v1",
+      });
+    };
     calculator.addEventListener("input", () => {
       if (!calculatorStarted) {
         calculatorStarted = true;
-        pushEvent("calculator_started", { page_path: window.location.pathname });
+        pushEvent("calculator_started", { page_path: window.location.pathname, ...eventAttribution() });
       }
       calculate();
     });
-    calculator.addEventListener("submit", (event) => event.preventDefault());
+    calculator.addEventListener("change", () => {
+      calculate();
+      trackCalculatorComplete();
+    });
+    calculator.addEventListener("submit", (event) => {
+      event.preventDefault();
+      calculate();
+      trackCalculatorComplete();
+    });
     calculate();
   }
 
@@ -174,7 +217,6 @@
     phoneInput.required = phoneSelected;
   };
   let auditCtaLocation = "unknown";
-  const riskBand = (value) => value >= 100000 ? "100k_plus" : value >= 50000 ? "50k_100k" : value >= 10000 ? "10k_50k" : "under_10k";
 
   const openAudit = (link) => {
     auditCtaLocation = link.closest(".site-header") ? "header" : link.closest(".site-footer") ? "footer" : link.closest(".cta-band") ? "cta_band" : link.closest(".sidebar") ? "sidebar" : "content";
@@ -248,6 +290,7 @@
       traffic_source: attribution.utm_source || "direct",
       traffic_medium: attribution.utm_medium || "none",
       traffic_campaign: attribution.utm_campaign || "none",
+      traffic_content: attribution.utm_content || "none",
     };
     const submitButton = auditForm.querySelector(".audit-submit");
     const status = auditForm.querySelector("[data-audit-status]");
@@ -290,6 +333,7 @@
         throw new Error(result.error || "SUBMISSION_FAILED");
       }
       clearTimeout(timeout);
+      pushEvent("audit_submit", analytics);
       pushEvent("audit_form_submitted", analytics);
       auditForm.reset();
       dialog.querySelector("[data-audit-calculator-summary]").hidden = true;
