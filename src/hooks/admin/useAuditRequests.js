@@ -11,7 +11,7 @@ export function useAuditRequests() {
     setError(null);
     const { data, error: queryError } = await supabase
       .from("audit_requests")
-      .select("id, full_name, email, company, service_area, phone, preferred_contact, current_process, contact_consent, marketing_consent, consent_version, consented_at, submission_page, attribution, calculator, status, created_at")
+      .select("id, full_name, email, company, service_area, phone, preferred_contact, current_process, contact_consent, marketing_consent, consent_version, consented_at, ai_demo_requested, ai_demo_consent, submission_page, attribution, calculator, status, created_at")
       .order("created_at", { ascending: false })
       .limit(250);
     if (queryError) setError(queryError);

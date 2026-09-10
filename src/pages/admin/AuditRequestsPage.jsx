@@ -51,7 +51,7 @@ export default function AuditRequestsPage() {
               <th className="px-4 py-3 font-medium">Received</th><th className="px-4 py-3 font-medium">Company</th><th className="px-4 py-3 font-medium">Contact</th><th className="px-4 py-3 font-medium">Service area</th><th className="px-4 py-3 font-medium">Status</th>
             </tr></thead>
             <tbody>{visible.map((row) => <tr key={row.id} onClick={() => { setSelected(row); setParams({ request: row.id }, { replace: true }); }} className="cursor-pointer border-b border-border/60 hover:bg-secondary/40">
-              <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">{formatDateTime(row.created_at)}</td><td className="px-4 py-3 font-medium text-ink">{row.company}</td><td className="px-4 py-3"><div>{row.full_name}</div><div className="text-xs text-muted-foreground">{row.email}</div></td><td className="px-4 py-3 text-muted-foreground">{row.service_area}</td><td className="px-4 py-3"><span className="rounded-full bg-secondary px-2 py-1 text-xs font-medium">{row.status}</span></td>
+              <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">{formatDateTime(row.created_at)}</td><td className="px-4 py-3 font-medium text-ink">{row.company}{row.ai_demo_requested && <div className="mt-1 text-xs font-medium text-brand-600">AI demo requested</div>}</td><td className="px-4 py-3"><div>{row.full_name}</div><div className="text-xs text-muted-foreground">{row.email}</div></td><td className="px-4 py-3 text-muted-foreground">{row.service_area}</td><td className="px-4 py-3"><span className="rounded-full bg-secondary px-2 py-1 text-xs font-medium">{row.status}</span></td>
             </tr>)}</tbody>
           </table></div>}
       </CardContent></Card>
@@ -59,6 +59,11 @@ export default function AuditRequestsPage() {
         {selected && <div className="space-y-5 text-sm">
           <div><label className="mb-1 block text-xs uppercase text-muted-foreground">Status</label><select value={selected.status} onChange={(e) => changeStatus(selected.id, e.target.value)} className="w-full rounded-lg border border-border bg-white px-3 py-2">{STATUSES.map((s) => <option key={s}>{s}</option>)}</select></div>
           <Fields row={selected} />
+          {selected.ai_demo_requested && <section className="space-y-2 rounded-lg border border-border p-3" aria-label="AI demo request">
+            <h3 className="font-semibold text-ink">AI demo requested — review required</h3>
+            <p>One AI voice sales demo was requested. Verify the number and permission, check current suppression and calling eligibility, and obtain pilot approval before dispatch. This request does not clear an opt-out or schedule a call.</p>
+            <JsonBlock label="Saved AI demo permission" value={selected.ai_demo_consent} />
+          </section>}
           <JsonBlock label="Calculator assumptions" value={selected.calculator} />
           <JsonBlock label="Attribution" value={selected.attribution} />
           <p className="text-xs text-muted-foreground">Consent: {selected.consent_version} at {formatDateTime(selected.consented_at)} · marketing {selected.marketing_consent ? "opted in" : "not opted in"}</p>
@@ -70,7 +75,7 @@ export default function AuditRequestsPage() {
 
 function Fields({ row }) {
   return <dl className="space-y-3">{[
-    ["Company", row.company], ["Contact", row.full_name], ["Email", row.email], ["Phone", row.phone || "—"], ["Preferred follow-up", row.preferred_contact], ["Service area", row.service_area], ["Current process", row.current_process || "—"], ["Submission page", row.submission_page || "—"]
+    ["Company", row.company], ["Contact", row.full_name], ["Email", row.email], ["Phone", row.phone || "—"], ["Preferred follow-up", row.preferred_contact], ["AI demo call", row.ai_demo_requested ? "Requested — review required" : "Not requested"], ["Service area", row.service_area], ["Current process", row.current_process || "—"], ["Submission page", row.submission_page || "—"]
   ].map(([label, value]) => <div key={label}><dt className="text-xs uppercase text-muted-foreground">{label}</dt><dd className="break-words text-ink">{value}</dd></div>)}</dl>;
 }
 
