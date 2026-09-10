@@ -7,6 +7,20 @@ const EMAIL_TIMEOUT_MS = 2_500;
 
 const text = (value, max) => typeof value === "string" ? value.trim().slice(0, max) : "";
 
+export const AI_DEMO_CONSENT_VERSION = "ai-demo-call-v1";
+// Keep the visible disclosure in site.js identical; the DOM tests check this.
+export const AI_DEMO_CONSENT_TEXT = "By checking this box and submitting with my full name as my electronic signature, I authorize Roof AI Lead Recovery to call the phone number I entered once to demonstrate and discuss its revenue-recovery services using an AI-generated (artificial) voice. I confirm I am the subscriber or customary user of this number. Consent is optional and is not a condition of an audit or purchase. I can withdraw consent before the call by emailing cory@roofaileadrecovery.com, or ask not to be called during the call.";
+
+export function normalizeDemoPhone(value) {
+  if (typeof value !== "string" || value.trim().length > 30) return null;
+  const raw = text(value, 30);
+  if (!/^\+?[\d\s().-]+$/.test(raw)) return null;
+  const digits = raw.replace(/\D/g, "");
+  const national = digits.length === 11 && digits.startsWith("1") ? digits.slice(1) : digits;
+  if (raw.startsWith("+") && (digits.length !== 11 || !digits.startsWith("1"))) return null;
+  return /^[2-9]\d{2}[2-9]\d{6}$/.test(national) ? `+1${national}` : null;
+}
+
 export function validateAuditRequest(input) {
   const data = input && typeof input === "object" ? input : {};
   const payload = {
@@ -19,6 +33,8 @@ export function validateAuditRequest(input) {
     current_process: text(data.currentProcess, 500) || null,
     contact_consent: data.contactConsent === true,
     marketing_consent: data.marketingConsent === true,
+    ai_demo_requested: data.aiDemoRequested === true,
+    ai_demo_consent: null,
     consent_version: "audit-form-v2",
     consented_at: new Date().toISOString(),
     submission_page: text(data.submissionPage, 500),
@@ -34,6 +50,27 @@ export function validateAuditRequest(input) {
   if (!["email", "phone"].includes(payload.preferred_contact)) errors.push("preferredContact");
   if (payload.preferred_contact === "phone" && !payload.phone) errors.push("phone");
   if (!payload.contact_consent) errors.push("contactConsent");
+  if (data.aiDemoRequested !== undefined && typeof data.aiDemoRequested !== "boolean") errors.push("aiDemoRequested");
+  if (payload.ai_demo_requested) {
+    const phone = normalizeDemoPhone(data.phone);
+    if (!phone && !errors.includes("phone")) errors.push("phone");
+    if (data.aiDemoConsentVersion !== AI_DEMO_CONSENT_VERSION) errors.push("aiDemoConsentVersion");
+    if (phone && payload.full_name && data.aiDemoConsentVersion === AI_DEMO_CONSENT_VERSION) {
+      // The client supplies only an affirmative choice and the displayed version.
+      // Wording, scope and signature identity are generated from validated fields;
+      // the database adds its own timestamp when the evidence is committed.
+      payload.ai_demo_consent = {
+        version: AI_DEMO_CONSENT_VERSION,
+        text: AI_DEMO_CONSENT_TEXT,
+        phone_e164: phone,
+        signer_name: payload.full_name,
+        scope: "roof_ai_ai_voice_sales_demo",
+        max_calls: 1,
+        method: "checkbox_and_typed_name",
+        submission_page: payload.submission_page,
+      };
+    }
+  }
   return { payload, errors };
 }
 
@@ -98,6 +135,12 @@ function notificationText(payload, requestId) {
     `Service area: ${payload.service_area}`,
     `Phone: ${payload.phone || "Not provided"}`,
     `Preferred follow-up: ${payload.preferred_contact}`,
+    `AI demo request: ${payload.ai_demo_requested ? "Requested — review required before calling" : "Not requested"}`,
+    ...(payload.ai_demo_requested ? [
+      `AI demo number: ${payload.ai_demo_consent.phone_e164}`,
+      `AI demo consent version: ${payload.ai_demo_consent.version}`,
+      "Review the saved consent, number ownership, suppression and calling eligibility in the admin inbox. This request does not authorize automatic dispatch.",
+    ] : []),
     `Current missed-call process: ${payload.current_process || "Not provided"}`,
     "",
     "Calculator scenario:",
@@ -215,8 +258,14 @@ export default async function handler(req, res) {
       console.error("[audit-request] Supabase RPC failed", response.status, result?.message || result?.error || "unknown");
       return json(res, 502, { ok: false, error: "SUBMISSION_FAILED" });
     }
+    if (payload.ai_demo_requested && result.ai_demo_consent_saved !== true) {
+      // An older RPC can save the audit while silently omitting new fields.
+      // Never report a captured AI request unless the updated database confirms it.
+      console.error("[audit-request] AI demo consent persistence was not confirmed");
+      return json(res, 502, { ok: false, error: "AI_DEMO_CONSENT_NOT_SAVED" });
+    }
     const notification = await sendAuditNotification(payload, result.id);
-    return json(res, 201, { ok: true, requestId: result.id, notificationSent: notification.sent });
+    return json(res, 201, { ok: true, requestId: result.id, notificationSent: notification.sent, ...(payload.ai_demo_requested ? { aiDemoRequested: true } : {}) });
   } catch (error) {
     console.error("[audit-request] Submission failed", error instanceof Error ? error.message : "unknown");
     return json(res, 502, { ok: false, error: "SUBMISSION_FAILED" });

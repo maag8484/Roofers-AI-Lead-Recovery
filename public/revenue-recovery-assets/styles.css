@@ -424,6 +424,10 @@ h3 { font-size: 1.32rem; }
 .audit-fields label span { color: var(--muted); font-weight: 500; }
 .audit-check { display: flex; align-items: flex-start; gap: 10px; margin-top: 16px; color: var(--muted); font-size: .85rem; line-height: 1.5; }
 .audit-check input { width: 18px; height: 18px; margin-top: 2px; flex: 0 0 auto; accent-color: var(--blue); }
+.audit-demo-option { margin-top: 20px; padding: 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); }
+.audit-demo-option .audit-check { margin-top: 0; color: var(--ink); font-size: 1rem; }
+.audit-demo-disclosure { margin: 12px 0 0; color: var(--ink); font-size: .9rem; line-height: 1.6; }
+.audit-demo-number { margin: 12px 0 0; font-size: .9rem; font-weight: 650; }
 .audit-calculator-summary { margin-top: 18px; padding: 14px 16px; border-left: 4px solid var(--orange); border-radius: 8px; background: #fff7eb; font-size: .9rem; }
 .audit-phone-note { margin: 10px 0 0 28px; color: var(--muted); font-size: .8rem; }
 .audit-submit { width: 100%; margin-top: 20px; }

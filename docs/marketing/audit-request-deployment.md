@@ -1,5 +1,7 @@
 # Missed Revenue Audit intake deployment
 
+For the optional AI demo request extension, use [the AI demo review and deployment notes](./ai-demo-request-review.md), including migration 0021 and the separate consent confirmation behavior. The prepared-email fallback below applies to ordinary audit requests; it does not capture AI-call permission.
+
 The hub now posts audit requests to `/api/audit-request`. The Vercel function validates and normalizes the request, hashes (but never stores) the source IP, and calls a service-role-only Supabase RPC. The RPC atomically enforces five requests per hashed source per hour, persists the request, and creates an admin notification. If the API is unavailable, the browser retains the prepared-email fallback.
 
 ## Required deployment steps

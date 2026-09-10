@@ -1,5 +1,6 @@
 (() => {
   const auditUrl = "mailto:cory@roofaileadrecovery.com?subject=Free%20Missed%20Revenue%20Audit";
+  const aiDemoConsentVersion = "ai-demo-call-v1";
   const homeUrl = "/roofing-revenue-recovery/";
   const tagManagerId = "GTM-WKMDN97L";
   const attributionKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "fbclid"];
@@ -115,11 +116,16 @@
             <div class="field"><label for="audit-email">Work email</label><input id="audit-email" name="email" type="email" autocomplete="email" maxlength="254" required></div>
             <div class="field"><label for="audit-company">Roofing company</label><input id="audit-company" name="company" autocomplete="organization" maxlength="150" required></div>
             <div class="field"><label for="audit-area">Primary service area</label><input id="audit-area" name="serviceArea" placeholder="City, state or region" maxlength="150" required></div>
-            <div class="field"><label for="audit-phone">Phone <span>(optional)</span></label><input id="audit-phone" name="phone" type="tel" autocomplete="tel" maxlength="30"></div>
+            <div class="field"><label for="audit-phone">Phone <span data-phone-required>(optional)</span></label><input id="audit-phone" name="phone" type="tel" autocomplete="tel" maxlength="30"></div>
             <div class="field"><label for="audit-contact">Preferred follow-up</label><select id="audit-contact" name="preferredContact"><option value="Email">Email</option><option value="Phone">Phone call</option></select></div>
             <div class="field audit-wide"><label for="audit-process">What happens to missed calls today? <span>(optional)</span></label><textarea id="audit-process" name="currentProcess" rows="3" maxlength="500" placeholder="Voicemail, manual callback, answering service…"></textarea></div>
           </div>
           <div class="audit-calculator-summary" data-audit-calculator-summary hidden></div>
+          <div class="audit-demo-option">
+            <label class="audit-check" for="audit-ai-demo"><input id="audit-ai-demo" name="aiDemoRequested" type="checkbox" aria-describedby="audit-ai-demo-disclosure audit-ai-demo-number"> <span><strong>Request an AI demo call</strong> <span>(optional)</span></span></label>
+            <p id="audit-ai-demo-disclosure" class="audit-demo-disclosure">By checking this box and submitting with my full name as my electronic signature, I authorize Roof AI Lead Recovery to call the phone number I entered once to demonstrate and discuss its revenue-recovery services using an AI-generated (artificial) voice. I confirm I am the subscriber or customary user of this number. Consent is optional and is not a condition of an audit or purchase. I can withdraw consent before the call by emailing cory@roofaileadrecovery.com, or ask not to be called during the call.</p>
+            <p id="audit-ai-demo-number" class="audit-demo-number" aria-live="polite" hidden></p>
+          </div>
           <label class="audit-check"><input name="contactConsent" type="checkbox" required> <span>By submitting, I agree that Roof AI Lead Recovery may contact me about my requested audit and acknowledge the <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
           <label class="audit-check"><input name="marketingConsent" type="checkbox"> <span>Send me occasional roofing revenue-recovery tips and product updates. Optional.</span></label>
           <p class="audit-phone-note" data-phone-note hidden>By choosing phone follow-up, you agree to receive a call about this audit. Consent is not a condition of purchase.</p>
@@ -210,11 +216,28 @@
   const auditForm = dialog?.querySelector("[data-audit-form]");
   const contactChoice = auditForm?.querySelector("[name=preferredContact]");
   const phoneInput = auditForm?.querySelector("[name=phone]");
+  const aiDemoChoice = auditForm?.querySelector("[name=aiDemoRequested]");
+  const normalizeDemoPhone = (value) => {
+    const raw = value.trim();
+    if (raw.length > 30) return null;
+    if (!/^\+?[\d\s().-]+$/.test(raw)) return null;
+    const digits = raw.replace(/\D/g, "");
+    const national = digits.length === 11 && digits.startsWith("1") ? digits.slice(1) : digits;
+    if (raw.startsWith("+") && (digits.length !== 11 || !digits.startsWith("1"))) return null;
+    return /^[2-9]\d{2}[2-9]\d{6}$/.test(national) ? `+1${national}` : null;
+  };
   const syncPhoneChoice = () => {
     if (!contactChoice || !phoneInput) return;
     const phoneSelected = contactChoice.value === "Phone";
     dialog.querySelector("[data-phone-note]").hidden = !phoneSelected;
-    phoneInput.required = phoneSelected;
+    const demoSelected = aiDemoChoice.checked;
+    phoneInput.required = phoneSelected || demoSelected;
+    dialog.querySelector("[data-phone-required]").textContent = phoneInput.required ? "(required)" : "(optional)";
+    const number = normalizeDemoPhone(phoneInput.value);
+    phoneInput.setCustomValidity(demoSelected && phoneInput.value && !number ? "Enter a 10-digit phone number, with an optional +1 country code and no extension." : "");
+    const demoNumber = dialog.querySelector("#audit-ai-demo-number");
+    demoNumber.hidden = !demoSelected;
+    demoNumber.textContent = number ? `Your requested AI demo number: ${number}. Please check it before submitting.` : "Enter the phone number you want Roof AI to call for your demo.";
   };
   let auditCtaLocation = "unknown";
 
@@ -250,6 +273,8 @@
   dialog?.querySelector("[data-audit-close]")?.addEventListener("click", () => dialog.close());
   dialog?.addEventListener("click", (event) => { if (event.target === dialog) dialog.close(); });
   contactChoice?.addEventListener("change", syncPhoneChoice);
+  aiDemoChoice?.addEventListener("change", syncPhoneChoice);
+  phoneInput?.addEventListener("input", syncPhoneChoice);
   auditForm?.addEventListener("reset", () => setTimeout(syncPhoneChoice, 0));
 
   let auditFormStarted = false;
@@ -261,6 +286,7 @@
   });
   auditForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
+    syncPhoneChoice();
     if (!auditForm.reportValidity()) {
       pushEvent("audit_form_error", { page_path: window.location.pathname, error_type: "validation" });
       return;
@@ -287,6 +313,7 @@
       cta_location: auditCtaLocation,
       preferred_contact: values.preferredContact.toLowerCase().replace(" ", "_"),
       calculator_included: Boolean(calculatorModel?.monthlyRisk > 0),
+      ai_demo_requested: values.aiDemoRequested === "on",
       revenue_risk_band: calculatorModel ? riskBand(calculatorModel.monthlyRisk) : "not_calculated",
       traffic_source: attribution.utm_source || "direct",
       traffic_medium: attribution.utm_medium || "none",
@@ -315,13 +342,15 @@
           currentProcess: values.currentProcess || "",
           contactConsent: values.contactConsent === "on",
           marketingConsent: values.marketingConsent === "on",
+          aiDemoRequested: values.aiDemoRequested === "on",
+          aiDemoConsentVersion: values.aiDemoRequested === "on" ? aiDemoConsentVersion : undefined,
           website: values.website || "",
           submissionPage: window.location.href,
           attribution,
           calculator: calculatorModel || null,
         }),
         signal: controller.signal,
-      });
+      }).finally(() => clearTimeout(timeout));
       if (!response.ok) {
         const result = await response.json().catch(() => ({}));
         clearTimeout(timeout);
@@ -333,21 +362,30 @@
         }
         throw new Error(result.error || "SUBMISSION_FAILED");
       }
+      if (values.aiDemoRequested === "on") {
+        const result = await response.json().catch(() => ({}));
+        if (response.status !== 201 || result.aiDemoRequested !== true || !result.requestId) throw new Error("AI_DEMO_CONSENT_NOT_SAVED");
+      }
       clearTimeout(timeout);
       pushEvent("audit_submit", analytics);
       pushEvent("audit_form_submitted", analytics);
+      if (values.aiDemoRequested === "on") pushEvent("ai_demo_requested", analytics);
       auditForm.reset();
       dialog.querySelector("[data-audit-calculator-summary]").hidden = true;
-      status.textContent = "Thank you—your audit request was received. We’ll follow up using your preferred contact method.";
+      status.textContent = values.aiDemoRequested === "on"
+        ? "Thank you—your audit and AI demo requests were received. We’ll review your request and follow up to arrange the demo."
+        : "Thank you—your audit request was received. We’ll follow up using your preferred contact method.";
       status.className = "audit-status success";
       submitButton.disabled = true;
       submitButton.textContent = "Request received";
       submitButton.classList.add("is-success");
     } catch (_error) {
       pushEvent("audit_form_error", { page_path: window.location.pathname, error_type: "service_unavailable" });
-      status.textContent = "Secure submission is temporarily unavailable. Opening your email app with the request prepared…";
+      status.textContent = values.aiDemoRequested === "on"
+        ? "We couldn’t confirm your AI demo request. Please try again, or email cory@roofaileadrecovery.com for help."
+        : "Secure submission is temporarily unavailable. Opening your email app with the request prepared…";
       status.className = "audit-status error";
-      window.location.href = `${auditUrl}&body=${encodeURIComponent(lines.join("\n"))}`;
+      if (values.aiDemoRequested !== "on") window.location.href = `${auditUrl}&body=${encodeURIComponent(lines.join("\n"))}`;
     } finally {
       if (!submitButton.classList.contains("is-success")) {
         submitButton.disabled = false;
