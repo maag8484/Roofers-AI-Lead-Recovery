@@ -124,9 +124,9 @@ export function Hero() {
               </motion.div>
 
               <h1 className="hv2-display hv2-hero-title hv2-hero-gap text-[var(--text)]">
-                <SplitText text="Recover More Roofing Opportunities From" delay={0.1} />{" "}
+                <SplitText text="Roof AI Lead Recovery for" delay={0.1} />{" "}
                 <span className="hv2-accent hv2-grad-text relative inline-block pr-1">
-                  Missed Calls
+                  Missed Roofing Calls
                 </span>
               </h1>
 
@@ -134,10 +134,10 @@ export function Hero() {
                 {...rise(1.05)}
                 className="hv2-hero-sub hv2-hero-gap max-w-xl leading-[1.65] text-[var(--text-dim)]"
               >
-                Roof AI Lead Recovery helps roofing companies respond to missed and
-                after-hours callers, qualify new opportunities and move homeowners toward
-                an appointment—so more of the leads you already paid for get a chance to
-                become revenue.
+                Roof AI Lead Recovery is roofing lead-recovery software for missed,
+                after-hours and weekend calls. Help homeowners requesting roof repairs,
+                replacements or storm-damage inspections reach a clear next step while
+                your team is busy.
               </motion.p>
 
               <motion.div
@@ -167,6 +167,14 @@ export function Hero() {
                   </button>
                 </Magnetic>
               </motion.div>
+              <p className="mt-5 text-sm text-[var(--text-dim)]">
+                <a
+                  href="/how-much-are-missed-calls-costing-your-roofing-company/"
+                  className="font-semibold underline underline-offset-4 hover:text-[var(--text)]"
+                >
+                  Try the free roofing missed-revenue calculator
+                </a>
+              </p>
             </motion.div>
 
             {/* ---------------- Phone ---------------- */}
