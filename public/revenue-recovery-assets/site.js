@@ -3,11 +3,29 @@
   const aiDemoConsentVersion = "ai-demo-call-v1";
   const homeUrl = "/roofing-revenue-recovery/";
   const tagManagerId = "GTM-WKMDN97L";
+  // Verified existing Roof AI GA4 web stream. GTM's published container is empty.
+  const measurementId = "G-8PV83SZ3X0";
   const attributionKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "fbclid"];
   const query = new URLSearchParams(window.location.search);
   const pushEvent = (event, details = {}) => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ event, ...details });
+    if (["calculator_complete", "audit_submit"].includes(event) && typeof window.gtag === "function") {
+      window.gtag("event", event, { ...details, send_to: measurementId });
+    }
+  };
+  const ensureAnalytics = () => {
+    // Preview/test builds must not send events into the production property.
+    if (!["www.roofaileadrecovery.com", "roofaileadrecovery.com"].includes(window.location.hostname)) return;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+    if (document.querySelector(`script[src*="gtag/js?id=${measurementId}"]`)) return;
+    window.gtag("js", new Date());
+    window.gtag("config", measurementId, { allow_google_signals: false, allow_ad_personalization_signals: false });
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
+    document.head.appendChild(script);
   };
   const ensureTagManager = () => {
     window.dataLayer = window.dataLayer || [];
@@ -23,6 +41,16 @@
     catch { return null; }
   };
   const currentAttribution = Object.fromEntries(attributionKeys.map((key) => [key, query.get(key) || ""]).filter(([, value]) => value));
+  // Keep the current campaign together when visitors navigate within the hub.
+  // A new tagged visit replaces the campaign rather than mixing old UTM fields.
+  let sessionAttribution = null;
+  try { sessionAttribution = JSON.parse(sessionStorage.getItem("roof_ai_session_touch") || "null"); }
+  catch { /* The current page still carries its URL attribution. */ }
+  if (Object.keys(currentAttribution).length) {
+    sessionAttribution = { ...currentAttribution, landing_page: window.location.pathname, referrer: document.referrer || "direct" };
+    try { sessionStorage.setItem("roof_ai_session_touch", JSON.stringify(sessionAttribution)); }
+    catch { /* Storage is optional. */ }
+  }
   const firstTouch = readStoredAttribution() || {
     ...currentAttribution,
     landing_page: window.location.pathname,
@@ -33,15 +61,17 @@
     if (!readStoredAttribution()) localStorage.setItem("roof_ai_first_touch", JSON.stringify(firstTouch));
   } catch { /* Attribution still works for this page when storage is unavailable. */ }
 
+  const conversionAttribution = sessionAttribution || firstTouch;
   const eventAttribution = () => ({
-    traffic_source: currentAttribution.utm_source || firstTouch.utm_source || "direct",
-    traffic_medium: currentAttribution.utm_medium || firstTouch.utm_medium || "none",
-    traffic_campaign: currentAttribution.utm_campaign || firstTouch.utm_campaign || "none",
-    traffic_content: currentAttribution.utm_content || firstTouch.utm_content || "none",
+    traffic_source: conversionAttribution.utm_source || "direct",
+    traffic_medium: conversionAttribution.utm_medium || "none",
+    traffic_campaign: conversionAttribution.utm_campaign || "none",
+    traffic_content: conversionAttribution.utm_content || "none",
   });
   const riskBand = (value) => value >= 100000 ? "100k_plus" : value >= 50000 ? "50k_100k" : value >= 10000 ? "10k_50k" : "under_10k";
 
   ensureTagManager();
+  ensureAnalytics();
 
   pushEvent("hub_page_view", {
     page_path: window.location.pathname,
@@ -63,7 +93,7 @@
           <a href="/how-much-are-missed-calls-costing-your-roofing-company/">Revenue calculator</a>
           <a href="/ai-receptionist-for-roofing-companies/">2026 guide</a>
           <a href="/resources/">Resources</a>
-          <a class="button small" href="${auditUrl}">Get free audit</a>
+          <a class="button small" href="#audit-request" data-audit-open>Get free audit</a>
         </div>
       </nav>
     </header>`;
@@ -91,7 +121,7 @@
           <ul class="footer-links">
             <li><a href="https://www.roofaileadrecovery.com/">Main website</a></li>
             <li><a href="https://www.roofaileadrecovery.com/signup">Start 7-day free trial</a></li>
-            <li><a href="${auditUrl}">Free missed revenue audit</a></li>
+            <li><a href="#audit-request" data-audit-open>Free missed revenue audit</a></li>
             <li><a href="mailto:cory@roofaileadrecovery.com">cory@roofaileadrecovery.com</a></li>
             <li><a href="https://www.roofaileadrecovery.com/privacy">Privacy</a> · <a href="https://www.roofaileadrecovery.com/terms">Terms</a></li>
           </ul>
@@ -103,7 +133,7 @@
   document.querySelector("[data-site-header]")?.insertAdjacentHTML("afterbegin", header);
   document.querySelector("[data-site-footer]")?.insertAdjacentHTML("afterbegin", footer);
   document.body.insertAdjacentHTML("beforeend", `
-    <dialog class="audit-dialog" data-audit-dialog aria-labelledby="audit-title">
+    <dialog id="audit-request" class="audit-dialog" data-audit-dialog aria-labelledby="audit-title">
       <div class="audit-modal">
         <button class="audit-close" type="button" data-audit-close aria-label="Close audit form">&times;</button>
         <p class="kicker">Free · No obligation</p>
@@ -131,7 +161,8 @@
           <p class="audit-phone-note" data-phone-note hidden>By choosing phone follow-up, you agree to receive a call about this audit. Consent is not a condition of purchase.</p>
           <button class="button audit-submit" type="submit">Request My Free Audit</button>
           <p class="audit-status" data-audit-status role="status" aria-live="polite"></p>
-          <p class="disclaimer">Your request will be sent securely. If it cannot be submitted, we’ll prepare an email as a fallback.</p>
+          <p><a data-audit-email-fallback hidden>Email your audit request instead</a></p>
+          <p class="disclaimer">Submit your request here. If we cannot confirm it, your details will stay in the form so you can retry or choose email.</p>
         </form>
       </div>
     </dialog>`);
@@ -240,6 +271,7 @@
     demoNumber.textContent = number ? `Your requested AI demo number: ${number}. Please check it before submitting.` : "Enter the phone number you want Roof AI to call for your demo.";
   };
   let auditCtaLocation = "unknown";
+  let auditSubmitting = false;
 
   const openAudit = (link) => {
     auditCtaLocation = link.closest(".site-header") ? "header" : link.closest(".site-footer") ? "footer" : link.closest(".cta-band") ? "cta_band" : link.closest(".sidebar") ? "sidebar" : "content";
@@ -252,22 +284,31 @@
     }
     pushEvent("audit_cta_clicked", { page_path: window.location.pathname, cta_location: auditCtaLocation });
     const submitButton = auditForm?.querySelector(".audit-submit");
-    if (submitButton) {
+    if (submitButton && !auditSubmitting) {
       submitButton.hidden = false;
       submitButton.disabled = false;
       submitButton.textContent = "Request My Free Audit";
       submitButton.classList.remove("is-success");
     }
     const status = auditForm?.querySelector("[data-audit-status]");
-    if (status) { status.textContent = ""; status.className = "audit-status"; }
+    if (status && !auditSubmitting) { status.textContent = ""; status.className = "audit-status"; }
+    if (!auditSubmitting) {
+      const fallback = auditForm.querySelector("[data-audit-email-fallback]");
+      fallback.hidden = true;
+      fallback.removeAttribute("href");
+    }
     syncPhoneChoice();
     if (typeof dialog.showModal === "function") dialog.showModal();
     else dialog.setAttribute("open", "");
-    dialog.querySelector("input")?.focus();
+    dialog.querySelector("#audit-name")?.focus();
   };
 
-  document.querySelectorAll('a[href^="mailto:cory@roofaileadrecovery.com"]').forEach((link) => {
-    if (!decodeURIComponent(link.href).toLowerCase().includes("missed revenue audit")) return;
+  document.querySelectorAll('[data-audit-open], a[href^="mailto:cory@roofaileadrecovery.com"]').forEach((link) => {
+    if (!link.hasAttribute("data-audit-open") && !decodeURIComponent(link.href).toLowerCase().includes("missed revenue audit")) return;
+    link.setAttribute("href", "#audit-request");
+    link.setAttribute("data-audit-open", "");
+    link.setAttribute("aria-haspopup", "dialog");
+    link.setAttribute("aria-controls", "audit-request");
     link.addEventListener("click", (event) => { event.preventDefault(); openAudit(link); });
   });
   dialog?.querySelector("[data-audit-close]")?.addEventListener("click", () => dialog.close());
@@ -286,13 +327,14 @@
   });
   auditForm?.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (auditSubmitting || auditForm.querySelector(".audit-submit").classList.contains("is-success")) return;
     syncPhoneChoice();
     if (!auditForm.reportValidity()) {
       pushEvent("audit_form_error", { page_path: window.location.pathname, error_type: "validation" });
       return;
     }
     const values = Object.fromEntries(new FormData(auditForm).entries());
-    const attribution = { ...firstTouch, ...currentAttribution };
+    const attribution = { ...conversionAttribution };
     const lines = [
       "Free Missed Revenue Audit Request", "",
       `Name: ${values.fullName}`, `Work email: ${values.email}`, `Roofing company: ${values.company}`,
@@ -322,38 +364,48 @@
     };
     const submitButton = auditForm.querySelector(".audit-submit");
     const status = auditForm.querySelector("[data-audit-status]");
+    const fallback = auditForm.querySelector("[data-audit-email-fallback]");
+    fallback.hidden = true;
+    fallback.removeAttribute("href");
+    auditSubmitting = true;
     submitButton.disabled = true;
     submitButton.textContent = "Sending request…";
     status.textContent = "";
 
+    const controller = new AbortController();
+    let timeout;
     try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 10_000);
-      const response = await fetch("/api/audit-request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName: values.fullName,
-          email: values.email,
-          company: values.company,
-          serviceArea: values.serviceArea,
-          phone: values.phone || "",
-          preferredContact: values.preferredContact,
-          currentProcess: values.currentProcess || "",
-          contactConsent: values.contactConsent === "on",
-          marketingConsent: values.marketingConsent === "on",
-          aiDemoRequested: values.aiDemoRequested === "on",
-          aiDemoConsentVersion: values.aiDemoRequested === "on" ? aiDemoConsentVersion : undefined,
-          website: values.website || "",
-          submissionPage: window.location.href,
-          attribution,
-          calculator: calculatorModel || null,
-        }),
-        signal: controller.signal,
-      }).finally(() => clearTimeout(timeout));
+      const deadline = new Promise((_, reject) => {
+        timeout = setTimeout(() => { controller.abort(); reject(new Error("SUBMISSION_TIMEOUT")); }, 10_000);
+      });
+      const request = async () => {
+        const response = await fetch("/api/audit-request", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fullName: values.fullName,
+            email: values.email,
+            company: values.company,
+            serviceArea: values.serviceArea,
+            phone: values.phone || "",
+            preferredContact: values.preferredContact,
+            currentProcess: values.currentProcess || "",
+            contactConsent: values.contactConsent === "on",
+            marketingConsent: values.marketingConsent === "on",
+            aiDemoRequested: values.aiDemoRequested === "on",
+            aiDemoConsentVersion: values.aiDemoRequested === "on" ? aiDemoConsentVersion : undefined,
+            website: values.website || "",
+            submissionPage: window.location.href,
+            attribution,
+            calculator: calculatorModel || null,
+          }),
+          signal: controller.signal,
+        });
+        const result = await response.json();
+        return { response, result };
+      };
+      const { response, result } = await Promise.race([request(), deadline]);
       if (!response.ok) {
-        const result = await response.json().catch(() => ({}));
-        clearTimeout(timeout);
         if (response.status === 429) {
           status.textContent = "We’ve received several requests from this connection. Please wait an hour or email us directly.";
           status.className = "audit-status error";
@@ -362,9 +414,11 @@
         }
         throw new Error(result.error || "SUBMISSION_FAILED");
       }
+      // Only a persisted request counts. Neutral honeypot responses and HTML
+      // fallback pages can be 2xx without creating an audit record.
+      if (response.status !== 201 || result.ok !== true || typeof result.requestId !== "string" || !result.requestId.trim()) throw new Error("AUDIT_NOT_CONFIRMED");
       if (values.aiDemoRequested === "on") {
-        const result = await response.json().catch(() => ({}));
-        if (response.status !== 201 || result.aiDemoRequested !== true || !result.requestId) throw new Error("AI_DEMO_CONSENT_NOT_SAVED");
+        if (result.aiDemoRequested !== true) throw new Error("AI_DEMO_CONSENT_NOT_SAVED");
       }
       clearTimeout(timeout);
       pushEvent("audit_submit", analytics);
@@ -383,10 +437,15 @@
       pushEvent("audit_form_error", { page_path: window.location.pathname, error_type: "service_unavailable" });
       status.textContent = values.aiDemoRequested === "on"
         ? "We couldn’t confirm your AI demo request. Please try again, or email cory@roofaileadrecovery.com for help."
-        : "Secure submission is temporarily unavailable. Opening your email app with the request prepared…";
+        : "We couldn’t confirm your request. Your details are still here. Please try again, or choose email below.";
       status.className = "audit-status error";
-      if (values.aiDemoRequested !== "on") window.location.href = `${auditUrl}&body=${encodeURIComponent(lines.join("\n"))}`;
+      if (values.aiDemoRequested !== "on") {
+        fallback.href = `${auditUrl}&body=${encodeURIComponent(lines.join("\n"))}`;
+        fallback.hidden = false;
+      }
     } finally {
+      clearTimeout(timeout);
+      auditSubmitting = false;
       if (!submitButton.classList.contains("is-success")) {
         submitButton.disabled = false;
         submitButton.textContent = "Request My Free Audit";
