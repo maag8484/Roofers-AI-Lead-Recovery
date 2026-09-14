@@ -125,7 +125,7 @@ test("accepted demo sends independent consent, records a non-PII event and reset
 
 test("ordinary audit success never emits an AI demo conversion", async (t) => {
   let body;
-  const { w, form } = page(t, async (_url, options) => { body = JSON.parse(options.body); return { ok: true, status: 201 }; });
+  const { w, form } = page(t, async (_url, options) => { body = JSON.parse(options.body); return { ok: true, status: 201, json: async () => ({ ok: true, requestId: "audit-only-test" }) }; });
   await submit(w, form);
   assert.equal(body.aiDemoRequested, false);
   assert.equal(body.aiDemoConsentVersion, undefined);
