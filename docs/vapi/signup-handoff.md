@@ -1,6 +1,8 @@
 # Requested signup handoff — rollout candidate, September 14, 2026
 
-Status: implementation prepared; not deployed or launch-certified. No prospect calls or emails were sent by this change.
+Status: database deployed and verified; Vercel PR preview reports Ready. Production activation and the internal end-to-end test remain pending. No prospect calls or emails were sent by this change.
+
+Access checkpoint: both integrations are installed/enabled, but no callable Vercel API tools are exposed in this workspace. The CLI device-login attempt was blocked by workspace network policy at `https://api.vercel.com:443`; no CLI login was saved. Repeating account sign-in does not resolve that policy block. Continue through working connected Vercel tools or an execution environment authorized to reach that API. Never disable preview protection or send credentials through chat.
 
 ## Verified live commercial path
 
@@ -41,13 +43,15 @@ Provider 202 means accepted, not delivered. Timeouts, 5xx, process crashes and p
 
 ## Deployment configuration
 
-1. Connect the existing Supabase and Vercel projects. Apply `supabase/migrations/0022_vapi_signup_delivery.sql` through the project's normal migration workflow. Service-role access only; no browser-readable delivery records.
+1. Database checkpoint: project `vmafjqsthbrnjusowolj` received the exact `0022_vapi_signup_delivery.sql` as migration `20260914192258_vapi_signup_delivery`. Permissions, replay protection and event ordering were verified live; temporary test writes were rolled back. Do not reapply this migration or run historical migrations in bulk: project migration history was previously empty. The companion `vapi_preserve_audit_cleanup` migration allows audit retention cleanup while preserving the deduplication claim. Verify its migration-history entry before any application.
 2. Deploy this branch with `VAPI_FOLLOWUP_MODE=off` initially. Required server variables: existing `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `SENDGRID_API_KEY`; new `VAPI_PRIVATE_API_KEY`, `VAPI_FOLLOWUP_TOKEN` (random >=32 characters), `VAPI_FOLLOWUP_FROM` (verified sender). Optional `SENDGRID_API_BASE_URL` is exactly the US or EU origin. The API key must permit mail send and all four suppression lookups; a failed lookup blocks sending.
 3. Configure a signed SendGrid Event Webhook to `https://www.roofaileadrecovery.com/api/vapi-email-events` for delivered, bounce, dropped, spam report and unsubscribe events. Preserve other existing account webhooks. Put its base64 DER public verification key in `SENDGRID_EVENT_PUBLIC_KEY`. Confirm raw request bodies reach the function unchanged.
 4. Implement the n8n branch described above with fresh workspace email and revocation checks. Preserve opt-out processing even if the email branch fails. A handoff error should create an internal review record, not trigger redial or email retry.
 5. Set mode `test` and `VAPI_FOLLOWUP_TEST_TO` to Cory's explicitly confirmed inbox. Only internal assistant `ef0931f3-859d-48ff-9a1e-205c5afbbddf` is accepted. Do not remove Cory's existing phone suppression. Use an internal web/simulation call with genuine spoken approval for the test inbox and no customer dialing; all applicable suppression checks still apply.
 6. Run the internal script below; verify one delivered email in the inbox AND signed event ledger, replay the completion twice, verify only one provider POST, and follow signup through checkout to confirm the displayed seven-day/$299 offer. Do not create a paid subscription merely to test the link.
 7. After evidence passes, apply the prompt addition to the production assistant, ensure future approved calls carry audit metadata, set mode `live` only in Vercel production, and admit one eligible opted-in prospect. Leave batch cold calling disabled.
+
+Vercel project settings: https://vercel.com/roof-ai-lead-recovery/roofers-ai-lead-recovery/settings/environment-variables. Confirm project ID `prj_2CY5raQNIZ9FZ8yQQyaIAbbs6DHD` and team `team_WVLU1KlTTe2JoW2OrqAQIXaC` before changing configuration. Add new secrets through encrypted/sensitive server variables, not frontend `VITE_` variables. Keep mode `off` until credentials, suppression checks and signed event handling are configured. Limit initial `test` mode to the internal recipient, redeploy after environment changes, and verify via the protected preview with authenticated tooling. A Ready build alone is not a passing delivery test.
 
 Rollback: set `VAPI_FOLLOWUP_MODE=off`, disable only the new n8n send branch, and restore the saved prior assistant prompt. Preserve opt-out receiver, delivery ledger and signed event processing for outstanding mail.
 
