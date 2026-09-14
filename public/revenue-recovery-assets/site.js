@@ -376,7 +376,8 @@
     let timeout;
     try {
       const deadline = new Promise((_, reject) => {
-        timeout = setTimeout(() => { controller.abort(); reject(new Error("SUBMISSION_TIMEOUT")); }, 10_000);
+        // Allow the API's 8s persistence + 2.5s notification budgets and transit.
+        timeout = setTimeout(() => { controller.abort(); reject(new Error("SUBMISSION_TIMEOUT")); }, 15_000);
       });
       const request = async () => {
         const response = await fetch("/api/audit-request", {

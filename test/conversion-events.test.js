@@ -142,7 +142,7 @@ test("response-body timeout releases pending state without a false conversion", 
   const dom = createPage(async () => ({ ok: true, status: 201, json: () => new Promise(() => {}) }));
   const w = dom.window;
   const setTimeout = w.setTimeout.bind(w);
-  w.setTimeout = (callback, delay) => setTimeout(callback, delay === 10000 ? 5 : delay);
+  w.setTimeout = (callback, delay) => setTimeout(callback, delay === 15000 ? 5 : delay);
   const form = openAndFillAudit(w);
   form.dispatchEvent(new w.Event("submit", { bubbles: true, cancelable: true }));
   await new Promise((resolve) => globalThis.setTimeout(resolve, 20));

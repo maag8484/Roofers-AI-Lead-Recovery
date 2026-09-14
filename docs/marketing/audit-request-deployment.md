@@ -38,7 +38,7 @@ In GA4, mark both event names as key events and register `traffic_source`, `traf
 
 Session attribution survives internal hub navigation. A new tagged campaign replaces the session campaign as a whole, preventing YouTube conversions from borrowing omitted fields from an earlier LinkedIn visit. The first-touch record remains available unchanged; saved audit attribution and conversion events use the same selected campaign.
 
-Raw IP addresses are not stored. The API creates salted one-way IP and email rate keys; rotate the salt if it is exposed. The database RPC uses advisory transaction locks to prevent concurrent requests from bypassing the limits (five submissions per connection/hour and three per email/day). A same-origin check and hidden honeypot handle common automated abuse without writing a record. Client and server requests fail into the prepared-email fallback after 10 and 8 seconds respectively.
+Raw IP addresses are not stored. The API creates salted one-way IP and email rate keys; rotate the salt if it is exposed. The database RPC uses advisory transaction locks to prevent concurrent requests from bypassing the limits (five submissions per connection/hour and three per email/day). A same-origin check and hidden honeypot handle common automated abuse without writing a record. The client confirmation deadline is 15 seconds, allowing the API's 8-second persistence and 2.5-second notification budgets plus network transit. Failure retains the form and offers the visitor an optional email link.
 
 ## Admin notification and follow-up
 
