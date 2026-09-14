@@ -67,9 +67,16 @@ test('real SQL ledger deduplicates claims/events and preserves early delivery an
  try {
  await db.exec('create role anon; create role authenticated; create role service_role; create table public.audit_requests(id uuid primary key);');
  await db.exec(await readFile(new URL('../supabase/migrations/0022_vapi_signup_delivery.sql',import.meta.url),'utf8'));
- const row={source_call_id:callId,audit_request_id:null,recipient:email,phone_e164:'',test_mode:true,confirmation:{answer:'yes'},template_version:'test'};
+ await db.exec(await readFile(new URL('../supabase/migrations/20260914193245_vapi_preserve_audit_cleanup.sql',import.meta.url),'utf8'));
+ const auditId='dddddddd-dddd-4ddd-8ddd-dddddddddddd';
+ await db.query('insert into audit_requests(id) values($1)',[auditId]);
+ const row={source_call_id:callId,audit_request_id:auditId,recipient:email,phone_e164:'',test_mode:true,confirmation:{answer:'yes'},template_version:'test'};
  const claim=async()=> (await db.query('select claim_vapi_signup_delivery($1::jsonb) as result',[JSON.stringify(row)])).rows[0].result;
  const a=await claim();assert.equal(a.claimed,true);assert.equal((await claim()).claimed,false);
+ await db.query('delete from audit_requests where id=$1',[auditId]);
+ assert.equal((await db.query('select audit_request_id from vapi_signup_deliveries where id=$1',[a.id])).rows[0].audit_request_id,null);
+ row.audit_request_id=null;
+ assert.equal((await claim()).claimed,false);
  const event={delivery_id:a.id,email,event_id:'event1',event:'delivered',timestamp:now/1000};
  const record=async()=> (await db.query('select record_vapi_delivery_event($1::jsonb) as result',[JSON.stringify(event)])).rows[0].result;
  assert.equal((await record()).recorded,true);assert.equal((await record()).duplicate,true);
