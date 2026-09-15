@@ -12,9 +12,8 @@ import { AccountMenu } from "@/components/AccountMenu";
 import { WelcomeHero } from "@/components/onboarding/WelcomeHero";
 import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 
-// New first-run experience: a full welcome page with an auto-opening 5-step
-// onboarding wizard. The wizard's final CTA ("Start Free Trial") kicks off the
-// existing Stripe Checkout. This replaces the old bare price-card checkout.
+// Start the existing Stripe trial directly. The five-step product tour remains
+// available as an optional explanation, including through ?tour=1.
 export default function CheckoutPage() {
   const { user, onboardingCompleted, markOnboardingComplete } = useAuth();
   const navigate = useNavigate();
@@ -44,17 +43,15 @@ export default function CheckoutPage() {
       });
   }, [user, navigate]);
 
-  // Auto-open the wizard on first visit (or when ?tour=1 from the dashboard's
-  // Help → Product Tour). Never auto-opens once completed unless explicitly
-  // requested via the param.
+  // Open the product tour only when explicitly requested.
   useEffect(() => {
     if (checking) return;
     const forced = searchParams.get("tour") === "1";
-    if (forced || !onboardingCompleted) {
+    if (forced) {
       setStep(1);
       setModalOpen(true);
     }
-  }, [checking, onboardingCompleted, searchParams]);
+  }, [checking, searchParams]);
 
   const closeModal = () => {
     setModalOpen(false);
@@ -116,7 +113,9 @@ export default function CheckoutPage() {
 
       <WelcomeHero
         ownerName={ownerName}
-        onStart={() => {
+        onStart={startCheckout}
+        starting={redirecting}
+        onTour={() => {
           setStep(1);
           setModalOpen(true);
         }}
