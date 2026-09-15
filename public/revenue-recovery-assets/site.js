@@ -274,6 +274,10 @@
   let auditSubmitting = false;
 
   const openAudit = (link) => {
+    // Preserve visitor notes; cohort requests use the verified audit endpoint.
+    const intent = link.getAttribute("data-audit-intent");
+    const processInput = auditForm?.querySelector('[name="currentProcess"]');
+    if (intent && processInput && !processInput.value.trim()) processInput.value = intent;
     auditCtaLocation = link.closest(".site-header") ? "header" : link.closest(".site-footer") ? "footer" : link.closest(".cta-band") ? "cta_band" : link.closest(".sidebar") ? "sidebar" : "content";
     const summary = dialog.querySelector("[data-audit-calculator-summary]");
     if (calculatorModel?.monthlyRisk > 0) {
