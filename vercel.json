@@ -1,11 +1,20 @@
 {
   "routes": [
-    { "handle": "filesystem" },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(resources/roofing-missed-call-scorecard|partners/roofing-marketing-agencies|founding-roofing-companies)/?",
+      "dest": "/$1/index.html"
+    },
     {
       "src": "/(roofing-revenue-recovery|how-much-are-missed-calls-costing-your-roofing-company|ai-receptionist-for-roofing-companies|roofing-answering-service-vs-ai-lead-recovery|what-happens-when-a-roofer-misses-a-homeowners-call|after-hours-answering-for-roofing-companies)/?",
       "dest": "/$1/index.html"
     },
-    { "src": "/resources/?", "dest": "/resources/index.html" },
+    {
+      "src": "/resources/?",
+      "dest": "/resources/index.html"
+    },
     {
       "src": "/resources/(roofing-lead-response-time|roofing-missed-call-text-back|roofing-lead-qualification-questions|roofing-appointment-scheduling|storm-lead-follow-up|roofing-marketing-roi|google-ads-roofing-lead-recovery|cost-per-roofing-lead-vs-booked-estimate)/?",
       "dest": "/resources/$1/index.html"
@@ -14,12 +23,17 @@
       "src": "/(home-v1|privacy|terms|reset-password|login|signup|checkout|onboarding|dashboard|account|billing)/?",
       "dest": "/index.html"
     },
-    { "src": "/admin(?:/.*)?", "dest": "/index.html" },
+    {
+      "src": "/admin(?:/.*)?",
+      "dest": "/index.html"
+    },
     {
       "src": "/(.*)",
       "dest": "/404.html",
       "status": 404,
-      "headers": { "X-Robots-Tag": "noindex" }
+      "headers": {
+        "X-Robots-Tag": "noindex"
+      }
     }
   ],
   "crons": [
@@ -32,13 +46,19 @@
     {
       "source": "/sitemap.xml",
       "headers": [
-        { "key": "Content-Type", "value": "application/xml" }
+        {
+          "key": "Content-Type",
+          "value": "application/xml"
+        }
       ]
     },
     {
       "source": "/robots.txt",
       "headers": [
-        { "key": "Content-Type", "value": "text/plain; charset=utf-8" }
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
       ]
     }
   ]

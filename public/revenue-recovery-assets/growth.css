@@ -1,0 +1,17 @@
+.growth-content { max-width: 1050px; }
+.growth-content h2 { margin-top: 42px; }
+.growth-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin: 26px 0; }
+.growth-grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.growth-card { border: 1px solid var(--line); border-radius: 18px; padding: 24px; background: var(--sky-2); }
+.growth-card h2, .growth-card h3 { margin-top: 0; }
+.score-values { margin: 0; }
+.score-values div { display: flex; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--line); padding: 12px 0; }
+.score-values dd { margin: 0; font-weight: 750; text-align: right; }
+.score-result { font-size: 2.8rem; font-weight: 800; color: var(--ink-2); line-height: 1.2; }
+.score-result span { display: block; margin-top: 12px; font-size: 1rem; font-weight: 500; }
+.growth-content blockquote { margin: 24px 0; border-left: 4px solid var(--orange); padding: 20px 26px; background: var(--sky-2); }
+.growth-content form { max-width: 650px; }
+.growth-content form button { margin-top: 18px; }
+.link-result { overflow-wrap: anywhere; }
+@media(max-width: 720px) { .growth-grid, .growth-grid.three { grid-template-columns: 1fr; } .growth-card { padding: 20px; } }
+@media print { .site-header, .site-footer, .no-print, dialog { display: none !important; } .page-hero, .section { padding: 14px 0; } h1 { font-size: 26pt !important; } .growth-grid, .growth-grid.three { display: block; } .growth-card { break-inside: avoid; margin: 12px 0; padding: 12px; } .growth-content h2 { margin-top: 18px; } .comparison { min-width: 0; } .comparison-wrap { overflow: visible; } }
