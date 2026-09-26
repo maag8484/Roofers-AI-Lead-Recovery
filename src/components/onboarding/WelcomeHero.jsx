@@ -1,25 +1,11 @@
 import { motion } from "framer-motion";
-import { Clock, Sparkles, PlayCircle, Quote } from "lucide-react";
+import { Clock, Sparkles, PlayCircle, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FeatureCard } from "./FeatureCard";
 import { FEATURES } from "./content";
 
-const TESTIMONIALS = [
-  {
-    quote: "We stopped losing weekend calls overnight. It books estimates while we're on a roof.",
-    name: "Joe",
-    company: "Alexander Roofing",
-  },
-  {
-    quote: "Feels like hiring a receptionist who never sleeps, for a fraction of the cost.",
-    name: "Mike",
-    company: "GM Exterior Pros",
-  },
-];
-
-// Full-page welcome behind the onboarding modal. `onStart` opens/advances the
-// modal; `onReplay` re-opens the tour.
-export function WelcomeHero({ ownerName, onStart }) {
+// The primary action starts the existing checkout; the product tour is optional.
+export function WelcomeHero({ ownerName, onStart, onTour, starting = false }) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:py-16">
       {/* Hero */}
@@ -41,13 +27,22 @@ export function WelcomeHero({ ownerName, onStart }) {
         </p>
 
         <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <Button size="lg" onClick={onStart} className="min-w-52">
-            <PlayCircle className="h-5 w-5" /> Start setup
+          <Button size="lg" onClick={onStart} disabled={starting} className="min-w-52">
+            <CreditCard className="h-5 w-5" />
+            {starting ? "Opening secure checkout..." : "Start 7-Day Free Trial"}
+          </Button>
+          <Button size="lg" variant="secondary" onClick={onTour} disabled={starting}>
+            <PlayCircle className="h-5 w-5" /> View product tour
           </Button>
           <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Clock className="h-4 w-4" /> Takes about 5 minutes
+            <Clock className="h-4 w-4" /> Guided setup after checkout
           </span>
         </div>
+        <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
+          No charge today. $299/month plus applicable tax after 7 days unless you cancel.
+          We configure your coverage after you submit your business details; calls begin
+          once forwarding is set up and tested.
+        </p>
       </motion.div>
 
       {/* Benefits */}
@@ -83,22 +78,10 @@ export function WelcomeHero({ ownerName, onStart }) {
         </div>
       </div>
 
-      {/* Testimonials (placeholder) */}
-      <div className="mt-14 grid gap-4 sm:grid-cols-2">
-        {TESTIMONIALS.map((t) => (
-          <div key={t.name} className="rounded-2xl border border-border bg-white p-6">
-            <Quote className="h-6 w-6 text-brand-200" />
-            <p className="mt-3 text-ink">"{t.quote}"</p>
-            <p className="mt-3 text-sm font-medium text-muted-foreground">
-              {t.name} · {t.company}
-            </p>
-          </div>
-        ))}
-      </div>
-
       <div className="mt-12 text-center">
-        <Button size="lg" onClick={onStart} className="min-w-52">
-          <PlayCircle className="h-5 w-5" /> Start setup
+        <Button size="lg" onClick={onStart} disabled={starting} className="min-w-52">
+          <CreditCard className="h-5 w-5" />
+          {starting ? "Opening secure checkout..." : "Start 7-Day Free Trial"}
         </Button>
       </div>
     </div>

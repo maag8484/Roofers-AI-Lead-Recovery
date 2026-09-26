@@ -110,7 +110,7 @@ export default function SignupPage() {
         <div>
           <h1 className="text-2xl font-extrabold text-ink">Create your account</h1>
           <p className="mt-1 text-muted-foreground">
-            Start recovering missed calls in minutes — no sales call.
+            Create your account, then start your trial. We'll help configure your call coverage.
           </p>
         </div>
 
