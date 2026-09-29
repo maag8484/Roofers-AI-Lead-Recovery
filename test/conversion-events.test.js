@@ -100,11 +100,11 @@ test("rate-limited audit requests do not create a conversion", async () => {
   dom.window.close();
 });
 
-test("all five calculator audit CTAs target and open the on-page form", () => {
+test("all calculator audit CTAs target and open the on-page form", () => {
   const dom = createPage(async () => accepted());
   const w = dom.window;
   const links = [...w.document.querySelectorAll("[data-audit-open]")];
-  assert.equal(links.length, 5);
+  assert.equal(links.length, 7);
   for (const link of links) {
     assert.equal(link.getAttribute("href"), "#audit-request");
     link.click();
@@ -207,5 +207,25 @@ test("preview hosts do not load production GA4 or send conversion commands", () 
   assert.equal(dom.window.document.querySelector('script[src*="gtag/js"]'), null);
   assert.equal(dom.window.dataLayer.filter((entry) => entry[0] === "event").length, 0);
   assert.equal(events(dom.window, "calculator_complete").length, 1);
+  dom.window.close();
+});
+
+test('internal QA is kept out of GA4 across subsequent page loads', () => {
+  const dom = createPage(async () => accepted(), {url: 'https://www.roofaileadrecovery.com/how-much-are-missed-calls-costing-your-roofing-company/?utm_source=qa_internal'});
+  enterCompleteScenario(dom.window);
+  assert.equal(dom.window.document.querySelector('script[src*="googletagmanager.com"]'), null);
+  assert.equal(dom.window.sessionStorage.getItem('roof_ai_qa'), '1');
+  assert.equal(dom.window.dataLayer.filter(entry => entry[0] === 'event').length, 0);
+  dom.window.close();
+});
+
+test('audit intent and calculator start are forwarded without form details', () => {
+  const dom = createPage(async () => accepted());
+  openAndFillAudit(dom.window);
+  enterCompleteScenario(dom.window);
+  const sent = dom.window.dataLayer.filter(entry => entry[0] === 'event');
+  assert.ok(sent.some(entry => entry[1] === 'audit_cta_clicked'));
+  assert.ok(sent.some(entry => entry[1] === 'calculator_started'));
+  assert.ok(!JSON.stringify(sent).includes('jamie@example.com'));
   dom.window.close();
 });

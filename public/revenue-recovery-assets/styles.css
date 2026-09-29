@@ -488,3 +488,11 @@ body:has(.audit-dialog[open]) { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
 }
+
+/* Calculator landing page: a concrete example before the long guide. */
+.recovery-example { margin-top: 24px; max-width: 850px; background: #fff; border: 1px solid #cbd5e1; border-radius: 14px; color: #17243b; }
+.recovery-example summary { padding: 18px 22px; cursor: pointer; font-weight: 750; }
+.recovery-example summary:focus-visible { outline: 3px solid #2563eb; outline-offset: 3px; }
+.recovery-example-body { padding: 0 22px 24px; line-height: 1.7; }
+.recovery-example-body ol { padding-left: 22px; }
+.recovery-example-body li { margin: 12px 0; }

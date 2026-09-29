@@ -7,16 +7,21 @@
   const measurementId = "G-8PV83SZ3X0";
   const attributionKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "fbclid"];
   const query = new URLSearchParams(window.location.search);
+  const isInternalTest = query.get("utm_source") === "qa_internal" || query.get("qa") === "1";
+  if (isInternalTest) { try { sessionStorage.setItem("roof_ai_qa", "1"); } catch {} }
+  const productionAnalytics = ["www.roofaileadrecovery.com", "roofaileadrecovery.com"].includes(window.location.hostname)
+    && !isInternalTest && (() => { try { return sessionStorage.getItem("roof_ai_qa") !== "1"; } catch { return true; } })();
+  const measuredEvents = ["calculator_started", "calculator_complete", "audit_cta_clicked", "audit_form_started", "audit_form_error", "audit_submit", "signup_clicked", "recovery_example_viewed"];
   const pushEvent = (event, details = {}) => {
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ event, ...details });
-    if (["calculator_complete", "audit_submit"].includes(event) && typeof window.gtag === "function") {
+    if (productionAnalytics && measuredEvents.includes(event) && typeof window.gtag === "function") {
       window.gtag("event", event, { ...details, send_to: measurementId });
     }
   };
   const ensureAnalytics = () => {
     // Preview/test builds must not send events into the production property.
-    if (!["www.roofaileadrecovery.com", "roofaileadrecovery.com"].includes(window.location.hostname)) return;
+    if (!productionAnalytics) return;
     window.dataLayer = window.dataLayer || [];
     window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
     if (document.querySelector(`script[src*="gtag/js?id=${measurementId}"]`)) return;
@@ -28,6 +33,7 @@
     document.head.appendChild(script);
   };
   const ensureTagManager = () => {
+    if (!productionAnalytics) return;
     window.dataLayer = window.dataLayer || [];
     if (document.querySelector(`script[src*="googletagmanager.com/gtm.js?id=${tagManagerId}"]`)) return;
     window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
@@ -177,6 +183,10 @@
     links?.classList.toggle("open", !open);
   });
 
+  document.querySelector('[data-recovery-example]')?.addEventListener('toggle', (event) => {
+    if (event.target.open) pushEvent('recovery_example_viewed', { page_path: window.location.pathname, ...eventAttribution() });
+  }, { once: true });
+
   let calculatorModel = null;
   const calculator = document.querySelector("[data-calculator]");
   if (calculator) {
@@ -286,7 +296,7 @@
     } else {
       summary.hidden = true;
     }
-    pushEvent("audit_cta_clicked", { page_path: window.location.pathname, cta_location: auditCtaLocation });
+    pushEvent("audit_cta_clicked", { page_path: window.location.pathname, ...eventAttribution(), cta_location: auditCtaLocation });
     const submitButton = auditForm?.querySelector(".audit-submit");
     if (submitButton && !auditSubmitting) {
       submitButton.hidden = false;
@@ -326,7 +336,7 @@
   auditForm?.addEventListener("input", () => {
     if (!auditFormStarted) {
       auditFormStarted = true;
-      pushEvent("audit_form_started", { page_path: window.location.pathname, cta_location: auditCtaLocation });
+      pushEvent("audit_form_started", { page_path: window.location.pathname, ...eventAttribution(), cta_location: auditCtaLocation });
     }
   });
   auditForm?.addEventListener("submit", async (event) => {
@@ -334,7 +344,7 @@
     if (auditSubmitting || auditForm.querySelector(".audit-submit").classList.contains("is-success")) return;
     syncPhoneChoice();
     if (!auditForm.reportValidity()) {
-      pushEvent("audit_form_error", { page_path: window.location.pathname, error_type: "validation" });
+      pushEvent("audit_form_error", { page_path: window.location.pathname, ...eventAttribution(), error_type: "validation" });
       return;
     }
     const values = Object.fromEntries(new FormData(auditForm).entries());
@@ -414,7 +424,7 @@
         if (response.status === 429) {
           status.textContent = "We’ve received several requests from this connection. Please wait an hour or email us directly.";
           status.className = "audit-status error";
-          pushEvent("audit_form_error", { page_path: window.location.pathname, error_type: "rate_limited" });
+          pushEvent("audit_form_error", { page_path: window.location.pathname, ...eventAttribution(), error_type: "rate_limited" });
           return;
         }
         throw new Error(result.error || "SUBMISSION_FAILED");
@@ -439,7 +449,7 @@
       submitButton.textContent = "Request received";
       submitButton.classList.add("is-success");
     } catch (_error) {
-      pushEvent("audit_form_error", { page_path: window.location.pathname, error_type: "service_unavailable" });
+      pushEvent("audit_form_error", { page_path: window.location.pathname, ...eventAttribution(), error_type: "service_unavailable" });
       status.textContent = values.aiDemoRequested === "on"
         ? "We couldn’t confirm your AI demo request. Please try again, or email cory@roofaileadrecovery.com for help."
         : "We couldn’t confirm your request. Your details are still here. Please try again, or choose email below.";
@@ -459,6 +469,6 @@
   });
 
   document.querySelectorAll('a[href*="/signup"]').forEach((link) => link.addEventListener("click", () => {
-    pushEvent("signup_clicked", { page_path: window.location.pathname, link_location: link.closest(".site-footer") ? "footer" : "content" });
+    pushEvent("signup_clicked", { page_path: window.location.pathname, ...eventAttribution(), link_location: link.closest(".site-footer") ? "footer" : "content" });
   }));
 })();
