@@ -496,3 +496,4 @@ body:has(.audit-dialog[open]) { overflow: hidden; }
 .recovery-example-body { padding: 0 22px 24px; line-height: 1.7; }
 .recovery-example-body ol { padding-left: 22px; }
 .recovery-example-body li { margin: 12px 0; }
+.page-hero .hero-shell > .disclaimer { color: #c9dce9; max-width: 760px; }
