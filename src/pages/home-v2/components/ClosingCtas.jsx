@@ -35,13 +35,13 @@ export function BottomCta() {
               </div>
 
               <h2 className="hv2-display relative text-[clamp(1.9rem,5vw,3rem)] text-[var(--text)]">
-                <SplitText text="Stop losing roofing jobs to" />{" "}
-                <span className="hv2-accent hv2-grad-text">voicemail</span>
+                <SplitText text="Give missed roofing calls a" />{" "}
+                <span className="hv2-accent hv2-grad-text">clear next step</span>
               </h2>
               <Reveal delay={0.2}>
                 <p className="relative mx-auto mt-5 max-w-xl text-[17px] leading-[1.7] text-[var(--text-dim)]">
-                  Every missed call is a homeowner looking for help. We'll respond within
-                  seconds — so you book more inspections and recover more revenue.
+                  Keep your team answering first. Use approved overflow coverage to acknowledge
+                  eligible callers, collect useful details and assign follow-through.
                 </p>
               </Reveal>
               <Reveal delay={0.28}>
@@ -99,14 +99,14 @@ export function FinalCta() {
         </span>
 
         <h2 className="hv2-display mx-auto mt-7 max-w-4xl text-[clamp(2.2rem,6.5vw,4.2rem)] text-white">
-          <SplitText text="Stop losing roofing jobs to" />{" "}
-          <span className="hv2-accent">voicemail</span>
+          <SplitText text="Turn unanswered roofing calls into" />{" "}
+          <span className="hv2-accent">owned next steps</span>
         </h2>
 
         <Reveal delay={0.25}>
           <p className="mx-auto mt-6 max-w-2xl text-[17.5px] font-medium leading-[1.7] text-white/85">
-            Every missed call is a homeowner looking for help. We'll respond within seconds.
-            Book more inspections. Recover more revenue.
+            Review your current process, verify the gap and activate only after the routing,
+            qualification and handoff flow passes an authorized test.
           </p>
         </Reveal>
         <Reveal delay={0.33}>
