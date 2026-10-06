@@ -60,11 +60,11 @@ export function Problem() {
               <h2 className="hv2-display mt-7 text-[clamp(2.2rem,4vw,3.3rem)] text-[var(--text)]">
                 <SplitText text="Every missed call" />
                 <br />
-                <span className="hv2-accent text-[var(--rose)]">costs money</span>
+                <span className="hv2-accent text-[var(--rose)]">creates uncertainty</span>
               </h2>
               <p className="mt-6 max-w-md text-[17px] leading-[1.7] text-[var(--text-dim)]">
-                When a homeowner reaches voicemail, they don't wait around. They dial the next
-                roofer on the list.
+                Some callers leave a message or call back. Others keep looking. A measured
+                follow-up process shows which inquiries still need a next step.
               </p>
 
               <div className="mt-12">
@@ -164,11 +164,11 @@ export function Problem() {
       <div className="relative px-5 py-20 lg:hidden">
         <SectionLabel index="01" eyebrow="The Problem" />
         <h2 className="hv2-display mt-6 text-[clamp(2rem,8vw,2.6rem)] text-[var(--text)]">
-          Every missed call <span className="hv2-accent text-[var(--rose)]">costs money</span>
+          Every missed call <span className="hv2-accent text-[var(--rose)]">creates uncertainty</span>
         </h2>
         <p className="mt-5 text-[16px] leading-[1.7] text-[var(--text-dim)]">
-          When a homeowner reaches voicemail, they don't wait around. They dial the next roofer
-          on the list.
+          Some callers leave a message or call back. Others keep looking. A measured follow-up
+          process shows which inquiries still need a next step.
         </p>
 
         <div className="mt-10 space-y-4">

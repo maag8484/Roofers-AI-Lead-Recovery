@@ -2,7 +2,7 @@ import { Parallax, Reveal, SectionLabel, Spotlight } from "./primitives";
 import { SMITH_AI_POINTS } from "../content";
 
 /**
- * Smith.ai credibility. Copy verbatim.
+ * Operational handoff guardrails.
  *
  * Off-axis split — the mark parallaxes against the statement — so it breaks
  * the rhythm of the sections either side of it.
@@ -25,10 +25,10 @@ export function SmithAiTrust() {
               <div className="hv2-glass relative flex h-full w-full items-center justify-center rounded-[2.5rem]">
                 <span className="text-[7rem] leading-none">🤝</span>
                 <span className="hv2-float hv2-glass absolute -right-4 top-8 rounded-2xl px-4 py-2.5 text-[13px] font-bold text-[var(--text)]">
-                  Live receptionist
+                  Team-approved handoff
                 </span>
                 <span className="hv2-float-slow hv2-glass absolute -left-4 bottom-10 rounded-2xl px-4 py-2.5 text-[13px] font-bold text-[var(--acid)]">
-                  Never voicemail
+                  Clear next step
                 </span>
               </div>
             </div>
@@ -37,16 +37,15 @@ export function SmithAiTrust() {
           {/* Statement */}
           <div className="order-1 lg:order-2">
             <Reveal>
-              <SectionLabel index="07" eyebrow="Trusted Call Handling" />
+              <SectionLabel index="07" eyebrow="Controlled Call Handling" />
               <h3 className="hv2-display mt-7 text-[clamp(1.8rem,4.2vw,2.7rem)] text-[var(--text)]">
-                Live receptionist support powered by{" "}
-                <span className="hv2-accent hv2-grad-text">Smith.ai</span>
+                Your staff answers first. Roof AI handles only{" "}
+                <span className="hv2-accent hv2-grad-text">approved overflow</span>
               </h3>
               <p className="mt-6 max-w-xl text-[17px] leading-[1.75] text-[var(--text-dim)]">
-                When AI needs a human, your customers speak with a{" "}
-                <span className="font-bold text-[var(--text)]">trained live receptionist</span> —
-                not voicemail. Smith.ai handles overflow calls so every homeowner gets a real
-                response, every single time.
+                Before activation, your team defines service area, urgency language, exclusions,
+                escalation and the exact callback or booking path. A human remains responsible
+                for promises and outcomes the configured workflow cannot verify.
               </p>
             </Reveal>
 

@@ -53,7 +53,8 @@ export function DashboardPreview() {
           </div>
           <Reveal delay={0.1}>
             <p className="max-w-sm text-[16px] leading-[1.7] text-[var(--text-dim)]">
-              Every recovered lead, response, and booking — tracked in one clean view.
+              Illustrative sample data — not customer results. Actual records depend on the
+              configured workflow and connected sources.
             </p>
           </Reveal>
         </div>
@@ -123,7 +124,7 @@ export function DashboardPreview() {
                         {big && (
                           <span className="hv2-sticker flex items-center gap-1.5 rounded-full bg-[var(--emerald-50)] px-2.5 py-1 text-[11.5px] font-bold text-[var(--emerald-600)]">
                             <TrendingUp className="h-3 w-3" />
-                            {wide ? "This month" : "Fastest yet"}
+                            Sample
                           </span>
                         )}
                       </div>

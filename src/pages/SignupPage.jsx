@@ -110,7 +110,8 @@ export default function SignupPage() {
         <div>
           <h1 className="text-2xl font-extrabold text-ink">Create your account</h1>
           <p className="mt-1 text-muted-foreground">
-            Create your account, then start your trial. We'll help configure your call coverage.
+            Create your account, review the exact trial end and first charge date in checkout,
+            then submit the details needed to configure your approved call coverage.
           </p>
         </div>
 
@@ -184,7 +185,7 @@ export default function SignupPage() {
         </Button>
 
         <p className="text-center text-xs text-muted-foreground">
-          We'll walk you through setup next — start your 7-day free trial, no charge today.
+          Next: Stripe Checkout → business details → configuration review → authorized test → activation.
         </p>
       </form>
     </AuthLayout>
