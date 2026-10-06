@@ -23,7 +23,7 @@ export function PricingPreview() {
           <span className="text-4xl font-extrabold">$299</span>
           <span className="pb-1 text-brand-100">/month</span>
         </div>
-        <p className="mt-1 text-sm text-brand-100">Starts after your 7-day free trial.</p>
+        <p className="mt-1 text-sm text-brand-100">Review the exact trial end and first charge date in Stripe Checkout.</p>
       </div>
 
       <div className="space-y-2.5 bg-white p-6">
