@@ -1,9 +1,8 @@
 /**
- * All /home-v2 copy, lifted VERBATIM from the live landing page.
+ * Shared /home-v2 marketing copy.
  *
- * This route is a UI/UX and motion upgrade — the words, numbers, section order
- * and claims are unchanged from src/pages/LandingPage.jsx. Keeping them in one
- * file makes that parity auditable at a glance.
+ * Keep operational claims bounded to configured, verified capabilities. Any
+ * example numbers shown in the UI must be visibly labeled as illustrative.
  */
 
 export const PROBLEMS = [
@@ -19,8 +18,8 @@ export const PROBLEMS = [
   },
   {
     icon: "Bell",
-    title: "They call a competitor",
-    body: "Within minutes, the next roofer on Google picks up — and wins your job.",
+    title: "The next step is unclear",
+    body: "Some callers leave a voicemail or call back. Others keep looking. Without a consistent process, you may not know which opportunities stalled.",
   },
 ];
 
@@ -29,27 +28,27 @@ export const STEPS = [
     n: 1,
     icon: "Phone",
     title: "Lead calls or submits a form",
-    body: "A missed call, web form, or after-hours inquiry triggers Roof AI automatically.",
+    body: "Your team defines which unanswered or after-hours inquiries Roof AI is allowed to handle.",
   },
   {
     n: 2,
     icon: "MessageSquare",
-    title: "Roof AI responds instantly",
-    body: "A personalized SMS goes out within 30 seconds, qualifies the lead, and answers questions.",
+    title: "Roof AI follows approved rules",
+    body: "The configured workflow acknowledges the inquiry and collects the roofing details your team needs.",
   },
   {
     n: 3,
     icon: "Calendar",
-    title: "Inspection gets scheduled",
-    body: "The appointment lands directly on your Google Calendar — and you get a notification.",
+    title: "Your team gets a clear next step",
+    body: "Roof AI can capture a callback request or use an approved booking route after configuration is verified.",
   },
 ];
 
 export const OUTCOME_FLOW = [
   { icon: "Phone", label: "Lead", tone: "brand" },
   { icon: "Bot", label: "AI responds", tone: "brand" },
-  { icon: "Calendar", label: "Google Calendar", tone: "emerald" },
-  { icon: "ClipboardCheck", label: "Roof Inspection", tone: "emerald" },
+  { icon: "Calendar", label: "Approved next step", tone: "emerald" },
+  { icon: "ClipboardCheck", label: "Owner notification", tone: "emerald" },
 ];
 
 export const DASH_STATS = [
@@ -60,11 +59,11 @@ export const DASH_STATS = [
 ];
 
 export const TRUST_BUILDERS = [
-  "Setup in under 15 minutes",
+  "Configured with your team",
   "No contracts",
   "Cancel anytime",
-  "Works with Google Calendar",
-  "No sales call required",
+  "Keep your current business number",
+  "Authorized overflow coverage",
 ];
 
 export const WHO_ITS_FOR = [
@@ -76,12 +75,12 @@ export const WHO_ITS_FOR = [
 ];
 
 export const PLAN_FEATURES = [
-  "AI responds to missed calls in under 30 seconds",
-  "Live receptionist backup for unanswered calls",
-  "AI qualifies every homeowner",
-  "Books inspections directly on your calendar",
-  "SMS & Email notifications",
-  "Google Calendar integration",
+  "Handles approved missed and after-hours calls",
+  "Collects roofing need, service area and urgency",
+  "Separates new inquiries from other callers",
+  "Captures an approved callback or booking request",
+  "Team notifications after configuration",
+  "Workflow review before activation",
   "Lead tracking dashboard",
   "Unlimited users",
 ];
@@ -91,78 +90,78 @@ export const PLAN_TRUST = [
   "7-Day Free Trial",
   "No new phone number required",
   "Keep your current workflow",
-  "Setup takes about 10 minutes",
+  "Activation follows an authorized test",
 ];
 
 export const WHY_ROOFERS_JOIN = [
   {
     emoji: "💰",
-    title: "Recover Lost Revenue",
-    desc: "Stop losing homeowners to the next roofer who answers first. Every missed call is money already spent on marketing — walking out the door.",
+    title: "Recover More Opportunities",
+    desc: "Give unanswered callers a clear next step and measure what happens instead of assuming every missed call was lost revenue.",
   },
   {
     emoji: "📅",
     title: "Book More Inspections",
-    desc: "Turn missed calls into scheduled estimates automatically. No manual follow-up. No leads falling through the cracks.",
+    desc: "Collect the details needed for a callback or an approved booking route, then keep a human owner for follow-through.",
   },
   {
     emoji: "⏰",
     title: "Works 24/7",
-    desc: "On the roof. Driving. After hours. Every lead gets an immediate response — even when you can't pick up.",
+    desc: "Use approved overflow and after-hours coverage while your team keeps answering first.",
   },
 ];
 
 export const SMITH_AI_POINTS = [
-  { emoji: "🎯", text: "Every call answered by a real person when AI can't" },
-  { emoji: "🏆", text: "Smith.ai is trusted by thousands of businesses" },
-  { emoji: "📞", text: "No customer ever reaches voicemail" },
+  { emoji: "🎯", text: "Escalation rules are agreed before activation" },
+  { emoji: "🧭", text: "Unsupported requests are routed to a clear next step" },
+  { emoji: "📞", text: "Your team remains the primary call owner" },
 ];
 
 export const COMPARISON_ROWS = [
   {
     without: "Missed calls go to voicemail",
-    with: "Every missed call gets an immediate response",
+    with: "Approved missed calls follow a defined workflow",
   },
   {
-    without: "Homeowners call another roofer",
-    with: "Homeowners stay engaged with your business",
+    without: "Caller outcome is unknown",
+    with: "Caller receives a clear next step",
   },
-  { without: "Lost inspections", with: "More inspections booked automatically" },
-  { without: "Lost revenue", with: "Revenue recovered 24/7" },
+  { without: "Unstructured callback notes", with: "Qualified details reach an owner" },
+  { without: "Revenue outcome is assumed", with: "Appointments and paid jobs are measured separately" },
   {
     without: "After-hours leads disappear",
-    with: "24/7 lead recovery — even while you sleep",
+    with: "Configured after-hours coverage",
   },
 ];
 
 export const FAQS = [
   {
     q: "How does Roof AI Lead Recovery work?",
-    a: "When a homeowner calls your roofing company and nobody answers, Roof AI instantly sends a personalized text within 30 seconds. It qualifies the lead by asking what kind of roofing work is needed, answers their questions, and books an inspection straight onto your Google Calendar — all automatically.",
+    a: "After your team approves the routing and conversation rules, Roof AI can handle eligible unanswered or after-hours inquiries, collect the roofing details you require and create an approved callback or booking next step. Exact channels and destinations are verified during setup.",
   },
   {
     q: "How much does it cost?",
-    a: "$299 per month with a 7-day free trial. No long-term contracts, no setup fees, and no sales call required. Cancel anytime from your dashboard.",
+    a: "$299 per month with a 7-day free trial. Review the exact trial end and first charge date in checkout before confirming. There are no long-term contracts or setup fees, and you can cancel future renewal from your dashboard.",
   },
   {
-    q: "What percentage of missed calls do roofers actually lose?",
-    a: "Industry data shows 62% of callers who reach voicemail hang up without leaving a message, and 80% never call back. For roofing companies where an average job is $5,000–$30,000, even 2–3 missed calls per week can mean $50,000 or more in lost annual revenue.",
+    q: "Is every missed call a lost roofing job?",
+    a: "No. Some callers leave voicemail, call back, are existing customers or do not fit your service area. The useful baseline is the number of unique missed callers that were legitimate new opportunities, then what happened after follow-up.",
   },
   {
     q: "How is this different from an answering service?",
-    a: "Traditional answering services cost $200–$500/month and take messages — they don't qualify leads or book estimates. Roof AI Lead Recovery qualifies the homeowner, determines urgency, and books the inspection automatically. It's faster, cheaper per recovered lead, and works 24/7 without hold times.",
+    a: "The important comparison is your actual workflow. Roof AI is designed as an overflow and after-hours recovery layer that can collect roofing-specific details and assign a next step. Existing staff or answering services may already cover that need, so we verify the gap before recommending activation.",
   },
   {
     q: "Will this replace my receptionist?",
-    a: "No — it backs them up. Roof AI catches the calls and leads that slip through when your team is busy, on a roof, or off the clock. It never sleeps and never puts a lead on hold.",
+    a: "No. Your team keeps answering first. Roof AI is configured only for approved overflow and after-hours situations, with escalation and follow-up rules your team controls.",
   },
   {
     q: "How long does setup take?",
-    a: "About 15 minutes. You sign up, get a business phone number, and connect your Google Calendar in one click. No sales call required.",
+    a: "Setup depends on your current number, coverage rules, service area and preferred next step. Activation follows a configuration review and an authorized end-to-end test; we do not promise a universal setup time.",
   },
   {
     q: "Can I see every conversation?",
-    a: "Yes. Your dashboard shows every recovered lead, every response, and every booked estimate in one clean view, updated in real time.",
+    a: "The dashboard is designed to show recovered-lead activity and recorded outcomes. What appears depends on the configured workflow and connected data sources.",
   },
   {
     q: "Do I need to change my phone number?",
@@ -170,7 +169,7 @@ export const FAQS = [
   },
   {
     q: "Does it work after business hours?",
-    a: "Yes. Roof AI works 24/7. Most roofing emergencies — storm damage, leaks, blow-offs — happen outside business hours, and those late-night and weekend inquiries get the same instant response and booking experience as calls during the day.",
+    a: "Approved after-hours calls can follow a configured acknowledgment, qualification and callback or booking workflow. Roof AI does not promise emergency dispatch, pricing, insurance outcomes or an appointment your team has not confirmed.",
   },
   {
     q: "Can I cancel anytime?",
