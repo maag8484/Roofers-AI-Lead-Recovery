@@ -35,12 +35,12 @@ export function Pricing() {
         <div className="max-w-2xl">
           <SectionLabel index="05" eyebrow="Pricing" />
           <h2 className="hv2-display mt-7 text-[clamp(2rem,4.4vw,3rem)] text-[var(--text)]">
-            <SplitText text="Recover more roofing jobs for" />{" "}
-            <span className="hv2-accent hv2-grad-text">less than the profit from one roof</span>
+            <SplitText text="One plan for your approved" />{" "}
+            <span className="hv2-accent hv2-grad-text">overflow workflow</span>
           </h2>
           <Reveal delay={0.2}>
             <p className="mt-5 text-[17px] leading-[1.65] text-[var(--text-dim)]">
-              One plan. Everything included. No surprises.
+              Verify the fit, configuration and exact checkout terms before activation.
             </p>
           </Reveal>
         </div>
@@ -119,8 +119,8 @@ export function Pricing() {
                 <span className="hv2-accent text-[var(--acid)]">A revenue safety net.</span>
               </h3>
               <p className="mt-4 text-[16.5px] leading-[1.7] text-[var(--text-dim)]">
-                Roof AI doesn't add work to your plate — it recovers the revenue you were
-                already losing.
+                Roof AI gives eligible unanswered callers a structured next step while your
+                team remains responsible for the customer relationship.
               </p>
             </Reveal>
 
