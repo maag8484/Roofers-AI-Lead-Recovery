@@ -7,7 +7,7 @@ const STEPS = [
   { title: "You tell us about your business", detail: "A quick form: service area, services, call-handling preference." },
   { title: "Our team configures your AI receptionist", detail: "We provision your number and set up call handling for you." },
   { title: "Your calendar & routing are connected", detail: "Appointments and warm transfers wired to your preferences." },
-  { title: "You're live — recovering missed calls 24/7", detail: "Every missed call gets answered and qualified automatically." },
+  { title: "Authorized test and activation", detail: "Coverage starts only after the approved routing, qualification and handoff flow is verified." },
 ];
 
 export function NextSteps() {
