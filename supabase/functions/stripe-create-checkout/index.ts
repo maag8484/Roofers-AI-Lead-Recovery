@@ -50,7 +50,10 @@ Deno.serve(async (req) => {
       automatic_tax: { enabled: true },
       customer_update: { address: "auto" },
       custom_text: {
-        submit: { message: "Recover missed calls. Book more roof inspections. Grow your business for just $299/month." } as any,
+        submit: {
+          message:
+            "Start a 7-day free trial. $299/month plus applicable tax after the trial unless canceled. Activation follows configuration review and an authorized workflow test.",
+        } as any,
       },
       success_url,
       cancel_url,
