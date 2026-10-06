@@ -41,7 +41,7 @@ export function HowItWorks() {
           <SectionLabel index="02" eyebrow="How It Works" />
           <h2 className="hv2-display mt-7 text-[clamp(2rem,4.6vw,3.2rem)] text-[var(--text)]">
             <SplitText text="Three steps." />{" "}
-            <span className="hv2-accent hv2-grad-text">Zero missed leads.</span>
+            <span className="hv2-accent hv2-grad-text">One clear next step.</span>
           </h2>
         </div>
 
@@ -136,12 +136,12 @@ export function HowItWorks() {
               <div>
                 <SectionLabel eyebrow="The Outcome" />
                 <h3 className="hv2-display mt-4 text-[clamp(1.5rem,3.4vw,2.2rem)] text-[var(--text)]">
-                  From missed lead to <span className="hv2-accent text-[var(--acid)]">booked inspection</span>
+                  From missed inquiry to <span className="hv2-accent text-[var(--acid)]">owned next step</span>
                 </h3>
               </div>
               <p className="max-w-sm text-[15.5px] leading-[1.65] text-[var(--text-dim)]">
-                Roof AI turns a single inquiry into an inspection on your calendar —
-                automatically.
+                The configured workflow collects the right details, then creates the callback,
+                booking request or owner notification your team approved.
               </p>
             </div>
           </Reveal>
