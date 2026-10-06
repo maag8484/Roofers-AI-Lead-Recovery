@@ -22,7 +22,7 @@ const THREAD = [
   { side: "left", text: "Repair — got a leak after the storm" },
   {
     side: "right",
-    text: "Got it. I can get you a free inspection. Does tomorrow at 2:00 PM work?",
+    text: "Got it. I can collect the details for your roofing team. What city is the property in?",
     typing: true,
   },
 ];
@@ -106,8 +106,8 @@ export function PhoneShowcase() {
       <Chip
         icon={Phone}
         accent="acid"
-        label="New lead recovered"
-        value="+$12,000 job"
+        label="Illustrative workflow"
+        value="Not customer results"
         className="right-0 top-10"
         float="hv2-float"
         delay={1.15}
@@ -116,8 +116,8 @@ export function PhoneShowcase() {
       <Chip
         icon={Calendar}
         accent="brand"
-        label="Responded in"
-        value="18 seconds"
+        label="Approved next step"
+        value="Callback requested"
         className="bottom-14 left-0"
         float="hv2-float-slow"
         delay={1.45}
@@ -149,7 +149,7 @@ export function PhoneShowcase() {
                 <span className="hv2-ping absolute inset-0 rounded-full" />
                 <span className="relative h-1.5 w-1.5 rounded-full bg-current" />
               </span>
-              Auto-replying now
+              Illustrative example
             </p>
           </div>
         </div>
@@ -198,7 +198,7 @@ export function PhoneShowcase() {
               className="flex items-center justify-center gap-1.5 rounded-xl border border-[var(--acid)]/30 bg-[var(--acid)]/10 px-3 py-2.5 text-[12px] font-bold text-[var(--acid)]"
             >
               <CheckCircle2 className="h-4 w-4" />
-              Inspection booked · Tue 2:00 PM
+              Callback request captured · owner notified
             </motion.div>
           )}
         </div>
