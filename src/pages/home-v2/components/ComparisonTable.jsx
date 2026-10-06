@@ -25,13 +25,13 @@ export function ComparisonTable() {
             <SectionLabel index="08" eyebrow="The Real Question" />
           </Reveal>
           <h2 className="hv2-display mt-7 text-[clamp(2rem,4.6vw,3.1rem)] text-[var(--text)]">
-            <SplitText text="Can you afford" />{" "}
-            <span className="hv2-accent text-[var(--rose)]">NOT to have this?</span>
+            <SplitText text="Do unanswered calls have" />{" "}
+            <span className="hv2-accent text-[var(--rose)]">a clear owner?</span>
           </h2>
           <Reveal delay={0.2}>
             <p className="mx-auto mt-5 max-w-xl text-[17px] leading-[1.7] text-[var(--text-dim)]">
-              Instead of asking 'should I spend $299?' — ask yourself what you're losing every
-              month without it.
+              Start with evidence: which calls went unanswered, which were legitimate new
+              opportunities, who followed up and what outcome was verified?
             </p>
           </Reveal>
         </div>
@@ -116,7 +116,7 @@ export function ComparisonTable() {
 
         <Reveal delay={0.12}>
           <p className="mt-10 text-center text-[15px] text-[var(--text-dim)]">
-            People buy because they don't want the left column.{" "}
+            The right process is the one your team can verify and support.{" "}
             <span className="font-bold text-[var(--text)]">
               Which column are you in right now?
             </span>
