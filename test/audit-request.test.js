@@ -100,7 +100,8 @@ test("accepted requests send an internal notification when SendGrid is configure
   assert.equal(calls[1].url, "https://api.sendgrid.com/v3/mail/send");
   const email = JSON.parse(calls[1].options.body);
   assert.equal(email.personalizations[0].to[0].email, "cory@roofaileadrecovery.com");
-  assert.equal(email.reply_to.email, "jamie@example.com");
+  assert.equal(email.reply_to.email, "cory@roofaileadrecovery.com");
+  assert.equal(email.from.email, "cory@roofaileadrecovery.com");
   assert.match(email.content[0].value, /Example Roofing/);
 });
 

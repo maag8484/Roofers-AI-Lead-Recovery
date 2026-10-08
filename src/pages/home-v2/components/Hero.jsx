@@ -145,10 +145,10 @@ export function Hero() {
                 className="hv2-hero-gap flex flex-col gap-3 sm:flex-row sm:items-center"
               >
                 <CtaButton
-                  to="/what-happens-when-a-roofer-misses-a-homeowners-call/"
+                  to="/#inquiry"
                   reloadDocument
                 >
-                  See How a Missed Call Gets Recovered
+                  Have Us Call You
                 </CtaButton>
                 <Magnetic strength={0.2}>
                   <button
