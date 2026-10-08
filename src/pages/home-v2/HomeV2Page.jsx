@@ -1,3 +1,4 @@
+import { InquiryForm } from "./components/InquiryForm";
 import { Nav } from "./components/Nav";
 import { Hero } from "./components/Hero";
 import { Problem } from "./components/Problem";
@@ -51,6 +52,7 @@ export default function HomeV2Page() {
       <Nav />
       <main className="flex-1">
         <Hero />
+        <InquiryForm />
         <Problem />
         <HowItWorks />
         <WhoItsFor />

@@ -6,6 +6,7 @@ const SUPABASE_TIMEOUT_MS = 8_000;
 const EMAIL_TIMEOUT_MS = 2_500;
 
 const text = (value, max) => typeof value === "string" ? value.trim().slice(0, max) : "";
+export const HUMAN_CALLBACK_CONSENT_TEXT = "I am interested in Roof AI Lead Recovery and request a phone call from its team, including Jesse, at the number provided about its services. This is a request for a human callback, not automated calls or marketing texts. No purchase is required.";
 
 export const AI_DEMO_CONSENT_VERSION = "ai-demo-call-v1";
 // Keep the visible disclosure in site.js identical; the DOM tests check this.
@@ -23,19 +24,20 @@ export function normalizeDemoPhone(value) {
 
 export function validateAuditRequest(input) {
   const data = input && typeof input === "object" ? input : {};
+  const callback = data.requestType === "human_callback";
   const payload = {
     full_name: text(data.fullName, 100),
     email: text(data.email, 254).toLowerCase(),
-    company: text(data.company, 150),
-    service_area: text(data.serviceArea, 150),
+    company: callback ? "Callback inquiry (company not supplied)" : text(data.company, 150),
+    service_area: text(callback ? data.address : data.serviceArea, 150),
     phone: text(data.phone, 30) || null,
-    preferred_contact: text(data.preferredContact, 20).toLowerCase(),
-    current_process: text(data.currentProcess, 500) || null,
+    preferred_contact: callback ? "phone" : text(data.preferredContact, 20).toLowerCase(),
+    current_process: callback ? HUMAN_CALLBACK_CONSENT_TEXT : text(data.currentProcess, 500) || null,
     contact_consent: data.contactConsent === true,
-    marketing_consent: data.marketingConsent === true,
-    ai_demo_requested: data.aiDemoRequested === true,
+    marketing_consent: !callback && data.marketingConsent === true,
+    ai_demo_requested: !callback && data.aiDemoRequested === true,
     ai_demo_consent: null,
-    consent_version: "audit-form-v2",
+    consent_version: callback ? "human-callback-v1" : "audit-form-v2",
     consented_at: new Date().toISOString(),
     submission_page: text(data.submissionPage, 500),
     attribution: sanitizeObject(data.attribution, ["landing_page", "referrer", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "fbclid"], 500),
@@ -43,6 +45,13 @@ export function validateAuditRequest(input) {
   };
 
   const errors = [];
+  if (callback) {
+    const phone = normalizeDemoPhone(data.phone);
+    if (!phone) errors.push("phone");
+    else payload.phone = phone;
+    if (!payload.service_area) errors.push("address");
+    if (data.callbackConsentVersion !== "human-callback-v1") errors.push("callbackConsentVersion");
+  }
   if (!payload.full_name) errors.push("fullName");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) errors.push("email");
   if (!payload.company) errors.push("company");
@@ -126,13 +135,13 @@ function notificationText(payload, requestId) {
     maximumFractionDigits: 0,
   }).format(Number(value) || 0);
   return [
-    "New missed revenue audit request",
+    payload.consent_version === "human-callback-v1" ? "New human callback inquiry — review for Jesse" : "New missed revenue audit request",
     "",
     `Request ID: ${requestId}`,
     `Name: ${payload.full_name}`,
     `Work email: ${payload.email}`,
     `Roofing company: ${payload.company}`,
-    `Service area: ${payload.service_area}`,
+    `${payload.consent_version === "human-callback-v1" ? "Business address" : "Service area"}: ${payload.service_area}`,
     `Phone: ${payload.phone || "Not provided"}`,
     `Preferred follow-up: ${payload.preferred_contact}`,
     `AI demo request: ${payload.ai_demo_requested ? "Requested — review required before calling" : "Not requested"}`,
@@ -165,7 +174,7 @@ async function sendAuditNotification(payload, requestId) {
   if (!apiKey) return { sent: false, reason: "NOT_CONFIGURED" };
 
   const to = process.env.AUDIT_NOTIFICATION_TO || "cory@roofaileadrecovery.com";
-  const from = process.env.AUDIT_NOTIFICATION_FROM || process.env.SENDGRID_FROM_EMAIL || "support@roofaileadrecovery.com";
+  const from = "cory@roofaileadrecovery.com";
   const configuredBase = (process.env.SENDGRID_API_BASE_URL || "").trim().replace(/\/$/, "");
   const baseUrls = configuredBase
     ? [configuredBase]
@@ -174,9 +183,9 @@ async function sendAuditNotification(payload, requestId) {
   const timeout = setTimeout(() => controller.abort(), EMAIL_TIMEOUT_MS);
   try {
     const body = JSON.stringify({
-      personalizations: [{ to: [{ email: to }], subject: `[Roof AI] New audit request — ${payload.company}` }],
+      personalizations: [{ to: [{ email: to }], subject: payload.consent_version === "human-callback-v1" ? "[Roof AI] New callback inquiry" : `[Roof AI] New audit request — ${payload.company}` }],
       from: { email: from, name: "Roof AI Lead Recovery" },
-      reply_to: { email: payload.email, name: payload.full_name },
+      reply_to: { email: "cory@roofaileadrecovery.com", name: "Cory Maag" },
       content: [{ type: "text/plain", value: notificationText(payload, requestId) }],
     });
     const statuses = [];

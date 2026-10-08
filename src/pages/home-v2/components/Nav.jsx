@@ -16,6 +16,7 @@ import { CtaButton } from "./primitives";
  */
 
 const LINKS = [
+  { label: "Request a callback", href: "/#inquiry" },
   { label: "How it works", href: "#how-it-works" },
   { label: "Free Revenue Calculator", href: "/how-much-are-missed-calls-costing-your-roofing-company/" },
   { label: "Pricing", href: "#pricing" },
