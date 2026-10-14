@@ -20,7 +20,7 @@ const LINKS = [
   { label: "How it works", href: "#how-it-works" },
   { label: "Free Revenue Calculator", href: "/how-much-are-missed-calls-costing-your-roofing-company/" },
   { label: "Pricing", href: "#pricing" },
-  { label: "FAQ", href: "#faq" },
+  { label: "Guides", href: "/resources/" },
 ];
 
 /* The real brand mark — the shared <Logo/> the live homepage uses, imported

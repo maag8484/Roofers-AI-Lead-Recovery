@@ -12,6 +12,7 @@ import { ComparisonTable } from "./components/ComparisonTable";
 import { Faq } from "./components/Faq";
 import { BottomCta, FinalCta } from "./components/ClosingCtas";
 import { Footer } from "./components/Footer";
+import { RecoveryGuides } from "./components/RecoveryGuides";
 import "./home-v2.css";
 
 /**
@@ -62,6 +63,7 @@ export default function HomeV2Page() {
         <SmithAiTrust />
         <ComparisonTable />
         <Faq />
+        <RecoveryGuides />
         <BottomCta />
         <FinalCta />
       </main>

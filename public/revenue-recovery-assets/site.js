@@ -97,7 +97,7 @@
         </button>
         <div class="nav-links" id="nav-links">
           <a href="/how-much-are-missed-calls-costing-your-roofing-company/">Revenue calculator</a>
-          <a href="/ai-receptionist-for-roofing-companies/">2026 guide</a>
+          <a href="/ai-receptionist-for-roofing-companies/">AI receptionist guide</a>
           <a href="/resources/">Resources</a>
           <a class="button small" href="#audit-request" data-audit-open>Get free audit</a>
         </div>
@@ -111,12 +111,13 @@
             <img class="brand-logo" src="/revenue-recovery-assets/roof-ai-logo.webp" width="148" height="61" loading="lazy" decoding="async" alt="Roof AI Lead Recovery">
             <span class="hub-label">Revenue Recovery Hub</span>
           </a>
-          <p>Practical tools for roofing companies that want more of their existing inbound opportunities to receive a real next step.</p>
+          <p>Practical tools for roofing companies that want more of their existing inbound opportunities to receive a real next step.</p><p><a href="/">Roof AI product and pricing</a> · <a href="/#inquiry">Request a callback</a></p>
         </div>
         <div>
           <h3>Cornerstone guides</h3>
           <ul class="footer-links">
             <li><a href="/how-much-are-missed-calls-costing-your-roofing-company/">Missed revenue calculator</a></li>
+            <li><a href="/resources/roofing-missed-call-text-back/">Missed-call text-back for roofers</a></li>
             <li><a href="/ai-receptionist-for-roofing-companies/">AI receptionist guide</a></li>
             <li><a href="/roofing-answering-service-vs-ai-lead-recovery/">Service comparison</a></li>
             <li><a href="/after-hours-answering-for-roofing-companies/">After-hours answering</a></li>
@@ -136,8 +137,12 @@
       <div class="footer-bottom">© <span data-year></span> Roof AI Lead Recovery. Estimates shown by the calculator are planning scenarios, not guaranteed results.</div>
     </footer>`;
 
-  document.querySelector("[data-site-header]")?.insertAdjacentHTML("afterbegin", header);
-  document.querySelector("[data-site-footer]")?.insertAdjacentHTML("afterbegin", footer);
+  // Production builds include navigation in the HTML for readers and crawlers.
+  // Keep the same fallback when opening a source page without a build.
+  const headerMount = document.querySelector("[data-site-header]");
+  const footerMount = document.querySelector("[data-site-footer]");
+  if (headerMount && !headerMount.children.length) headerMount.insertAdjacentHTML("afterbegin", header);
+  if (footerMount && !footerMount.children.length) footerMount.insertAdjacentHTML("afterbegin", footer);
   document.body.insertAdjacentHTML("beforeend", `
     <dialog id="audit-request" class="audit-dialog" data-audit-dialog aria-labelledby="audit-title">
       <div class="audit-modal">

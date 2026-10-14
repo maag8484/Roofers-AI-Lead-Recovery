@@ -1,10 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-
-const SITE_URL = "https://www.roofaileadrecovery.com";
-const HOME_TITLE = "Roof AI Lead Recovery | Recover Missed Roofing Leads & Book Estimates";
-const HOME_DESCRIPTION =
-  "Roof AI helps roofing companies respond to missed and after-hours calls, qualify opportunities, and move homeowners toward an approved next step.";
+import { SITE_URL, HOME_TITLE, HOME_DESCRIPTION, homeStructuredData } from "@/config/search";
+import { FAQS } from "@/pages/home-v2/content";
 
 function updateMeta(selector, attribute, value) {
   const element = document.head.querySelector(selector);
@@ -31,6 +28,18 @@ export function Seo() {
     updateMeta('meta[property="og:url"]', "content", canonical);
     updateMeta('meta[name="twitter:title"]', "content", title);
     updateMeta('meta[name="twitter:description"]', "content", description);
+    let structuredData = document.getElementById("roof-ai-structured-data");
+    if (isHome) {
+      if (!structuredData) {
+        structuredData = document.createElement("script");
+        structuredData.id = "roof-ai-structured-data";
+        structuredData.type = "application/ld+json";
+        document.head.appendChild(structuredData);
+      }
+      structuredData.textContent = JSON.stringify(homeStructuredData(FAQS));
+    } else {
+      structuredData?.remove();
+    }
   }, [isHome, pathname]);
 
   return null;

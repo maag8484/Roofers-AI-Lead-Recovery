@@ -497,3 +497,6 @@ body:has(.audit-dialog[open]) { overflow: hidden; }
 .recovery-example-body ol { padding-left: 22px; }
 .recovery-example-body li { margin: 12px 0; }
 .page-hero .hero-shell > .disclaimer { color: #c9dce9; max-width: 760px; }
+
+/* A direct product next step for readers comparing call coverage. */
+.guide-actions{display:flex;align-items:center;flex-wrap:wrap;gap:18px;margin-top:24px}.guide-actions>a:not(.button){font-weight:700}.product-next-step{margin:36px 0;padding:26px;border:1px solid #cbdaf3;border-left:4px solid #2563eb;border-radius:12px;background:#f3f7ff}.product-next-step h2{margin-top:0}.product-next-step .button{white-space:normal;line-height:1.5}@media(max-width:600px){.product-next-step{padding:20px}.guide-actions{align-items:flex-start;flex-direction:column;gap:14px}}

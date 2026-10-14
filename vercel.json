@@ -21,11 +21,17 @@
     },
     {
       "src": "/(home-v1|privacy|terms|reset-password|login|signup|checkout|onboarding|dashboard|account|billing)/?",
-      "dest": "/index.html"
+      "dest": "/index.html",
+      "headers": {
+        "X-Robots-Tag": "noindex, follow"
+      }
     },
     {
       "src": "/admin(?:/.*)?",
-      "dest": "/index.html"
+      "dest": "/index.html",
+      "headers": {
+        "X-Robots-Tag": "noindex, follow"
+      }
     },
     {
       "src": "/(.*)",
