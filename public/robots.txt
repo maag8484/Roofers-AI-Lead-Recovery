@@ -15,8 +15,7 @@ Disallow: /onboarding
 Disallow: /login
 Disallow: /reset-password
 
-# Superseded landing page — kept reachable, but not indexed (duplicate of /).
-Disallow: /home-v1
+# Legacy marketing route may be crawled so its noindex response can be read.
 
 # Sitemap location
 Sitemap: https://www.roofaileadrecovery.com/sitemap.xml
