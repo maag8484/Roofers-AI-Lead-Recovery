@@ -163,7 +163,7 @@ export function Hero() {
                       <span className="hv2-ping absolute inset-0 rounded-full opacity-50" />
                       <Play className="relative h-2.5 w-2.5 fill-current" />
                     </span>
-                    Watch 120-Second Demo Video
+                    Watch 84-Second Demo Video
                   </button>
                 </Magnetic>
               </motion.div>

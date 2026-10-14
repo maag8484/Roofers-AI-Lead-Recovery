@@ -8,24 +8,22 @@
  * See public/media/README.md for the files to drop in.
  */
 export const DEMO_VIDEO = {
-  /* Primary source.
-     The filename contains spaces, so it MUST stay percent-encoded here. */
-  src: "/media/ROOF%20AI%2010%20AUG%201.mp4",
+  /* Versioned, URL-safe source for the 84-second narrated walkthrough. */
+  src: "/media/roof-ai-demo-20261014.mp4",
 
   /* Optional WebM: usually smaller; offered first so browsers that support it
      never download the MP4. null = not supplied. */
   webm: null,
 
-  /* Still frame shown before playback. Without it the player opens black.
-     Not supplied yet; see public/media/README.md for how to generate one. */
-  poster: null,
+  /* Still frame shown before playback. */
+  poster: "/media/roof-ai-demo-20261014-poster.jpg",
 
-  /* Optional WebVTT captions. null = no subtitles track. */
+  /* The current MP4 includes burned-in captions. Optional WebVTT track. */
   captions: null,
 
   /* Used for the dialog title and the <video> accessible name. */
-  title: "Roof AI Lead Recovery - 120-second demo",
+  title: "Roof AI Lead Recovery - 84-second walkthrough",
 
   /* Shown under the title inside the modal. */
-  subtitle: "See how a missed call becomes a booked inspection.",
+  subtitle: "See the missed-inquiry handoff and request a human callback.",
 };
