@@ -46,3 +46,9 @@ No verified customer-result dataset or permission to publish a named customer ca
 - https://developers.google.com/search/docs/crawling-indexing/links-crawlable
 - https://developers.google.com/search/docs/appearance/structured-data/sd-policies
 - https://www.indexnow.org/documentation
+
+## Mobile performance follow-up
+
+The first post-release mobile lab audit reported homepage performance 52/100 (LCP 13.3s) and text-back-guide performance 75/100 (LCP 4.8s), with no real-user field dataset. Both automated SEO category scores were 100; these scores do not establish indexing or rankings. A follow-up splits non-homepage routes, reuses the existing 10KB logo instead of the 720KB PNG, and loads support chat assets only after the visitor opens chat. Keep the same endpoint and support behavior. See the follow-up pull request for the new production lab measurement; do not mix lab and field metrics.
+
+Initial SEO production verification: PR #19, commit b650f656112cb32623f65379347bcf00f91e9178, deployment dpl_CDeXw5WALx4j2oqCdvN38Zije9hZ READY. All 24 production sitemap URLs passed the technical audit on October 14 at 20:50 UTC. IndexNow returned HTTP 202 for 24 URLs; key validation and indexing remain unconfirmed.
