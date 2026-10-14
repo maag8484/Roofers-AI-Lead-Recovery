@@ -27,7 +27,7 @@ const THREAD = [
   },
 ];
 
-const LOGO_SRC = "/media/roof_ai_lead_recovery_logo_transparent.png";
+const LOGO_SRC = "/revenue-recovery-assets/roof-ai-logo.webp";
 
 function Typing() {
   return (
@@ -136,6 +136,9 @@ export function PhoneShowcase() {
           <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-white/40 bg-white shadow-sm">
             <img
               src={LOGO_SRC}
+              width="32"
+              height="32"
+              decoding="async"
               alt=""
               aria-hidden="true"
               className="h-8 w-8 object-contain"

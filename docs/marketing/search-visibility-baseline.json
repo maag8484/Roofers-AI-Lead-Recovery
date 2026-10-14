@@ -2,7 +2,7 @@
   "site": "https://www.roofaileadrecovery.com/",
   "baseline_date": "2026-10-14",
   "prepared_at": "2026-10-14T20:44:01.087Z",
-  "baseline_stage": "validated locally before production deployment; see the introducing pull request for post-deployment evidence",
+  "baseline_stage": "First SEO release verified in production; a measured mobile-performance improvement is prepared next.",
   "sitemap_urls": 24,
   "buyer_targets": [
     {
@@ -336,10 +336,14 @@
     }
   },
   "indexnow": {
-    "status": "ownership file prepared; submission only after live deployment verification",
+    "checked_at": "2026-10-14T20:50:48.147Z",
+    "endpoint": "api.indexnow.org",
+    "status": 202,
+    "urls_submitted": 24,
+    "result": "received_key_validation_pending",
     "google_destination": false,
     "indexing_confirmed": false,
-    "verification_record": "Introducing pull request, post-deployment evidence"
+    "note": "Receipt only; key validation and search-engine indexing are not confirmed. Do not resubmit repeatedly."
   },
   "conversions": {
     "organic_callback_requests": null,
@@ -366,5 +370,334 @@
     "Public search observations on each due review",
     "Homepage JavaScript bundle and mobile performance",
     "Verified customer evidence when available"
-  ]
+  ],
+  "production_technical_check": {
+    "checked_at": "2026-10-14T20:50:28.019Z",
+    "target": "https://www.roofaileadrecovery.com",
+    "sitemap_urls": 24,
+    "pages_with_html_navigation": 23,
+    "errors": [],
+    "warnings": [
+      "https://www.roofaileadrecovery.com/: Homepage uses client rendering; confirm Google's rendered content with Search Console URL Inspection."
+    ],
+    "indexing_confirmed": null,
+    "private_search_metrics": {
+      "google_impressions": null,
+      "google_clicks": null,
+      "google_average_position": null,
+      "bing_impressions": null,
+      "bing_clicks": null
+    },
+    "note": "Technical accessibility is not evidence of search-engine indexing or ranking. Private webmaster data is not part of this audit.",
+    "pages": [
+      {
+        "url": "https://www.roofaileadrecovery.com/",
+        "status": 200,
+        "title": "Missed Call Recovery for Roofers | Roof AI Lead Recovery",
+        "description": "Recover missed and after-hours roofing calls with configured AI follow-up, qualification and callback or booking workflows. Keep your business number. $299/month.",
+        "canonical": "https://www.roofaileadrecovery.com/",
+        "server_navigation": false,
+        "h1_count_without_noscript": 0,
+        "errors": [],
+        "notices": [
+          "Homepage uses client rendering; confirm Google's rendered content with Search Console URL Inspection."
+        ]
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/after-hours-answering-for-roofing-companies/",
+        "status": 200,
+        "title": "After-Hours Answering Service for Roofers | Roof AI",
+        "description": "Explore after-hours answering for roofers: evening and weekend coverage, caller qualification and callback handoffs. Review Roof AI's $299/month plan.",
+        "canonical": "https://www.roofaileadrecovery.com/after-hours-answering-for-roofing-companies/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/ai-receptionist-for-roofing-companies/",
+        "status": 200,
+        "title": "AI Receptionist for Roofing Companies | Roof AI",
+        "description": "Compare AI receptionist coverage for roofing companies, qualification, scheduling and human handoff. Review Roof AI's $299/month plan and request a callback.",
+        "canonical": "https://www.roofaileadrecovery.com/ai-receptionist-for-roofing-companies/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/founding-roofing-companies/",
+        "status": 200,
+        "title": "Help Build a Real Roofing Missed-Call Case Study | Roof AI",
+        "description": "Apply for Roof AI's initial three-company evaluation cohort. Start with a free audit and measure response, inspections and verified outcomes.",
+        "canonical": "https://www.roofaileadrecovery.com/founding-roofing-companies/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/how-much-are-missed-calls-costing-your-roofing-company/",
+        "status": 200,
+        "title": "Roofing Missed Call Revenue Calculator | Roof AI",
+        "description": "Estimate revenue at risk from missed roofing calls using your call volume, opportunity rate, close rate and average job value. Get a free audit.",
+        "canonical": "https://www.roofaileadrecovery.com/how-much-are-missed-calls-costing-your-roofing-company/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/partners/roofing-marketing-agencies/",
+        "status": 200,
+        "title": "A Missed-Call Resource for Roofing Marketing Agencies | Roof AI",
+        "description": "Share a free roofing missed-call scorecard and calculator with clients. Preserve original marketing attribution and measure qualified audit requests.",
+        "canonical": "https://www.roofaileadrecovery.com/partners/roofing-marketing-agencies/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/",
+        "status": 200,
+        "title": "Roofing Revenue Recovery Resources | Roof AI",
+        "description": "Practical guides for roofing lead response time, missed-call text-back, qualification, appointment scheduling, storm follow-up and marketing ROI.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/cost-per-roofing-lead-vs-booked-estimate/",
+        "status": 200,
+        "title": "Cost per Roofing Lead vs Booked Estimate | Roof AI",
+        "description": "Compare cost per roofing lead with cost per qualified opportunity and booked estimate to understand which marketing creates real calendar outcomes.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/cost-per-roofing-lead-vs-booked-estimate/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/google-ads-roofing-lead-recovery/",
+        "status": 200,
+        "title": "Google Ads Lead Recovery for Roofing Companies | Roof AI",
+        "description": "Protect roofing calls generated by Google Ads by connecting call tracking, missed-call response, qualification, appointments and verified outcomes.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/google-ads-roofing-lead-recovery/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/roofing-after-hours-call-script/",
+        "status": 200,
+        "title": "Roofing After-Hours Call Script and Workflow | Roof AI",
+        "description": "A concise after-hours roofing call script that acknowledges the caller, gathers useful details and avoids unsupported promises.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/roofing-after-hours-call-script/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/roofing-appointment-scheduling/",
+        "status": 200,
+        "title": "How to Schedule Roofing Estimates From Inbound Calls | Roof AI",
+        "description": "Build a roofing appointment scheduling workflow with accurate service areas, appointment types, capacity, confirmations and handoffs.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/roofing-appointment-scheduling/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/roofing-call-overflow-plan/",
+        "status": 200,
+        "title": "Roofing Call Overflow Plan: A Practical Checklist | Roof AI",
+        "description": "Build a roofing call overflow plan for busy crews, storm surges and after-hours inquiries without replacing your office team.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/roofing-call-overflow-plan/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/roofing-crm-missed-call-workflow/",
+        "status": 200,
+        "title": "Roofing CRM Missed-Call Workflow | Roof AI",
+        "description": "Connect unanswered roofing calls to a CRM-ready next step without claiming unsupported integrations or automatic bookings.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/roofing-crm-missed-call-workflow/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/roofing-lead-follow-up-automation/",
+        "status": 200,
+        "title": "Roofing Lead Follow-Up Automation: A Safe Framework | Roof AI",
+        "description": "Automate roofing lead follow-up while preserving consent, human ownership, stop conditions and measurable outcomes.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/roofing-lead-follow-up-automation/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/roofing-lead-qualification-questions/",
+        "status": 200,
+        "title": "Roofing Lead Qualification Questions | Roof AI",
+        "description": "Use a practical set of roofing lead qualification questions to identify fit, urgency, service area and the right next step.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/roofing-lead-qualification-questions/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/roofing-lead-response-time/",
+        "status": 200,
+        "title": "Roofing Lead Response Time: What to Measure | Roof AI",
+        "description": "Learn how to define, measure and improve roofing lead response time from the first inbound call through a qualified next step.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/roofing-lead-response-time/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/roofing-marketing-roi/",
+        "status": 200,
+        "title": "Roofing Marketing ROI: What to Measure | Roof AI",
+        "description": "Measure roofing marketing ROI from source and inbound opportunity through booked estimate, signed job and verified revenue.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/roofing-marketing-roi/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-scorecard/",
+        "status": 200,
+        "title": "Roofing Missed-Call Scorecard | Roof AI",
+        "description": "See a sample missed-call scorecard, three practical fixes and a worksheet to review your roofing call process before requesting a free audit.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-scorecard/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-text-back/",
+        "status": 200,
+        "title": "Missed Call Text Back for Roofers | Roof AI",
+        "description": "Missed-call text-back for roofing companies: sample messages, qualification and callback workflows. Review Roof AI's $299/month plan and request a callback.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-text-back/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/storm-lead-follow-up/",
+        "status": 200,
+        "title": "Storm Lead Follow-Up for Roofing Companies | Roof AI",
+        "description": "Use a practical storm lead follow-up workflow to acknowledge callers, triage roofing needs, protect capacity and record outcomes.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/storm-lead-follow-up/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/resources/winter-roofing-call-handling/",
+        "status": 200,
+        "title": "Winter Roofing Call Handling: Keep Every Inquiry Owned | Roof AI",
+        "description": "A winter call-handling plan for roofing companies managing leaks, wind damage, ice concerns and slower seasonal schedules.",
+        "canonical": "https://www.roofaileadrecovery.com/resources/winter-roofing-call-handling/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/roofing-answering-service-vs-ai-lead-recovery/",
+        "status": 200,
+        "title": "Roofing Answering Service vs AI Lead Recovery | Roof AI",
+        "description": "Compare roofing answering services with AI missed-call recovery: coverage, qualification, handoffs and total cost. Review Roof AI's $299/month plan.",
+        "canonical": "https://www.roofaileadrecovery.com/roofing-answering-service-vs-ai-lead-recovery/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/roofing-revenue-recovery/",
+        "status": 200,
+        "title": "Roofing Revenue Recovery Hub | Roof AI",
+        "description": "Calculate the revenue tied to missed roofing calls and learn how to improve response, qualification, scheduling and after-hours follow-up.",
+        "canonical": "https://www.roofaileadrecovery.com/roofing-revenue-recovery/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/what-happens-when-a-roofer-misses-a-homeowners-call/",
+        "status": 200,
+        "title": "When a Roofer Misses a Homeowner Call | Roof AI",
+        "description": "Follow the homeowner journey after a missed roofing call and learn how timely follow-up, qualification and scheduling can keep an opportunity moving.",
+        "canonical": "https://www.roofaileadrecovery.com/what-happens-when-a-roofer-misses-a-homeowners-call/",
+        "server_navigation": true,
+        "h1_count_without_noscript": 1,
+        "errors": [],
+        "notices": []
+      }
+    ]
+  },
+  "production_release": {
+    "pull_request": "https://github.com/maag8484/Roofers-AI-Lead-Recovery/pull/19",
+    "commit": "b650f656112cb32623f65379347bcf00f91e9178",
+    "deployment_id": "dpl_CDeXw5WALx4j2oqCdvN38Zije9hZ",
+    "state": "READY"
+  },
+  "mobile_lab_before_performance_followup": {
+    "source": "PageSpeed Insights via Supermetrics",
+    "checked_at": "2026-10-14T20:50:58+00:00",
+    "field_data_available": false,
+    "homepage": {
+      "performance": 52,
+      "seo": 100,
+      "accessibility": 100,
+      "best_practices": 96,
+      "lcp_seconds": 13.3,
+      "cls": 0,
+      "tbt_ms": 260
+    },
+    "text_back_guide": {
+      "checked_at": "2026-10-14T20:50:48+00:00",
+      "performance": 75,
+      "seo": 100,
+      "accessibility": 96,
+      "best_practices": 100,
+      "lcp_seconds": 4.8,
+      "cls": 0,
+      "tbt_ms": 20
+    },
+    "note": "Lab diagnostics are not ranking positions or proof of indexing."
+  },
+  "performance_followup": {
+    "changes": [
+      "Lazy-load non-homepage customer/admin routes",
+      "Use the existing 10KB logo instead of the 720KB PNG, with image dimensions",
+      "Load support chat framework and stylesheet only when a visitor opens chat"
+    ],
+    "measured_after_release": null,
+    "initial_main_js_before_bytes": 1331980,
+    "initial_main_js_prepared_bytes": 688700,
+    "note": "Post-deployment measurements belong in the follow-up pull request and next review."
+  }
 }

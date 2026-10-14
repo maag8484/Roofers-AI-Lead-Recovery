@@ -1,39 +1,41 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { ProtectedRoute, PublicOnlyRoute, AdminRoute } from "@/components/ProtectedRoute";
 
-import LandingPage from "@/pages/LandingPage";
+const LandingPage = lazy(() => import("@/pages/LandingPage"));
 import HomeV2Page from "@/pages/home-v2/HomeV2Page";
-import LoginPage from "@/pages/LoginPage";
-import SignupPage from "@/pages/SignupPage";
-import CheckoutPage from "@/pages/CheckoutPage";
-import OnboardingPage from "@/pages/OnboardingPage";
-import ResetPasswordPage from "@/pages/ResetPasswordPage";
-import DashboardPage from "@/pages/DashboardPage";
-import AccountPage from "@/pages/AccountPage";
-import BillingPage from "@/pages/BillingPage";
-import AdminDashboardPage from "@/pages/AdminDashboardPage";
-import PrivacyPage from "@/pages/legal/PrivacyPage";
-import TermsPage from "@/pages/legal/TermsPage";
-import NotFoundPage from "@/pages/NotFoundPage";
+const LoginPage = lazy(() => import("@/pages/LoginPage"));
+const SignupPage = lazy(() => import("@/pages/SignupPage"));
+const CheckoutPage = lazy(() => import("@/pages/CheckoutPage"));
+const OnboardingPage = lazy(() => import("@/pages/OnboardingPage"));
+const ResetPasswordPage = lazy(() => import("@/pages/ResetPasswordPage"));
+const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
+const AccountPage = lazy(() => import("@/pages/AccountPage"));
+const BillingPage = lazy(() => import("@/pages/BillingPage"));
+const AdminDashboardPage = lazy(() => import("@/pages/AdminDashboardPage"));
+const PrivacyPage = lazy(() => import("@/pages/legal/PrivacyPage"));
+const TermsPage = lazy(() => import("@/pages/legal/TermsPage"));
+const NotFoundPage = lazy(() => import("@/pages/NotFoundPage"));
 import { Seo } from "@/components/Seo";
 
 // Admin console (Phase 1 shell + placeholder pages)
-import { AdminShell } from "@/components/admin/layout/AdminShell";
-import AdminDashboardOverviewPage from "@/pages/admin/DashboardPage";
-import AdminCustomersPage from "@/pages/admin/CustomersPage";
-import AdminCustomerDetailPage from "@/pages/admin/CustomerDetailPage";
-import AdminOnboardingPage from "@/pages/admin/OnboardingPage";
-import AdminScrapedLeadsPage from "@/pages/admin/ScrapedLeadsPage";
-import AdminAuditPage from "@/pages/admin/AuditPage";
-import AdminAuditRequestsPage from "@/pages/admin/AuditRequestsPage";
-import AdminNotificationsPage from "@/pages/admin/NotificationsPage";
-import AdminBillingPage from "@/pages/admin/BillingPage";
-import AdminSettingsPage from "@/pages/admin/SettingsPage";
+const AdminShell = lazy(() => import("@/components/admin/layout/AdminShell").then((module) => ({ default: module.AdminShell })));
+const AdminDashboardOverviewPage = lazy(() => import("@/pages/admin/DashboardPage"));
+const AdminCustomersPage = lazy(() => import("@/pages/admin/CustomersPage"));
+const AdminCustomerDetailPage = lazy(() => import("@/pages/admin/CustomerDetailPage"));
+const AdminOnboardingPage = lazy(() => import("@/pages/admin/OnboardingPage"));
+const AdminScrapedLeadsPage = lazy(() => import("@/pages/admin/ScrapedLeadsPage"));
+const AdminAuditPage = lazy(() => import("@/pages/admin/AuditPage"));
+const AdminAuditRequestsPage = lazy(() => import("@/pages/admin/AuditRequestsPage"));
+const AdminNotificationsPage = lazy(() => import("@/pages/admin/NotificationsPage"));
+const AdminBillingPage = lazy(() => import("@/pages/admin/BillingPage"));
+const AdminSettingsPage = lazy(() => import("@/pages/admin/SettingsPage"));
 
 export default function App() {
   return (
     <>
       <Seo />
+      <Suspense fallback={<div role="status" className="grid min-h-screen place-items-center text-sm text-slate-600">Loading…</div>}>
       <Routes>
         {/* Public marketing + legal. HomeV2Page is the live landing page; the
           previous one stays reachable at /home-v1 for comparison/rollback. */}
@@ -139,6 +141,7 @@ export default function App() {
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      </Suspense>
     </>
   );
 }

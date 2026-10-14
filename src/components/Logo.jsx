@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-const LOGO_SRC = "/media/roof_ai_lead_recovery_logo_transparent.png";
+const LOGO_SRC = "/revenue-recovery-assets/roof-ai-logo.webp";
 
 export function Logo({ className, iconOnly = false }) {
   return (
@@ -13,6 +13,9 @@ export function Logo({ className, iconOnly = false }) {
     >
       <img
         src={LOGO_SRC}
+        width="296"
+        height="120"
+        decoding="async"
         alt={iconOnly ? "Roof AI" : "Roof AI Lead Recovery"}
         className={cn(
           "block h-full max-w-none select-none object-cover",
