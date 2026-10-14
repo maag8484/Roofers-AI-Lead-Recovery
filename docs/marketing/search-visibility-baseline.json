@@ -2,7 +2,7 @@
   "site": "https://www.roofaileadrecovery.com/",
   "baseline_date": "2026-10-14",
   "prepared_at": "2026-10-14T20:44:01.087Z",
-  "baseline_stage": "First SEO release verified in production; a measured mobile-performance improvement is prepared next.",
+  "baseline_stage": "SEO implementation and mobile follow-up verified in production.",
   "sitemap_urls": 24,
   "buyer_targets": [
     {
@@ -362,7 +362,9 @@
     "schedule": "SEO section every other Friday within the existing weekly briefing",
     "next_due_date": "2026-10-30",
     "timezone": "America/New_York",
-    "previous_seo_review_date": null
+    "previous_seo_review_date": null,
+    "records_branch": "seo/review-records (initialize from current main on first future review)",
+    "public_record_scope": "Public technical observations and publication metadata only; no private analytics, customer data or revenue."
   },
   "next_checks": [
     "Google Search Console owner connection and rendered URL Inspection",
@@ -372,7 +374,7 @@
     "Verified customer evidence when available"
   ],
   "production_technical_check": {
-    "checked_at": "2026-10-14T20:50:28.019Z",
+    "checked_at": "2026-10-14T20:58:56.827Z",
     "target": "https://www.roofaileadrecovery.com",
     "sitemap_urls": 24,
     "pages_with_html_navigation": 23,
@@ -659,9 +661,10 @@
     ]
   },
   "production_release": {
-    "pull_request": "https://github.com/maag8484/Roofers-AI-Lead-Recovery/pull/19",
-    "commit": "b650f656112cb32623f65379347bcf00f91e9178",
-    "deployment_id": "dpl_CDeXw5WALx4j2oqCdvN38Zije9hZ",
+    "pull_request": "https://github.com/maag8484/Roofers-AI-Lead-Recovery/pull/20",
+    "seo_pull_request": "https://github.com/maag8484/Roofers-AI-Lead-Recovery/pull/19",
+    "commit": "96ffa81b392c982de1462ed552f138c8af2522cb",
+    "deployment_id": "dpl_D5eEKVFgd46mxS931gPQ9ZyT5b7R",
     "state": "READY"
   },
   "mobile_lab_before_performance_followup": {
@@ -695,9 +698,41 @@
       "Use the existing 10KB logo instead of the 720KB PNG, with image dimensions",
       "Load support chat framework and stylesheet only when a visitor opens chat"
     ],
-    "measured_after_release": null,
+    "measured_after_release": "mobile_lab_current",
     "initial_main_js_before_bytes": 1331980,
-    "initial_main_js_prepared_bytes": 688700,
+    "initial_main_js_prepared_bytes": 688695,
     "note": "Post-deployment measurements belong in the follow-up pull request and next review."
+  },
+  "mobile_lab_current": {
+    "source": "PageSpeed Insights via Supermetrics",
+    "checked_at": "2026-10-14T20:59:06+00:00",
+    "field_data_available": false,
+    "homepage": {
+      "performance": 65,
+      "seo": 100,
+      "accessibility": 100,
+      "best_practices": 100,
+      "lcp_seconds": 6.2,
+      "cls": 0,
+      "tbt_ms": 120,
+      "fcp_seconds": 3.9,
+      "speed_index_seconds": 5.3
+    },
+    "remaining_findings": [
+      "Render-blocking resources",
+      "Remaining unused JavaScript",
+      "Minor image-delivery savings"
+    ],
+    "note": "Single-run lab results vary. Homepage LCP remains above the good threshold; this is an improvement, not a claim that Core Web Vitals or rankings have passed."
+  },
+  "browser_checks": {
+    "date": "2026-10-14",
+    "homepage_and_four_guide_cards": "rendered",
+    "small_logo": "loaded",
+    "guide_to_callback_form": "verified without submission",
+    "callback_consent": "unchecked by default",
+    "signup_form": "rendered without account creation",
+    "support_chat": "stylesheet absent before opening; native welcome screen opens after click, one toggle, no error",
+    "messages_forms_calls_payments_submitted": false
   }
 }

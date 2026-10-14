@@ -52,3 +52,11 @@ No verified customer-result dataset or permission to publish a named customer ca
 The first post-release mobile lab audit reported homepage performance 52/100 (LCP 13.3s) and text-back-guide performance 75/100 (LCP 4.8s), with no real-user field dataset. Both automated SEO category scores were 100; these scores do not establish indexing or rankings. A follow-up splits non-homepage routes, reuses the existing 10KB logo instead of the 720KB PNG, and loads support chat assets only after the visitor opens chat. Keep the same endpoint and support behavior. See the follow-up pull request for the new production lab measurement; do not mix lab and field metrics.
 
 Initial SEO production verification: PR #19, commit b650f656112cb32623f65379347bcf00f91e9178, deployment dpl_CDeXw5WALx4j2oqCdvN38Zije9hZ READY. All 24 production sitemap URLs passed the technical audit on October 14 at 20:50 UTC. IndexNow returned HTTP 202 for 24 URLs; key validation and indexing remain unconfirmed.
+
+## Final October 14 baseline
+
+Performance follow-up PR #20 is live: code commit 96ffa81b392c982de1462ed552f138c8af2522cb, deployment dpl_D5eEKVFgd46mxS931gPQ9ZyT5b7R READY. The refreshed mobile lab run at 20:59 UTC measured performance 65/100, LCP 6.2s, TBT 120ms and CLS 0; accessibility, best practices and automated SEO categories were 100. This improves the earlier 52/100 and 13.3s LCP but leaves mobile performance work, especially render-blocking resources. These are single-run lab observations without field data or ranking evidence.
+
+The final live technical audit passed all 24 sitemap URLs. Browser QA verified the four guide cards, loaded small logo, guide-to-callback navigation, unchecked callback permission, signup form and support-chat welcome screen. Chat assets were absent before opening and loaded on click without a duplicate toggle. No form, account, chat message, phone call or payment was submitted.
+
+Future review-only report commits belong on a non-production `seo/review-records` branch, initialized from current main. Read that branch for later reviews so the latest record is reused without deploying reporting-only commits. Commit only public technical observations and publication metadata. Keep private webmaster analytics, leads, customer information, conversion counts and revenue in the private briefing, never this public repository.
