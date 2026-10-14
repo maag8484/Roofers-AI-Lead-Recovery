@@ -9,14 +9,14 @@
  */
 export const DEMO_VIDEO = {
   /* Versioned, URL-safe source for the 84-second narrated walkthrough. */
-  src: "/media/roof-ai-demo-20261014.mp4",
+  src: "/media/roof-ai-demo-20261014-polished.mp4",
 
   /* Optional WebM: usually smaller; offered first so browsers that support it
      never download the MP4. null = not supplied. */
   webm: null,
 
   /* Still frame shown before playback. */
-  poster: "/media/roof-ai-demo-20261014-poster.jpg",
+  poster: "/media/roof-ai-demo-20261014-polished-poster.jpg",
 
   /* The current MP4 includes burned-in captions. Optional WebVTT track. */
   captions: null,
