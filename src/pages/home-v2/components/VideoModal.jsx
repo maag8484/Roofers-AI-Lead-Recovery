@@ -26,7 +26,37 @@ export function VideoModal({ onClose }) {
   const reduce = useReducedMotion();
   const videoRef = useRef(null);
   const closeRef = useRef(null);
+  const callbackRequested = useRef(false);
   const [failed, setFailed] = useState(false);
+  const [showCallback, setShowCallback] = useState(false);
+
+  // The closing card finishes its transition at 79.65s in the current demo.
+  const syncCallback = (event) => {
+    const video = event.currentTarget;
+    setShowCallback(video.ended || video.currentTime >= 79.65);
+  };
+
+  const handleEnded = (event) => {
+    const video = event.currentTarget;
+    setShowCallback(true);
+    // Native fullscreen/PiP shows only the video, not website links.
+    // Return to the embedded closing card so its callback link is available.
+    if (document.fullscreenElement === video) {
+      document.exitFullscreen?.().catch(() => {});
+    }
+    if (video.webkitDisplayingFullscreen) video.webkitExitFullscreen?.();
+    if (document.pictureInPictureElement === video) {
+      document.exitPictureInPicture?.().catch(() => {});
+    }
+  };
+
+  const handleCallback = (event) => {
+    // Preserve opening the real link in another tab with Ctrl/Cmd-click.
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    callbackRequested.current = true;
+    videoRef.current?.pause();
+    onClose?.();
+  };
 
   const handleClose = useCallback(() => onClose?.(), [onClose]);
 
@@ -53,6 +83,11 @@ export function VideoModal({ onClose }) {
     return () => {
       body.style.overflow = prevOverflow;
       body.style.paddingRight = prevPadding;
+      // AnimatePresence finishes closing before returning focus to the form.
+      if (callbackRequested.current) {
+        document.getElementById("inquiry")?.scrollIntoView({ block: "start", behavior: "instant" });
+        document.getElementById("inquiry-fullName")?.focus({ preventScroll: true });
+      }
     };
   }, []);
 
@@ -112,7 +147,7 @@ export function VideoModal({ onClose }) {
       className="hv2 fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8"
       role="dialog"
       aria-modal="true"
-      aria-label={DEMO_VIDEO.title}
+      aria-label="Roof AI demo"
       onKeyDown={onKeyDownTrap}
     >
       {/* Backdrop */}
@@ -126,22 +161,16 @@ export function VideoModal({ onClose }) {
         {...pop}
         className="relative flex w-full max-w-5xl flex-col overflow-hidden rounded-2xl bg-[var(--ink-900)] shadow-[0_50px_120px_-40px_rgba(0,0,0,0.9)]"
       >
-        {/* Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 py-4">
-          <div className="min-w-0">
-            <p className="truncate text-[15px] font-bold text-white">{DEMO_VIDEO.title}</p>
-            <p className="mt-0.5 truncate text-[13px] text-white/55">{DEMO_VIDEO.subtitle}</p>
-          </div>
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={handleClose}
-            aria-label="Close video"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+        {/* Keep the player clear of a visible title bar. */}
+        <button
+          ref={closeRef}
+          type="button"
+          onClick={handleClose}
+          aria-label="Close video"
+          className="absolute right-2 top-2 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-3 sm:top-3"
+        >
+          <X className="h-4 w-4" />
+        </button>
 
         {/* Player */}
         <div className="relative aspect-video w-full bg-black">
@@ -164,7 +193,11 @@ export function VideoModal({ onClose }) {
               preload="none"
               poster={DEMO_VIDEO.poster || undefined}
               onError={() => setFailed(true)}
-              title={DEMO_VIDEO.title}
+              aria-label="Roof AI demo"
+              onTimeUpdate={syncCallback}
+              onSeeked={syncCallback}
+              onPlay={syncCallback}
+              onEnded={handleEnded}
             >
               {DEMO_VIDEO.webm && <source src={DEMO_VIDEO.webm} type="video/webm" />}
               <source src={DEMO_VIDEO.src} type="video/mp4" />
@@ -179,6 +212,23 @@ export function VideoModal({ onClose }) {
               )}
               Your browser does not support embedded video.
             </video>
+          )}
+          {!failed && showCallback && (
+            <a
+              href="#inquiry"
+              onClick={handleCallback}
+              aria-label="Have us call you — request a human callback"
+              className="absolute z-10 min-h-11 cursor-pointer rounded-lg transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-white sm:rounded-2xl"
+              // Match the button drawn into the 1920×1080 closing card.
+              style={{
+                left: "5.4167%",
+                top: "55.6481%",
+                width: "43.9583%",
+                height: "11.8519%",
+              }}
+            >
+              <span className="sr-only">Have us call you</span>
+            </a>
           )}
         </div>
       </motion.div>
