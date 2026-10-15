@@ -514,3 +514,8 @@ body:has(.audit-dialog[open]) { overflow: hidden; }
 .callback-card [role="alert"] { color: #991b1b; }
 .callback-card fieldset:disabled { opacity: .7; }
 @media (max-width: 760px) { .callback-layout { grid-template-columns: 1fr; gap: 24px; } .callback-card { padding: 20px; } }
+
+.callback-section .eyebrow { color: var(--blue-dark); }
+[hidden] { display: none !important; }
+#call-review { scroll-margin-top: 96px; }
+@media print { [data-call-review] input { border: 1px solid #555; color: #000; } [data-call-review-result] { break-inside: avoid; } }

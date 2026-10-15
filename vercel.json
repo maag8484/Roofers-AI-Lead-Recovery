@@ -4,7 +4,7 @@
       "handle": "filesystem"
     },
     {
-      "src": "/(resources/roofing-missed-call-scorecard|partners/roofing-marketing-agencies|founding-roofing-companies)/?",
+      "src": "/(roofing-missed-call-demo|resources/roofing-missed-call-scorecard|partners/roofing-marketing-agencies|founding-roofing-companies)/?",
       "dest": "/$1/index.html"
     },
     {

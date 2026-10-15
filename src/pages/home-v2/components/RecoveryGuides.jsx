@@ -21,7 +21,7 @@ export function RecoveryGuides() {
           ))}
         </div>
         <p className="mt-7 text-sm leading-7 text-[var(--text-dim)]">
-          Put your call history into the <a className="font-bold text-[var(--acid)] underline underline-offset-4" href="/how-much-are-missed-calls-costing-your-roofing-company/">missed-call revenue calculator</a>,
+          Start with the free <a className="font-bold text-[var(--acid)] underline underline-offset-4" href="/resources/roofing-missed-call-scorecard/#call-review">missed-call review tool</a>, watch the <a className="font-bold text-[var(--acid)] underline underline-offset-4" href="/roofing-missed-call-demo/">roofing demo</a>, or put your call history into the <a className="font-bold text-[var(--acid)] underline underline-offset-4" href="/how-much-are-missed-calls-costing-your-roofing-company/">missed-call revenue calculator</a>,
           or <a className="font-bold text-[var(--acid)] underline underline-offset-4" href="/#inquiry">request a callback</a> to review your workflow.
         </p>
       </div>
