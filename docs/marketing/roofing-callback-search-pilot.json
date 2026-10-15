@@ -1,0 +1,144 @@
+{
+  "name": "Roof AI | Roofing Owners | Callback Pilot",
+  "status": "PREPARED_NOT_CREATED",
+  "created": "2026-10-15",
+  "platform": "Google Ads",
+  "campaign_type": "SEARCH",
+  "create_status": "PAUSED",
+  "budget": {
+    "currency": "USD",
+    "total": 300,
+    "period": "CUSTOM_PERIOD",
+    "explicitly_shared": false,
+    "duration_days": 14,
+    "start_date_time": null,
+    "end_date_time": null,
+    "note": "Set dates at verified activation in the account timezone. Use a campaign total budget. Do not substitute an uncapped average daily budget."
+  },
+  "destination": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-text-back/",
+  "tracking_template": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-text-back/?utm_source=google&utm_medium=cpc&utm_campaign=roofing_callback_pilot&utm_term={keyword}&utm_content={creative}",
+  "targeting": {
+    "country": "United States",
+    "location_option": "Presence: people in or regularly in target locations",
+    "language": "English",
+    "google_search": true,
+    "search_partners": false,
+    "display_network": false,
+    "ai_max": false,
+    "broad_match": false
+  },
+  "bidding": {
+    "initial": "Manual CPC if available, otherwise Maximize Clicks with CPC ceiling",
+    "max_cpc_usd": 5,
+    "note": "Diagnostic ceiling, not a market CPC estimate. Do not raise without evidence and authorization."
+  },
+  "ad_groups": [
+    {
+      "name": "Roofing Missed Calls",
+      "keywords": [
+        {
+          "text": "missed call text back for roofers",
+          "match": "EXACT"
+        },
+        {
+          "text": "missed call text back for roofers",
+          "match": "PHRASE"
+        },
+        {
+          "text": "roofing missed call recovery",
+          "match": "EXACT"
+        },
+        {
+          "text": "roofing missed call recovery",
+          "match": "PHRASE"
+        },
+        {
+          "text": "missed call text back roofing",
+          "match": "EXACT"
+        },
+        {
+          "text": "missed call text back roofing",
+          "match": "PHRASE"
+        }
+      ]
+    },
+    {
+      "name": "Roofing Answering",
+      "keywords": [
+        {
+          "text": "roofing answering service",
+          "match": "EXACT"
+        },
+        {
+          "text": "roofing answering service",
+          "match": "PHRASE"
+        },
+        {
+          "text": "ai receptionist for roofing companies",
+          "match": "EXACT"
+        },
+        {
+          "text": "ai receptionist for roofing companies",
+          "match": "PHRASE"
+        },
+        {
+          "text": "after hours answering service for roofers",
+          "match": "EXACT"
+        },
+        {
+          "text": "after hours answering service for roofers",
+          "match": "PHRASE"
+        }
+      ]
+    }
+  ],
+  "negative_keywords_phrase": [
+    "roof repair near me",
+    "roof replacement estimate",
+    "roofing contractor near me",
+    "free roof inspection",
+    "roof leak repair",
+    "roofing jobs",
+    "roofing careers",
+    "roofing salary",
+    "roofing training",
+    "roofing materials",
+    "diy roof repair",
+    "homeowner",
+    "homeowners"
+  ],
+  "responsive_search_ad": {
+    "headlines": [
+      "Missed Roofing Calls?",
+      "Roof AI Lead Recovery",
+      "Text-Back for Roofing Calls",
+      "See a Roofing Call Walkthrough",
+      "Keep Your Business Number",
+      "Overflow & After-Hours Help",
+      "Request a Human Callback",
+      "Roof AI: $299/Month",
+      "7-Day Free Trial"
+    ],
+    "descriptions": [
+      "For roofing business owners. See how missed-call recovery could fit your phone setup.",
+      "Request a walkthrough with Jesse or our team. No payment required to talk.",
+      "Keep your business number. Review missed-call and after-hours recovery with our team.",
+      "Roof AI is $299/month with a 7-day free trial. See how it works before deciding."
+    ]
+  },
+  "primary_conversion": "callback_inquiry_submit, only after HTTP 201 + ok:true + requestId; count one per ad interaction; exclude automatic form_submit and CTA clicks from bidding goals",
+  "activation_requirements": [
+    "Connect the correct Roof AI Google Ads account; do not use StudyMoxie account or change its campaigns.",
+    "Connect Analytics and verify stream G-8PV83SZ3X0 belongs to Roof AI.",
+    "Verify one controlled saved callback and its GA4 event; exclude/internal-label QA, never count a mock save as real.",
+    "Mark callback_inquiry_submit as GA4 key event; link/import it once into Ads and verify conversion configuration.",
+    "Verify US/USD billing, campaign total budget, dates, exclusions, landing page and functioning intake; keep paused if any check is missing."
+  ],
+  "evaluation": {
+    "diagnostic_review": "After first 20 relevant clicks or $100, whichever happens first; this is a diagnostic checkpoint, not statistical proof.",
+    "pause_early": "Broken intake/tracking, homeowner-heavy search terms, or no qualified callback at the diagnostic checkpoint pending offer/targeting review.",
+    "hard_stop": "Campaign total $300 or end date; no automatic renewal or budget expansion.",
+    "success": "Verified paying roofing customers and collected revenue; also report unique qualified callbacks, held demos, activated trials, acquisition cost, refunds and variable costs.",
+    "note": "A small pilot may be inconclusive. Do not promise a number of leads or customers."
+  }
+}
