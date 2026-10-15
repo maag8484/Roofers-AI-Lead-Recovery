@@ -28,8 +28,10 @@ export function validateAuditRequest(input) {
   const payload = {
     full_name: text(data.fullName, 100),
     email: text(data.email, 254).toLowerCase(),
-    company: callback ? "Callback inquiry (company not supplied)" : text(data.company, 150),
-    service_area: text(callback ? data.address : data.serviceArea, 150),
+    company: callback ? text(data.company, 150) || "Callback inquiry (company not supplied)" : text(data.company, 150),
+    // Callback inquiries need contact details, not a setup address. Keep the
+    // existing non-null inbox field and accept older forms during rollout.
+    service_area: callback ? text(data.address, 150) || "Not collected — callback inquiry" : text(data.serviceArea, 150),
     phone: text(data.phone, 30) || null,
     preferred_contact: callback ? "phone" : text(data.preferredContact, 20).toLowerCase(),
     current_process: callback ? HUMAN_CALLBACK_CONSENT_TEXT : text(data.currentProcess, 500) || null,
@@ -49,7 +51,6 @@ export function validateAuditRequest(input) {
     const phone = normalizeDemoPhone(data.phone);
     if (!phone) errors.push("phone");
     else payload.phone = phone;
-    if (!payload.service_area) errors.push("address");
     if (data.callbackConsentVersion !== "human-callback-v1") errors.push("callbackConsentVersion");
   }
   if (!payload.full_name) errors.push("fullName");

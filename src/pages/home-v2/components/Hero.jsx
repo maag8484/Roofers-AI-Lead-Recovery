@@ -148,7 +148,7 @@ export function Hero() {
                   to="/#inquiry"
                   reloadDocument
                 >
-                  Have Us Call You
+                  See How Missed-Call Recovery Works
                 </CtaButton>
                 <Magnetic strength={0.2}>
                   <button
@@ -167,6 +167,7 @@ export function Hero() {
                   </button>
                 </Magnetic>
               </motion.div>
+              <p className="mt-3 text-sm text-[var(--text-dim)]">For roofing business owners. Request a walkthrough with Jesse—no payment required to talk.</p>
             </motion.div>
 
             {/* ---------------- Phone ---------------- */}
