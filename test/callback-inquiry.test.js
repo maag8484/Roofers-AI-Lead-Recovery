@@ -15,8 +15,15 @@ test("callback stores address and exact consent without authorizing AI or market
  assert.equal(payload.ai_demo_consent, null);
  assert.equal(payload.marketing_consent, false);
 });
-test("callback rejects missing address, invalid phone, missing or mismatched permission", () => {
- for (const [patch, field] of [[{address:""},"address"],[{phone:"abc"},"phone"],[{contactConsent:false},"contactConsent"],[{callbackConsentVersion:"other"},"callbackConsentVersion"]]) {
+test("callback accepts contact-only inquiries while audit address requirements stay intact", () => {
+ const {address, ...shortForm} = valid;
+ const result = validateAuditRequest(shortForm);
+ assert.deepEqual(result.errors, []);
+ assert.equal(result.payload.service_area, "Not collected — callback inquiry");
+ assert.ok(validateAuditRequest({...shortForm, requestType:undefined, company:"Example Roofing", preferredContact:"phone"}).errors.includes("serviceArea"));
+});
+test("callback rejects invalid phone, missing or mismatched permission", () => {
+ for (const [patch, field] of [[{phone:"abc"},"phone"],[{contactConsent:false},"contactConsent"],[{callbackConsentVersion:"other"},"callbackConsentVersion"]]) {
   assert.ok(validateAuditRequest({...valid,...patch}).errors.includes(field));
  }
 });
