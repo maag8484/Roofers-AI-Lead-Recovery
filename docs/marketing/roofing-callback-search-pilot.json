@@ -1,6 +1,6 @@
 {
   "name": "Roof AI | Roofing Owners | Callback Pilot",
-  "status": "PREPARED_NOT_CREATED",
+  "status": "CANCELLED_DO_NOT_CREATE",
   "created": "2026-10-15",
   "platform": "Google Ads",
   "campaign_type": "SEARCH",
@@ -140,5 +140,7 @@
     "hard_stop": "Campaign total $300 or end date; no automatic renewal or budget expansion.",
     "success": "Verified paying roofing customers and collected revenue; also report unique qualified callbacks, held demos, activated trials, acquisition cost, refunds and variable costs.",
     "note": "A small pilot may be inconclusive. Do not promise a number of leads or customers."
-  }
+  },
+  "cancelled_at": "2026-10-15",
+  "authorization": "User chose free traffic. Do not create or activate this campaign or spend the proposed $300. Historical specification only; a future paid test requires new explicit authorization."
 }
