@@ -1,5 +1,5 @@
 (() => {
-  document.querySelector('[data-print-scorecard]')?.addEventListener('click', () => window.print());
+  document.querySelectorAll('[data-print-scorecard]').forEach(button => button.addEventListener('click', () => window.print()));
   const form = document.querySelector('[data-partner-link-form]');
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
