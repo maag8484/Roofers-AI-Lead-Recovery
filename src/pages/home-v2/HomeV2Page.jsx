@@ -1,4 +1,5 @@
 import { InquiryForm } from "./components/InquiryForm";
+import { AnimatePresence } from "framer-motion";
 import { Nav } from "./components/Nav";
 import { Hero } from "./components/Hero";
 import { Problem } from "./components/Problem";
@@ -49,6 +50,7 @@ export default function HomeV2Page() {
   // FAQ rail) stops pinning to the viewport. Decorations are clipped by their
   // own .hv2-clip wrappers inside each section instead.
   return (
+    <AnimatePresence initial={false}>
     <div className="hv2 flex min-h-screen flex-col">
       <Nav />
       <main className="flex-1">
@@ -69,5 +71,6 @@ export default function HomeV2Page() {
       </main>
       <Footer />
     </div>
+    </AnimatePresence>
   );
 }

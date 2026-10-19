@@ -1,11 +1,13 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const CONSENT = "I am interested in Roof AI Lead Recovery and request a phone call from its team, including Jesse, at the number provided about its services. This is a request for a human callback, not automated calls or marketing texts. No purchase is required.";
 
 export function InquiryForm() {
   const pending = useRef(false);
+  const [ready, setReady] = useState(false);
   const [state, setState] = useState("idle");
   const [message, setMessage] = useState("");
+  useEffect(() => { setReady(true); }, []);
   async function submit(event) {
     event.preventDefault();
     if (pending.current || state === "success") return;
@@ -35,7 +37,7 @@ export function InquiryForm() {
       </div>
       <form data-callback-form onSubmit={submit} className="rounded-3xl border border-[var(--line-2)] bg-[var(--void)] p-6 sm:p-8" aria-label="Request a human callback">
         <h3 className="mb-5 text-xl font-bold text-[var(--text)]">Request your walkthrough</h3>
-        <fieldset disabled={state === "pending" || state === "success"} className="space-y-4 disabled:opacity-70">
+        <fieldset disabled={!ready || state === "pending" || state === "success"} className="space-y-4 disabled:opacity-70">
           {[
             ["fullName", "Name", "text", "name", 100, "Your full name"],
             ["email", "Email", "email", "email", 254, "you@company.com"],

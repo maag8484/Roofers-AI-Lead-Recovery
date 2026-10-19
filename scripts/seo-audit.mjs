@@ -68,17 +68,22 @@ await Promise.all(Array.from({ length: 4 }, async () => {
     document.querySelectorAll("noscript").forEach((node) => node.remove());
     const h1s = document.querySelectorAll("h1");
     if (pathname === "/") {
-      notices.push("Homepage uses client rendering; confirm Google's rendered content with Search Console URL Inspection.");
+      if (h1s.length !== 1) errors.push(`Expected one pre-rendered homepage H1, found ${h1s.length}`);
+      if (!document.querySelector("#root[data-prerendered-homepage] header nav")) errors.push("Homepage HTML navigation missing");
+      if (!document.querySelector('#inquiry form[data-callback-form] fieldset[disabled]')) errors.push("Missing safe pre-hydration callback form");
     } else {
       if (h1s.length !== 1) errors.push(`Expected one H1, found ${h1s.length}`);
       if (!document.querySelector("[data-site-header] nav")) errors.push("Navigation is missing from the HTML");
       if (!document.querySelector("[data-site-footer] footer")) errors.push("Footer is missing from the HTML");
       if (!document.getElementById("search-breadcrumbs")) errors.push("Breadcrumb data missing");
     }
+    for (const selector of ['meta[property="og:title"]', 'meta[property="og:description"]', 'meta[property="og:url"]', 'meta[name="twitter:title"]', 'meta[name="twitter:description"]', 'meta[name="twitter:image"]']) {
+      if (!document.querySelector(selector)?.content?.trim()) errors.push(`Missing social preview: ${selector}`);
+    }
     if (SEARCH_GUIDES.some((guide) => guide.href === pathname) && !document.querySelector('a[href="/#inquiry"]')) errors.push("Priority guide has no callback-form destination");
     const links = [...document.querySelectorAll("a[href]")].map((link) => link.getAttribute("href"));
     const ids = new Set([...document.querySelectorAll("[id]")].map((element) => element.id));
-    checks.push({ url, status: response.status, title, description, canonical, server_navigation: Boolean(document.querySelector("[data-site-header] nav")), h1_count_without_noscript: h1s.length, errors, notices });
+    checks.push({ url, status: response.status, title, description, canonical, server_navigation: Boolean(document.querySelector("[data-site-header] nav, #root header nav")), h1_count_without_noscript: h1s.length, errors, notices });
     documents.set(url, { links, ids });
     dom.window.close();
   }

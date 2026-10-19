@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
 import { JSDOM } from "jsdom";
+import { createServer } from "vite";
 import { SITE_URL, HOME_TITLE, HOME_DESCRIPTION, SEARCH_GUIDES, homeStructuredData } from "../src/config/search.js";
 import { FAQS } from "../src/pages/home-v2/content.js";
 
@@ -91,9 +92,79 @@ export function prepareResourceHtml(html, url, templates) {
     });
     document.head.appendChild(script);
   }
+  // Social crawlers do not need JavaScript to read the resource's own title,
+  // description and URL. Preserve any deliberately authored page metadata.
+  for (const [attribute, name, content] of [
+    ["property", "og:type", "website"],
+    ["property", "og:site_name", "Roof AI Lead Recovery"],
+    ["property", "og:title", document.title],
+    ["property", "og:description", document.querySelector('meta[name="description"]')?.content || ""],
+    ["property", "og:url", url],
+    ["name", "twitter:card", "summary_large_image"],
+    ["name", "twitter:title", document.title],
+    ["name", "twitter:description", document.querySelector('meta[name="description"]')?.content || ""],
+    ["name", "twitter:image", document.querySelector('meta[property="og:image"]')?.content || ""],
+    ["name", "twitter:image:alt", document.querySelector('meta[property="og:image:alt"]')?.content || "Roof AI Lead Recovery"],
+  ]) {
+    if (document.querySelector(`meta[${attribute}="${name}"]`)) continue;
+    const meta = document.createElement("meta");
+    meta.setAttribute(attribute, name);
+    meta.content = content;
+    document.head.appendChild(meta);
+  }
   const result = dom.serialize();
   dom.window.close();
   return result;
+}
+
+export function preparePrerenderedHomepage(html, markup) {
+  const dom = new JSDOM(html);
+  const { document } = dom.window;
+  const mount = document.getElementById("root");
+  if (!mount || !markup.includes('id="inquiry"')) throw new Error("Missing public homepage or callback form in pre-render");
+  mount.innerHTML = markup;
+  mount.setAttribute("data-prerendered-homepage", "");
+  // The same real page now works without JavaScript; retain only an honest
+  // contact fallback instead of a second, duplicate marketing page.
+  // Write the noscript content after serialization: a DOM innerHTML assignment
+  // treats its markup as text and would escape the working contact link.
+  const result = dom.serialize().replace(/<noscript>[\s\S]*?<\/noscript>/,
+    '<noscript><p style="max-width:960px;margin:20px auto;padding:0 20px;font:16px/1.7 system-ui">Enable JavaScript to request a callback, or <a href="mailto:cory@roofaileadrecovery.com?subject=Roof%20AI%20callback%20request">email Cory to request a human callback</a>. You can also <a href="/roofing-missed-call-demo/">watch the roofing demo</a>.</p></noscript>');
+  dom.window.close();
+  return result;
+}
+
+export function prepareAppShell(html) {
+  const dom = new JSDOM(html);
+  const { document } = dom.window;
+  const mount = document.getElementById("root");
+  mount.replaceChildren();
+  mount.removeAttribute("data-prerendered-homepage");
+  document.querySelector('meta[name="robots"]').content = "noindex, follow";
+  const result = dom.serialize();
+  dom.window.close();
+  return result;
+}
+
+async function renderPublicHomepage() {
+  const server = await createServer({
+    root,
+    configFile: path.join(root, "vite.config.js"),
+    appType: "custom",
+    server: { middlewareMode: true, hmr: false, watch: null },
+    optimizeDeps: { noDiscovery: true, include: [] },
+    ssr: {
+      noExternal: ["react-router-dom", "react-router"],
+      resolve: { conditions: ["module", "node", "import", "module-sync"] },
+    },
+    resolve: {
+      alias: [{ find: /^@\/lib\/(?:supabase|authRedirect)(?:\.js)?$/, replacement: path.join(root, "scripts/prerender-public-client.js") }],
+    },
+  });
+  try {
+    const { renderHomepage } = await server.ssrLoadModule("/scripts/prerender-homepage.jsx");
+    return renderHomepage();
+  } finally { await server.close(); }
 }
 
 async function main() {
@@ -105,7 +176,11 @@ async function main() {
   }
   const directory = path.join(root, "dist");
   const filename = path.join(directory, "index.html");
-  await writeFile(filename, prepareHomepage(await readFile(filename, "utf8")));
+  const homepage = prepareHomepage(await readFile(filename, "utf8"));
+  // App routes must keep their own shell: a direct signup/login visit must not
+  // briefly display the pre-rendered homepage while authentication loads.
+  await writeFile(path.join(directory, "app.html"), prepareAppShell(homepage));
+  await writeFile(filename, preparePrerenderedHomepage(homepage, await renderPublicHomepage()));
   const templates = navigationTemplates(await readFile(path.join(root, "public/revenue-recovery-assets/site.js"), "utf8"));
   const sitemap = await readFile(path.join(directory, "sitemap.xml"), "utf8");
   const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
@@ -117,7 +192,7 @@ async function main() {
     await writeFile(page, prepareResourceHtml(await readFile(page, "utf8"), url, templates));
     count++;
   }
-  console.log(`Prepared ${count} resource pages with HTML navigation and breadcrumbs; homepage metadata synchronized.`);
+  console.log(`Prepared ${count} resource pages with HTML navigation, breadcrumbs and social previews; public homepage pre-rendered.`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) await main();
