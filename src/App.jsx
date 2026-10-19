@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { ProtectedRoute, PublicOnlyRoute, AdminRoute } from "@/components/ProtectedRoute";
 
 const LandingPage = lazy(() => import("@/pages/LandingPage"));
@@ -31,11 +31,23 @@ const AdminNotificationsPage = lazy(() => import("@/pages/admin/NotificationsPag
 const AdminBillingPage = lazy(() => import("@/pages/admin/BillingPage"));
 const AdminSettingsPage = lazy(() => import("@/pages/admin/SettingsPage"));
 
+function RouteBoundary({ children }) {
+  const { pathname } = useLocation();
+  // The homepage is eagerly imported and pre-rendered. Keeping it outside a
+  // Suspense boundary lets the existing auth effect settle without replacing
+  // the page before React finishes hydration. Lazy app routes retain loading UI.
+  return pathname === "/" ? children : (
+    <Suspense fallback={<div role="status" className="grid min-h-screen place-items-center text-sm text-slate-600">Loading…</div>}>
+      {children}
+    </Suspense>
+  );
+}
+
 export default function App() {
   return (
     <>
       <Seo />
-      <Suspense fallback={<div role="status" className="grid min-h-screen place-items-center text-sm text-slate-600">Loading…</div>}>
+      <RouteBoundary>
       <Routes>
         {/* Public marketing + legal. HomeV2Page is the live landing page; the
           previous one stays reachable at /home-v1 for comparison/rollback. */}
@@ -141,7 +153,7 @@ export default function App() {
 
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
-      </Suspense>
+      </RouteBoundary>
     </>
   );
 }

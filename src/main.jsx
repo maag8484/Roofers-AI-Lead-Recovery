@@ -6,7 +6,8 @@ import { AuthProvider } from "@/context/AuthContext";
 import App from "./App";
 import "./index.css";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+const root = document.getElementById("root");
+const application = (
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
@@ -16,3 +17,11 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     </BrowserRouter>
   </React.StrictMode>
 );
+
+// Only the public homepage is pre-rendered. Other routes retain their empty
+// app shell and existing authentication flow.
+if (window.location.pathname === "/" && root.hasAttribute("data-prerendered-homepage")) {
+  ReactDOM.hydrateRoot(root, application);
+} else {
+  ReactDOM.createRoot(root).render(application);
+}
