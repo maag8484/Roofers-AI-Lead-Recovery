@@ -8,7 +8,7 @@
       "dest": "/$1/index.html"
     },
     {
-      "src": "/(roofing-revenue-recovery|how-much-are-missed-calls-costing-your-roofing-company|ai-receptionist-for-roofing-companies|roofing-answering-service-vs-ai-lead-recovery|what-happens-when-a-roofer-misses-a-homeowners-call|after-hours-answering-for-roofing-companies)/?",
+      "src": "/(partners|roofing-revenue-recovery|how-much-are-missed-calls-costing-your-roofing-company|ai-receptionist-for-roofing-companies|roofing-answering-service-vs-ai-lead-recovery|what-happens-when-a-roofer-misses-a-homeowners-call|after-hours-answering-for-roofing-companies)/?",
       "dest": "/$1/index.html"
     },
     {

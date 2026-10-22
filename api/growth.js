@@ -103,7 +103,7 @@ export function planText(data, id) {
     `Modeled gross opportunity: ${cash(q.modeledGross)}/month`, `Modeled contribution before overhead and service costs: ${cash(q.modeledContribution)}/month`,
     '', q.disclaimer, '', 'Next step: verify these assumptions against your recent call log. Check which calls were genuine opportunities, which received a response, and which became paid jobs.',
     '', `Your on-demand demonstration and signup path: ${SITE}/recover.html`,
-    'The current advertised offer is a 7-day free trial followed by $299/month. Review the actual checkout terms, taxes and cancellation details before subscribing.',
+    'Start with a free missed-call audit, then a free 30-day pilot on your real line, up to 40 recovered calls. No automatic paid conversion. If you choose to continue: $149/month locked for 12 months for the first 10 founding customers; standard $299/month. Your eligibility and rate are confirmed before the pilot starts. Review the actual checkout terms, taxes and cancellation details before explicitly subscribing.',
     '', 'This is the single plan email you explicitly requested. You have not been added to an automated marketing sequence, SMS list, or AI calling campaign.',
     'Reply to this message with a correction or a request about your audit.', '', 'Roof AI Lead Recovery',
   ].join('\n');

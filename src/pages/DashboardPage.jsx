@@ -1,3 +1,4 @@
+import { SetupFraming } from "@/components/onboarding/PilotTerms";
 import { useEffect, useState, useCallback } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -22,6 +23,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { AccountMenu } from "@/components/AccountMenu";
 import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
 import { formatPhone } from "@/lib/utils";
+import { hasPilotRequest } from "@/lib/pilot";
 import { pickActiveSubscription, isSubscriptionActive } from "@/lib/subscription";
 
 // Customer-facing wording for the admin's 13-value `current_status`. Deliberately
@@ -103,12 +105,12 @@ export default function DashboardPage() {
   useEffect(() => {
     if (loading || authLoading || isAdmin) return;
     const paid = isSubscriptionActive(subscription);
-    if (!paid) {
+    if (!paid && !hasPilotRequest(user)) {
       navigate("/checkout", { replace: true });
     } else if (!profile?.details_submitted) {
       navigate("/onboarding", { replace: true });
     }
-  }, [loading, authLoading, isAdmin, subscription, profile, navigate]);
+  }, [loading, authLoading, isAdmin, subscription, profile, navigate, user]);
 
   useEffect(() => {
     if (searchParams.get("payment") === "success") {
@@ -231,6 +233,7 @@ export default function DashboardPage() {
             status={profile?.status}
             currentStatus={profile?.current_status}
             subscription={subscription}
+            pilot={hasPilotRequest(user)}
           />
         )}
 
@@ -269,11 +272,7 @@ export default function DashboardPage() {
                   <CalendarDays className="h-5 w-5 text-brand-600" />
                 </span>
                 <div>
-                  <p className="font-bold text-ink">Schedule your onboarding call</p>
-                  <p className="text-sm text-muted-foreground">
-                    Book a call with our Smith.ai team so they can finish configuring your AI
-                    receptionist.
-                  </p>
+                  <SetupFraming />
                 </div>
               </div>
               <a
@@ -283,7 +282,7 @@ export default function DashboardPage() {
                 className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-brand-700 transition-colors"
               >
                 <CalendarDays className="h-4 w-4" />
-                Schedule call
+                Book Free Setup
               </a>
             </CardContent>
           </Card>
@@ -298,7 +297,7 @@ export default function DashboardPage() {
 // Calendar self-serve steps were removed; provisioning is handled by the team
 // (reflected by the account status: new -> in_progress -> live).
 // ---------------------------------------------------------------------------
-function OnboardingChecklist({ status, currentStatus, subscription }) {
+function OnboardingChecklist({ status, currentStatus, subscription, pilot }) {
   const paid = ["active", "trialing"].includes(subscription?.status);
   const detailsDone = true; // dashboard is only reachable after details submitted
   // AI_ACTIVATED and LIVE both map to legacy 'live'; either means configuration
@@ -313,14 +312,14 @@ function OnboardingChecklist({ status, currentStatus, subscription }) {
 
   const steps = [
     { label: "Account created", state: "done" },
-    { label: "Subscription active", state: paid ? "done" : "todo" },
+    { label: pilot && !paid ? "Free pilot requested — no automatic billing" : "Subscription active", state: paid || pilot ? "done" : "todo" },
     { label: "Business information submitted", state: detailsDone ? "done" : "todo" },
     {
       label: "Our team is configuring your AI receptionist and will be in touch to schedule a quick onboarding call",
       note: live ? undefined : stageNote,
       state: configState,
     },
-    { label: "AI activated — recovering calls 24/7", state: live ? "done" : "todo" },
+    { label: "AI activated — missed and after-hours coverage", state: live ? "done" : "todo" },
   ];
 
   return (

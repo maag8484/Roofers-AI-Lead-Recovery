@@ -7,7 +7,13 @@ export function InquiryForm() {
   const [ready, setReady] = useState(false);
   const [state, setState] = useState("idle");
   const [message, setMessage] = useState("");
-  useEffect(() => { setReady(true); }, []);
+  useEffect(() => {
+    setReady(true);
+    const openFromHash = () => { if (window.location.hash === "#inquiry") { const form = document.getElementById("inquiry"); if (form) form.open = true; } };
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
+    return () => window.removeEventListener("hashchange", openFromHash);
+  }, []);
   async function submit(event) {
     event.preventDefault();
     if (pending.current || state === "success") return;
@@ -27,16 +33,12 @@ export function InquiryForm() {
       setMessage(error.name === "AbortError" ? "Confirmation is taking longer than expected. Your request may have been saved. Please email cory@roofaileadrecovery.com before submitting again." : error.message);
     } finally { pending.current = false; }
   }
-  return <section id="inquiry" aria-labelledby="inquiry-title" className="scroll-mt-24 border-y border-[var(--line)] bg-[var(--deep)] px-5 py-16 sm:px-8">
-    <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-2 lg:items-center">
-      <div>
-        <p className="mb-3 text-sm font-bold uppercase tracking-widest text-[var(--brand-glow)]">For roofing business owners</p>
-        <h2 id="inquiry-title" className="hv2-display text-3xl font-bold leading-tight text-[var(--text)] sm:text-4xl">See how missed-call recovery would work for your roofing company.</h2>
-        <p className="mt-5 max-w-lg text-lg leading-relaxed text-[var(--text-dim)]">Request a walkthrough with Jesse or our team. See a missed-call scenario, discuss your current phone setup, and get your questions answered before deciding whether to start a trial.</p>
-        <p className="mt-5 font-semibold text-[var(--text)]">No payment. No signup. Just a conversation.</p>
-      </div>
+  return <details id="inquiry" aria-labelledby="inquiry-title" className="scroll-mt-24 border-y border-[var(--line)] bg-[var(--deep)] px-5 py-16 sm:px-8">
+    <summary className="mx-auto max-w-6xl cursor-pointer text-[var(--text)]">Request a callback</summary>
+    <div className="mx-auto grid max-w-6xl gap-10 lg:max-w-2xl">
+
       <form data-callback-form onSubmit={submit} className="rounded-3xl border border-[var(--line-2)] bg-[var(--void)] p-6 sm:p-8" aria-label="Request a human callback">
-        <h3 className="mb-5 text-xl font-bold text-[var(--text)]">Request your walkthrough</h3>
+        <h3 className="mb-5 text-xl font-bold text-[var(--text)]">Request a callback</h3>
         <fieldset disabled={!ready || state === "pending" || state === "success"} className="space-y-4 disabled:opacity-70">
           {[
             ["fullName", "Name", "text", "name", 100, "Your full name"],
@@ -54,5 +56,5 @@ export function InquiryForm() {
         {message && <p role={state === "error" ? "alert" : "status"} className={`mt-4 rounded-xl p-3 text-sm ${state === "error" ? "bg-red-50 text-red-900" : "bg-emerald-50 text-emerald-900"}`}>{message}</p>}
       </form>
     </div>
-  </section>;
+  </details>;
 }

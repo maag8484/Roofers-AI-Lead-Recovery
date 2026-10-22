@@ -30,7 +30,7 @@ const FOCUSABLE =
 //   open        — visibility
 //   step/setStep — current 1..TOTAL
 //   onClose     — X / Escape / "Skip for now"
-//   onFinish    — final CTA ("Start Free Trial"); parent kicks off checkout
+//   onFinish    — final CTA ("Start the Free 30-Day Pilot"); parent continues setup
 //   finishing   — parent's in-flight state for the CTA spinner
 export function OnboardingModal({
   open,
@@ -39,7 +39,7 @@ export function OnboardingModal({
   onClose,
   onFinish,
   finishing,
-  finishLabel = "Start Free Trial",
+  finishLabel = "Start the Free 30-Day Pilot",
   finishIcon: FinishIcon = Rocket,
 }) {
   const panelRef = useRef(null);
@@ -215,15 +215,15 @@ function StepContent({ step }) {
         <StepHeading
           icon={Hand}
           title="Welcome 👋"
-          subtitle="In the next few minutes we'll get your AI receptionist ready to recover missed calls."
+          subtitle="See how free setup and a live test prepare your missed-call and after-hours pilot."
         />
         <ul className="space-y-2.5">
           {[
-            "Secure your subscription (7-day free trial)",
+            "Request your free 30-day pilot",
             "Tell us about your business",
             "We configure your AI receptionist",
-            "Connect your calendar & call routing",
-            "Activate 24/7 lead recovery",
+            "Verify your approved callback or booking-request route",
+            "Run the 30-day pilot, up to 40 recovered calls",
           ].map((line) => (
             <li key={line} className="flex items-center gap-3 text-sm text-ink">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-50 text-xs font-bold text-brand-600">
@@ -243,7 +243,7 @@ function StepContent({ step }) {
         <StepHeading
           icon={Sparkles}
           title="What your AI does"
-          subtitle="Everything that goes to work the moment a call comes in."
+          subtitle="Your approved overflow workflow, after setup and a successful live test."
         />
         <div className="grid gap-3 sm:grid-cols-2">
           {FEATURES.map((f, i) => (
@@ -260,7 +260,7 @@ function StepContent({ step }) {
         <StepHeading
           icon={ClipboardList}
           title="What you'll need"
-          subtitle="Have these handy for the quick setup form after checkout."
+          subtitle="Have these handy for your free setup."
         />
         <SetupChecklist items={CHECKLIST} />
       </div>
@@ -273,7 +273,7 @@ function StepContent({ step }) {
         <StepHeading
           icon={CreditCard}
           title="Simple, transparent pricing"
-          subtitle="Start free. You won't be charged during your 7-day trial."
+          subtitle="Start free. No card required and no automatic paid conversion."
         />
         <PricingPreview />
       </div>
@@ -285,7 +285,7 @@ function StepContent({ step }) {
       <StepHeading
         icon={ListChecks}
         title="What happens after you start"
-        subtitle="Here's exactly what we'll do once you begin your trial."
+        subtitle="Here is the setup process before your free pilot starts."
       />
       <NextSteps />
     </div>

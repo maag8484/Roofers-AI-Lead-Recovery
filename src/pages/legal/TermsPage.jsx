@@ -2,7 +2,7 @@ import { LegalLayout, LegalSection } from "@/components/marketing/LegalLayout";
 
 export default function TermsPage() {
   return (
-    <LegalLayout title="Terms & Conditions" updated="July 28, 2026">
+    <LegalLayout title="Terms & Conditions" updated="October 22, 2026">
       <p>
         These Terms and Conditions govern your use of Roof AI Lead Recovery. By creating an account
         or using our services, you agree to these Terms.
@@ -31,18 +31,18 @@ export default function TermsPage() {
       </LegalSection>
 
       <LegalSection heading="Subscription">
-        <p>Your subscription is billed monthly.</p>
+        <p>If you explicitly choose to continue with a paid subscription, it is billed monthly at the rate confirmed before you subscribe.</p>
         <p className="mt-3">
           Unless canceled before renewal, your subscription automatically renews each billing cycle.
         </p>
       </LegalSection>
 
-      <LegalSection heading="Free Trial">
-        <p>New customers may receive a free trial.</p>
+      <LegalSection heading="Free 30-Day Pilot">
+        <p>Eligible operating roofing companies with a forwardable business line may use one free 30-day pilot per company, covering up to 40 recovered missed and after-hours overflow calls. Your staff answers first. The pilot begins after setup and a successful live test call.</p>
         <p className="mt-3">
-          At the end of the trial period, your subscription automatically converts to a paid plan
-          unless canceled before the trial ends.
+          No card or payment is required for the pilot. If you do not explicitly choose to continue, the pilot ends. It does not automatically convert to a paid subscription or create an automatic charge.
         </p>
+        <p className="mt-3">Existing subscriptions retain their previously agreed billing and renewal terms.</p>
       </LegalSection>
 
       <LegalSection heading="Payments">
@@ -60,8 +60,7 @@ export default function TermsPage() {
 
       <LegalSection heading="Refund Policy">
         <p>
-          We offer a <strong>7-Day Free Trial</strong> so new customers can evaluate our platform
-          before being charged.
+          We offer a <strong>free 30-day pilot</strong>, up to 40 recovered calls, so eligible new customers can evaluate our platform without a charge. A paid subscription begins only if you explicitly choose to continue.
         </p>
         <p className="mt-3">After a paid subscription begins:</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">

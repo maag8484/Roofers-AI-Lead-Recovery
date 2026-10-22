@@ -223,13 +223,13 @@ export function SectionLabel({ index, eyebrow, className = "" }) {
      dark    — for use on the acid full-bleed band.
    ====================================================================== */
 export function CtaButton({
-  to = "/signup",
+  to = "/resources/roofing-missed-call-scorecard/#call-review",
   children,
   variant = "acid",
   className = "",
   size = "lg",
   magnetic = true,
-  reloadDocument = false,
+  reloadDocument = true,
 }) {
   const sizes = {
     lg: "px-7 py-4 text-[15px]",

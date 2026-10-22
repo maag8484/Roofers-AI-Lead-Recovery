@@ -30,7 +30,7 @@ const COLS = [
     label: "Account",
     links: [
       { text: "Login", to: "/login" },
-      { text: "Start free trial", to: "/signup" },
+      { text: "Get My Free Missed-Call Audit", href: "/resources/roofing-missed-call-scorecard/#call-review" },
     ],
   },
 ];

@@ -6,6 +6,9 @@ import { AuthProvider } from "@/context/AuthContext";
 import App from "./App";
 import "./index.css";
 
+import { referralCode } from "@/lib/pilot";
+referralCode();
+
 const root = document.getElementById("root");
 const application = (
   <React.StrictMode>

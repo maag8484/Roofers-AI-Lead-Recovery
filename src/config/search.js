@@ -1,7 +1,7 @@
 export const SITE_URL = "https://www.roofaileadrecovery.com";
 export const HOME_TITLE = "Missed Call Recovery for Roofers | Roof AI Lead Recovery";
 export const HOME_DESCRIPTION =
-  "Recover missed and after-hours roofing calls with configured AI follow-up, qualification and callback or booking workflows. Keep your business number. $299/month.";
+  "Recover missed and after-hours roofing calls with configured AI follow-up, qualification and callback or booking workflows. Keep your business number. Free missed-call audit and 30-day pilot.";
 
 export const SEARCH_GUIDES = [
   {
@@ -67,7 +67,7 @@ export function homeStructuredData(faqs) {
           price: "299",
           priceCurrency: "USD",
           url: `${SITE_URL}/signup`,
-          description: "$299 per month with a 7-day free trial. Review the exact trial end and first charge date in checkout.",
+          description: "Free 30-day pilot, up to 40 recovered calls. Optional $149/month founding rate locked 12 months for first 10 customers; standard $299/month.",
           priceSpecification: {
             "@type": "UnitPriceSpecification",
             price: "299",

@@ -1,134 +1,50 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { HelpCircle } from "lucide-react";
-import { toast } from "sonner";
-import { supabase, invokeFunction } from "@/lib/supabase";
-import { useAuth } from "@/context/AuthContext";
-import { pickActiveSubscription, isSubscriptionActive } from "@/lib/subscription";
-import { Logo } from "@/components/Logo";
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
-import { AccountMenu } from "@/components/AccountMenu";
-import { WelcomeHero } from "@/components/onboarding/WelcomeHero";
-import { OnboardingModal } from "@/components/onboarding/OnboardingModal";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
+import { isSubscriptionActive, pickActiveSubscription } from '@/lib/subscription';
+import { hasPilotRequest, pilotMetadata } from '@/lib/pilot';
+import { PilotTerms, SetupFraming } from '@/components/onboarding/PilotTerms';
+import { Button } from '@/components/ui/button';
+import { Logo } from '@/components/Logo';
+import { Spinner } from '@/components/ui/spinner';
 
-// Start the existing Stripe trial directly. The five-step product tour remains
-// available as an optional explanation, including through ?tour=1.
+// The historical /checkout confirmation redirect is intentionally retained.
+// New pilots never invoke Stripe or create a subscription.
 export default function CheckoutPage() {
-  const { user, onboardingCompleted, markOnboardingComplete } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
   const [checking, setChecking] = useState(true);
-  const [redirecting, setRedirecting] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [step, setStep] = useState(1);
-
-  // If the user already paid (refreshed / came back), skip ahead to onboarding.
+  const [loadError, setLoadError] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [accepted, setAccepted] = useState(false);
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from("subscriptions")
-      .select("status, created_at")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        // Multiple rows per user are possible; maybeSingle() would error here
-        // and strand an already-paid customer on the checkout page.
-        if (isSubscriptionActive(pickActiveSubscription(data))) {
-          navigate("/onboarding", { replace: true });
-        } else {
-          setChecking(false);
-        }
+    supabase.from('subscriptions').select('status, created_at').eq('user_id', user.id)
+      .order('created_at', { ascending: false }).then(({data, error}) => {
+        if (error) { setLoadError(true); setChecking(false); return; }
+        if (isSubscriptionActive(pickActiveSubscription(data)) || hasPilotRequest(user)) {
+          navigate('/onboarding', { replace: true });
+        } else setChecking(false);
       });
   }, [user, navigate]);
-
-  // Open the product tour only when explicitly requested.
-  useEffect(() => {
-    if (checking) return;
-    const forced = searchParams.get("tour") === "1";
-    if (forced) {
-      setStep(1);
-      setModalOpen(true);
-    }
-  }, [checking, searchParams]);
-
-  const closeModal = () => {
-    setModalOpen(false);
-    if (!onboardingCompleted) markOnboardingComplete();
-  };
-
-  const startCheckout = async () => {
-    setRedirecting(true);
-    try {
-      // Remember they've seen onboarding before we leave for Stripe.
-      if (!onboardingCompleted) markOnboardingComplete();
-      const res = await invokeFunction("stripe-create-checkout", {
-        success_url: `${window.location.origin}/onboarding?payment=success`,
-        cancel_url: `${window.location.origin}/checkout`,
-      });
-      if (res?.url) window.location.href = res.url;
-      else throw new Error(res?.error ?? "No checkout URL returned.");
-    } catch (err) {
-      console.error(err);
-      toast.error("Could not start checkout. Please try again.");
-      setRedirecting(false);
-    }
-  };
-
-  if (checking) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Spinner className="h-8 w-8" />
-      </div>
-    );
+  async function continueSetup(event) {
+    event.preventDefault();
+    if (!accepted || saving) return;
+    setSaving(true);
+    const {error} = await supabase.auth.updateUser({data: pilotMetadata()});
+    if (error) { toast.error(error.message); setSaving(false); return; }
+    navigate('/onboarding', {replace:true});
   }
-
-  const ownerName = user?.user_metadata?.full_name?.split(" ")[0] || "";
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-brand-50/60 via-secondary/30 to-secondary/30">
-      <header className="border-b border-border bg-white/70 backdrop-blur">
-        <div className="container flex h-16 items-center justify-between">
-          <Link to="/" aria-label="Roof AI Lead Recovery home">
-            <Logo />
-          </Link>
-          <div className="flex items-center gap-2">
-            {!onboardingCompleted && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setStep(1);
-                  setModalOpen(true);
-                }}
-              >
-                <HelpCircle className="h-4 w-4" /> Product tour
-              </Button>
-            )}
-            <AccountMenu />
-          </div>
-        </div>
-      </header>
-
-      <WelcomeHero
-        ownerName={ownerName}
-        onStart={startCheckout}
-        starting={redirecting}
-        onTour={() => {
-          setStep(1);
-          setModalOpen(true);
-        }}
-      />
-
-      <OnboardingModal
-        open={modalOpen}
-        step={step}
-        setStep={setStep}
-        onClose={closeModal}
-        onFinish={startCheckout}
-        finishing={redirecting}
-      />
-    </div>
-  );
+  if (loadError) return <main className="mx-auto max-w-lg space-y-4 p-8"><h1 className="text-2xl font-bold">We could not check your account</h1><p>Please retry before continuing. No payment or pilot has been started.</p><Button onClick={()=>window.location.reload()}>Retry account check</Button><a className="block underline" href="/">Back to home</a></main>;
+  if (checking) return <div className="flex min-h-screen items-center justify-center"><Spinner /></div>;
+  return <main className="mx-auto max-w-2xl space-y-6 px-5 py-12"><Logo />
+    <h1 className="text-3xl font-bold">Start the Free 30-Day Pilot</h1>
+    <SetupFraming /><PilotTerms />
+    <form onSubmit={continueSetup} className="space-y-4">
+      <label className="flex items-start gap-2 text-sm"><input type="checkbox" required checked={accepted} onChange={e=>setAccepted(e.target.checked)} />I operate a roofing company with a forwardable business line, have not used a pilot before, and accept these terms.</label>
+      <Button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Continue to Free Setup'}</Button>
+    </form>
+  </main>;
 }

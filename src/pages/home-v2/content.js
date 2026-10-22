@@ -25,23 +25,23 @@ export const PROBLEMS = [
 
 export const STEPS = [
   {
-    n: 1,
-    icon: "Phone",
-    title: "Lead calls or submits a form",
-    body: "Your team defines which unanswered or after-hours inquiries Roof AI is allowed to handle.",
+    "n": 1,
+    "icon": "Phone",
+    "title": "Get your free missed-call audit.",
+    "body": "We look at one recent period of your call history together — how many calls went unanswered, how many were real new opportunities, what happened next. Your numbers, not a made-up ROI claim. If the audit shows there's no real gap, we'll tell you."
   },
   {
-    n: 2,
-    icon: "MessageSquare",
-    title: "Roof AI follows approved rules",
-    body: "The configured workflow acknowledges the inquiry and collects the roofing details your team needs.",
+    "n": 2,
+    "icon": "MessageSquare",
+    "title": "Book your free setup.",
+    "body": "A specialist configures your roofing workflow with you in about 15 minutes: your service area, what counts as urgent, what to exclude, and exactly where each qualified caller goes — callback request, booking request, or straight to you. Then we run a live test call together so you hear exactly what your customers will hear. You keep your existing number; setup is call forwarding, and your team still answers first."
   },
   {
-    n: 3,
-    icon: "Calendar",
-    title: "Your team gets a clear next step",
-    body: "Roof AI can capture a callback request or use an approved booking route after configuration is verified.",
-  },
+    "n": 3,
+    "icon": "Calendar",
+    "title": "Run the free 30-day pilot.",
+    "body": "For 30 days, your missed and after-hours calls get answered, qualified, and sent to you as clear next steps in your dashboard. At the end, you get a report of exactly what it caught. Keep it only if the numbers say so."
+  }
 ];
 
 export const OUTCOME_FLOW = [
@@ -74,20 +74,11 @@ export const WHO_ITS_FOR = [
   "Want more inspections booked",
 ];
 
-export const PLAN_FEATURES = [
-  "Handles approved missed and after-hours calls",
-  "Collects roofing need, service area and urgency",
-  "Separates new inquiries from other callers",
-  "Captures an approved callback or booking request",
-  "Team notifications after configuration",
-  "Workflow review before activation",
-  "Lead tracking dashboard",
-  "Unlimited users",
-];
+export const PLAN_FEATURES = ["Answers missed and after-hours calls (your team answers first)", "Collects roofing need, service area and urgency", "Separates new inquiries from other callers", "Creates a callback or booking request for each qualified caller", "Team notifications for every recovered lead", "Lead tracking dashboard", "Unlimited users", "Keep your current number — no new phone number required"];
 
 export const PLAN_TRUST = [
   "No contracts",
-  "7-Day Free Trial",
+  "Free 30-Day Pilot",
   "No new phone number required",
   "Keep your current workflow",
   "Activation follows an authorized test",
@@ -135,13 +126,14 @@ export const COMPARISON_ROWS = [
 ];
 
 export const FAQS = [
+{"q": "How does the free pilot work?", "a": "After your free setup call, your missed and after-hours calls are answered and qualified on your real business line for 30 days, up to 40 recovered calls. You see every recovered lead in your dashboard, and at the end you receive a report of exactly what the pilot caught. If you do nothing, the pilot simply ends — keeping the service is your choice, at the rate quoted before your pilot started."},
   {
     q: "How does Roof AI Lead Recovery work?",
     a: "After your team approves the routing and conversation rules, Roof AI can handle eligible unanswered or after-hours inquiries, collect the roofing details you require and create an approved callback or booking next step. Exact channels and destinations are verified during setup.",
   },
   {
     q: "How much does it cost?",
-    a: "$299 per month with a 7-day free trial. Review the exact trial end and first charge date in checkout before confirming. There are no long-term contracts or setup fees, and you can cancel future renewal from your dashboard.",
+    a: "The missed-call audit and the 30-day pilot are both free. If you keep the service after the pilot, the founding rate is $149 per month, locked for 12 months, for the first 10 customers; the standard price is $299 per month. There are no setup fees and no long-term contracts, and you can cancel future renewal from your dashboard.",
   },
   {
     q: "Is every missed call a lost roofing job?",
@@ -157,7 +149,7 @@ export const FAQS = [
   },
   {
     q: "How long does setup take?",
-    a: "Setup depends on your current number, coverage rules, service area and preferred next step. Activation follows a configuration review and an authorized end-to-end test; we do not promise a universal setup time.",
+    a: "The setup call itself takes about 15 minutes, and we run a live test call on it so you can verify the full flow before your pilot starts. Exact timing can depend on your current number and carrier forwarding, so we confirm everything works end-to-end with you rather than promise a universal setup time.",
   },
   {
     q: "Can I see every conversation?",
@@ -173,6 +165,6 @@ export const FAQS = [
   },
   {
     q: "Can I cancel anytime?",
-    a: "Absolutely. There are no contracts and no setup fees. Start with a 7-day free trial and cancel anytime from your dashboard.",
+    a: "Absolutely. There are no contracts and no setup fees — start with the free audit and 30-day pilot, and if you continue to a paid plan you can cancel anytime from your dashboard.",
   },
 ];

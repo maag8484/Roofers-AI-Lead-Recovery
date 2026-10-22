@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/context/AuthContext";
+import { hasPilotRequest } from "@/lib/pilot";
 import { pickActiveSubscription } from "@/lib/subscription";
 
 /**
@@ -47,7 +48,7 @@ export function useResumePath() {
   let path = "/dashboard";
   if (isAdmin) {
     path = "/admin";
-  } else if (!["active", "trialing"].includes(subStatus)) {
+  } else if (!["active", "trialing"].includes(subStatus) && !hasPilotRequest(user)) {
     path = "/checkout";
   } else if (!profile?.details_submitted) {
     path = "/onboarding";

@@ -59,7 +59,7 @@ export function Navbar() {
                 <Link to="/login">Login</Link>
               </Button>
               <Button asChild>
-                <Link to="/signup">Sign Up</Link>
+                <a href="/resources/roofing-missed-call-scorecard/#call-review">Get My Free Missed-Call Audit</a>
               </Button>
             </>
           )}
@@ -100,7 +100,7 @@ export function Navbar() {
                     <Link to="/login">Login</Link>
                   </Button>
                   <Button asChild>
-                    <Link to="/signup">Sign Up</Link>
+                    <a href="/resources/roofing-missed-call-scorecard/#call-review">Get My Free Missed-Call Audit</a>
                   </Button>
                 </>
               )}

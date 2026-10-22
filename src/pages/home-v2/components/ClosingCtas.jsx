@@ -46,7 +46,7 @@ export function BottomCta() {
               </Reveal>
               <Reveal delay={0.28}>
                 <div className="relative mt-9 flex justify-center">
-                  <CtaButton>Start Your 7-Day Free Trial</CtaButton>
+                  <CtaButton>Get My Free Missed-Call Audit</CtaButton>
                 </div>
                 <p className="relative mt-5 text-[13.5px] text-[var(--text-faint)]">
                   No contracts · No setup fee · Cancel anytime
@@ -111,7 +111,7 @@ export function FinalCta() {
         </Reveal>
         <Reveal delay={0.33}>
           <div className="mt-10 flex justify-center">
-            <CtaButton variant="glass">Start Your 7-Day Free Trial</CtaButton>
+            <CtaButton variant="glass">Get My Free Missed-Call Audit</CtaButton>
           </div>
         </Reveal>
         <Reveal delay={0.4}>

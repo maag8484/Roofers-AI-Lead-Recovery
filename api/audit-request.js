@@ -42,7 +42,7 @@ export function validateAuditRequest(input) {
     consent_version: callback ? "human-callback-v1" : "audit-form-v2",
     consented_at: new Date().toISOString(),
     submission_page: text(data.submissionPage, 500),
-    attribution: sanitizeObject(data.attribution, ["landing_page", "referrer", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "fbclid"], 500),
+    attribution: sanitizeObject(data.attribution, ["landing_page", "referrer", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "fbclid", "ref"], 500),
     calculator: sanitizeCalculator(data.calculator),
   };
 
@@ -81,6 +81,7 @@ export function validateAuditRequest(input) {
       };
     }
   }
+  if (payload.attribution.ref && !/^[A-Za-z0-9_-]{1,64}$/.test(payload.attribution.ref)) delete payload.attribution.ref;
   return { payload, errors };
 }
 

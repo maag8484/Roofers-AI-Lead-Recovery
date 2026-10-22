@@ -16,7 +16,7 @@ import { CtaButton } from "./primitives";
  */
 
 const LINKS = [
-  { label: "Request a callback", href: "/#inquiry" },
+  { label: "Free Missed-Call Audit", href: "/resources/roofing-missed-call-scorecard/#call-review" },
   { label: "How it works", href: "#how-it-works" },
   { label: "Free Revenue Calculator", href: "/how-much-are-missed-calls-costing-your-roofing-company/" },
   { label: "Pricing", href: "#pricing" },
@@ -34,7 +34,7 @@ export function Nav() {
   const progress = useSpring(scrollYProgress, { stiffness: 150, damping: 28, restDelta: 0.001 });
 
   // Session-aware actions. A signed-in visitor landing back on the homepage must
-  // never be shown "Login / Start free trial" — they get a single button that
+  // never be shown "Login / Get My Free Missed-Call Audit" — they get a single button that
   // resumes wherever they actually left off (checkout → onboarding → dashboard,
   // or the console for admins). Mirrors marketing/Navbar.jsx.
   const { user, isAdmin, loading } = useAuth();
@@ -101,7 +101,7 @@ export function Nav() {
                 Login
               </Link>
               <CtaButton size="md" magnetic={false}>
-                Start free trial
+                Get My Free Missed-Call Audit
               </CtaButton>
             </>
           )}
@@ -162,7 +162,7 @@ export function Nav() {
                     Login
                   </Link>
                   <CtaButton className="w-full" magnetic={false}>
-                    Start free trial
+                    Get My Free Missed-Call Audit
                   </CtaButton>
                 </>
               )}

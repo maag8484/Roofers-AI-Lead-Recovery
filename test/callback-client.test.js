@@ -5,7 +5,7 @@ import { JSDOM } from "jsdom";
 import { HUMAN_CALLBACK_CONSENT_TEXT } from "../api/audit-request.js";
 
 const script = await readFile(new URL("../public/callback-client.js", import.meta.url), "utf8");
-const html = await readFile(new URL("../public/resources/roofing-missed-call-text-back/index.html", import.meta.url), "utf8");
+const html = await readFile(new URL("./fixtures/callback-form.html", import.meta.url), "utf8");
 const fields = { fullName: "Test Visitor", email: "private@example.com", phone: "614-555-0123", contactConsent: "on" };
 function page(url = "https://www.roofaileadrecovery.com/resources/roofing-missed-call-text-back/?utm_source=jesse&utm_medium=phone&utm_campaign=callback_walkthrough&email=private@example.com", fetcher, stored) {
   const dom = new JSDOM(html, { url, runScripts: "outside-only" });

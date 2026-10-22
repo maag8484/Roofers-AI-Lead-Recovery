@@ -9,6 +9,8 @@ import { ConfirmEmailNotice } from "@/components/auth/ConfirmEmailNotice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PilotTerms } from "@/components/onboarding/PilotTerms";
+import { pilotMetadata } from "@/lib/pilot";
 import { Spinner } from "@/components/ui/spinner";
 
 // Signup is email + password ONLY. Business details are collected AFTER payment
@@ -43,6 +45,7 @@ export default function SignupPage() {
     // etc. The onboarding form still writes the company row after payment.
     const { data: result, error } = await signUp(values.email, values.password, {
       full_name: values.full_name.trim(),
+      ...pilotMetadata(),
     });
     setSubmitting(false);
 
@@ -110,8 +113,7 @@ export default function SignupPage() {
         <div>
           <h1 className="text-2xl font-extrabold text-ink">Create your account</h1>
           <p className="mt-1 text-muted-foreground">
-            Create your account, review the exact trial end and first charge date in checkout,
-            then submit the details needed to configure your approved call coverage.
+            Start your free 30-day pilot. No card required. Create your account, confirm your email, and book your free setup with a live test call.
           </p>
         </div>
 
@@ -174,6 +176,8 @@ export default function SignupPage() {
           )}
         </div>
 
+        <PilotTerms />
+        <label className="flex items-start gap-2 text-sm"><input type="checkbox" required {...register("pilot_terms", { required: true })} />I confirm I operate a roofing company with a forwardable business line, have not used a pilot before, and agree to the pilot terms above.</label>
         <Button type="submit" className="w-full" disabled={submitting}>
           {submitting ? (
             <Spinner className="text-white" />
@@ -185,7 +189,7 @@ export default function SignupPage() {
         </Button>
 
         <p className="text-center text-xs text-muted-foreground">
-          Next: Stripe Checkout → business details → configuration review → authorized test → activation.
+          Next: confirm email → business details → free setup and live test → pilot. No automatic charge.
         </p>
       </form>
     </AuthLayout>

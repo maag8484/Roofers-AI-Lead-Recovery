@@ -1,3 +1,5 @@
+import { SetupFraming, PilotTerms } from "@/components/onboarding/PilotTerms";
+import { hasPilotRequest } from "@/lib/pilot";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -324,8 +326,8 @@ export default function OnboardingPage() {
   let paymentDetail;
   if (subscription?.status === "trialing") {
     paymentDetail = trialEnds
-      ? `Your 7-day free trial is active — you won't be charged until ${trialEnds}.`
-      : "Your 7-day free trial is active — no charge yet.";
+      ? `Your existing subscription trial is active — you won't be charged until ${trialEnds}.`
+      : "Your existing subscription trial is active — no charge yet.";
   } else {
     paymentDetail = "Your subscription is active.";
   }
@@ -435,10 +437,7 @@ export default function OnboardingPage() {
             </div>
             {/* Body */}
             <div className="space-y-4 p-6">
-              <p className="text-sm text-muted-foreground">
-                Pick a time that works for you. This call lets our team collect the details
-                needed to configure your AI receptionist quickly.
-              </p>
+              <SetupFraming />
               <a
                 href={SMITH_CALENDLY}
                 target="_blank"
@@ -469,6 +468,7 @@ export default function OnboardingPage() {
       </header>
 
       <main className="container max-w-2xl py-10">
+        {hasPilotRequest(user) && <div className="mb-6 space-y-4"><SetupFraming /><PilotTerms /></div>}
         {/* Persistent payment-complete banner — reflects the real subscription,
             so it survives reloads (unlike the transient success toast). */}
         {paid && (

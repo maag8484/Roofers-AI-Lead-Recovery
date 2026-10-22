@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import { Clock, Sparkles, PlayCircle, CreditCard } from "lucide-react";
+import { Clock, Sparkles, PlayCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FeatureCard } from "./FeatureCard";
 import { FEATURES } from "./content";
 
-// The primary action starts the existing checkout; the product tour is optional.
+// Free pilot setup; the product tour is optional.
 export function WelcomeHero({ ownerName, onStart, onTour, starting = false }) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:py-16">
@@ -22,24 +22,23 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false }) {
           Welcome to Roof AI Lead Recovery{ownerName ? `, ${ownerName}` : ""}
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-          Let's get everything ready so your AI assistant can start recovering missed leads and
-          booking appointments.
+          Let's configure and test your missed-call and after-hours overflow workflow together.
         </p>
 
         <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button size="lg" onClick={onStart} disabled={starting} className="min-w-52">
-            <CreditCard className="h-5 w-5" />
-            {starting ? "Opening secure checkout..." : "Start 7-Day Free Trial"}
+            <Phone className="h-5 w-5" />
+            {starting ? "Preparing free setup…" : "Start the Free 30-Day Pilot"}
           </Button>
           <Button size="lg" variant="secondary" onClick={onTour} disabled={starting}>
             <PlayCircle className="h-5 w-5" /> View product tour
           </Button>
           <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-            <Clock className="h-4 w-4" /> Guided setup after checkout
+            <Clock className="h-4 w-4" /> Free guided setup and live test
           </span>
         </div>
         <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
-          No charge today. $299/month plus applicable tax after 7 days unless you cancel.
+          No card required. No automatic paid conversion. Optional founding rate: $149/month locked 12 months for first 10 customers; standard $299/month.
           We configure your coverage after you submit your business details; calls begin
           once forwarding is set up and tested.
         </p>
@@ -62,10 +61,10 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false }) {
         <h2 className="text-center text-lg font-bold text-ink">How setup works</h2>
         <div className="mt-6 grid gap-6 sm:grid-cols-4">
           {[
-            { n: 1, t: "Start your trial", d: "Subscribe — free for 7 days." },
+            { n: 1, t: "Request your free pilot", d: "No card required." },
             { n: 2, t: "Tell us about your business", d: "A quick guided form." },
-            { n: 3, t: "We configure your AI", d: "Our team provisions everything." },
-            { n: 4, t: "Go live", d: "Start recovering calls 24/7." },
+            { n: 3, t: "Free setup and live test", d: "Verify forwarding and the full workflow." },
+            { n: 4, t: "Run your free pilot", d: "30 days, up to 40 recovered overflow calls." },
           ].map((s) => (
             <div key={s.n} className="text-center">
               <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-sm font-bold text-brand-600">
@@ -80,8 +79,8 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false }) {
 
       <div className="mt-12 text-center">
         <Button size="lg" onClick={onStart} disabled={starting} className="min-w-52">
-          <CreditCard className="h-5 w-5" />
-          {starting ? "Opening secure checkout..." : "Start 7-Day Free Trial"}
+          <Phone className="h-5 w-5" />
+          {starting ? "Preparing free setup…" : "Start the Free 30-Day Pilot"}
         </Button>
       </div>
     </div>

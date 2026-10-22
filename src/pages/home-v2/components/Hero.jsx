@@ -1,31 +1,14 @@
-import { useRef, useState, lazy, Suspense } from "react";
+import { useRef } from "react";
 import {
   motion,
-  AnimatePresence,
   useReducedMotion,
   useScroll,
   useTransform,
 } from "framer-motion";
-import { Play, Check } from "lucide-react";
-import { CtaButton, SplitText, Magnetic } from "./primitives";
+import { Check } from "lucide-react";
+import { CtaButton } from "./primitives";
 import { PhoneShowcase } from "./PhoneShowcase";
 import { TRUST_BUILDERS } from "../content";
-
-/* Lazily imported so the player — and framer's portal work — land in their own
-   chunk that is only fetched when someone actually clicks "Watch demo". None
-   of this is in the initial homepage bundle. */
-const VideoModal = lazy(() =>
-  import("./VideoModal").then((m) => ({ default: m.VideoModal }))
-);
-
-/* Warm the chunk on hover/focus so the modal opens instantly on click, while
-   still costing nothing to visitors who never intend to watch. */
-let demoChunkWarmed = false;
-function warmDemoChunk() {
-  if (demoChunkWarmed) return;
-  demoChunkWarmed = true;
-  import("./VideoModal");
-}
 
 /**
  * Hero — aurora over a receding perspective floor.
@@ -45,7 +28,6 @@ function warmDemoChunk() {
 export function Hero() {
   const ref = useRef(null);
   const reduce = useReducedMotion();
-  const [demoOpen, setDemoOpen] = useState(false);
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -123,21 +105,13 @@ export function Hero() {
                 </span>
               </motion.div>
 
-              <h1 className="hv2-display hv2-hero-title hv2-hero-gap text-[var(--text)]">
-                <SplitText text="Recover More Roofing Opportunities From" delay={0.1} />{" "}
-                <span className="hv2-accent hv2-grad-text relative inline-block pr-1">
-                  Missed Calls
-                </span>
-              </h1>
+              <h1 className="hv2-display hv2-hero-title hv2-hero-gap text-[var(--text)]">The call you miss is the job that goes to whoever answers.</h1>
 
               <motion.p
                 {...rise(1.05)}
                 className="hv2-hero-sub hv2-hero-gap max-w-xl leading-[1.65] text-[var(--text-dim)]"
               >
-                Roof AI Lead Recovery helps roofing companies respond to missed and
-                after-hours callers, qualify new opportunities and move homeowners toward
-                an appointment—so more of the leads you already paid for get a chance to
-                become revenue.
+                A homeowner with a leaking roof doesn't leave a voicemail and wait. They call the next roofer on the list. Roof AI Lead Recovery answers the calls your team can't get to — missed calls and after-hours calls — qualifies the caller, and hands your team a clear next step, so the leads you already paid for stop slipping away.
               </motion.p>
 
               <motion.div
@@ -145,29 +119,14 @@ export function Hero() {
                 className="hv2-hero-gap flex flex-col gap-3 sm:flex-row sm:items-center"
               >
                 <CtaButton
-                  to="/#inquiry"
+                  to="/resources/roofing-missed-call-scorecard/#call-review"
                   reloadDocument
                 >
-                  See How Missed-Call Recovery Works
+                  Get My Free Missed-Call Audit
                 </CtaButton>
-                <Magnetic strength={0.2}>
-                  <button
-                    type="button"
-                    onClick={() => setDemoOpen(true)}
-                    onMouseEnter={warmDemoChunk}
-                    onFocus={warmDemoChunk}
-                    aria-haspopup="dialog"
-                    className="group inline-flex items-center justify-center gap-3 rounded-full border border-[var(--line-2)] bg-[var(--glass)] px-6 py-3.5 text-[14.5px] font-bold text-[var(--text)] backdrop-blur transition-all duration-300 hover:border-[var(--brand-600)]/45 hover:bg-[var(--glass-2)]"
-                  >
-                    <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-[var(--brand)]/25 text-[var(--brand-glow)]">
-                      <span className="hv2-ping absolute inset-0 rounded-full opacity-50" />
-                      <Play className="relative h-2.5 w-2.5 fill-current" />
-                    </span>
-                    Watch 84-Second Demo Video
-                  </button>
-                </Magnetic>
+                <a href="/signup" className="text-sm font-bold underline text-[var(--text)]">or start the free 30-day pilot</a>
               </motion.div>
-              <p className="mt-3 text-sm text-[var(--text-dim)]">For roofing business owners. Request a walkthrough with Jesse—no payment required to talk.</p>
+              <p className="mt-3 text-sm text-[var(--text-dim)]">For roofing companies. Keep your current number — your staff still answers first. We only catch the overflow.</p><p className="mt-3 text-sm text-[var(--text-dim)]">No setup fee · No contract · Cancel anytime · Free 30-day pilot — see exactly what it catches before you pay a dollar</p>
             </motion.div>
 
             {/* ---------------- Phone ---------------- */}
@@ -208,16 +167,7 @@ export function Hero() {
         </div>
       </div>
 
-      {/* ---------- Demo video ----------
-          Mounted only while open, so no video bytes are requested until the
-          visitor asks for them. Suspense covers the one-time chunk fetch. */}
-      <AnimatePresence>
-        {demoOpen && (
-          <Suspense fallback={null}>
-            <VideoModal key="demo" onClose={() => setDemoOpen(false)} />
-          </Suspense>
-        )}
-      </AnimatePresence>
+
     </section>
   );
 }

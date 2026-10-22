@@ -55,7 +55,6 @@ export default function HomeV2Page() {
       <Nav />
       <main className="flex-1">
         <Hero />
-        <InquiryForm />
         <Problem />
         <HowItWorks />
         <WhoItsFor />
@@ -65,6 +64,7 @@ export default function HomeV2Page() {
         <SmithAiTrust />
         <ComparisonTable />
         <Faq />
+        <InquiryForm />
         <RecoveryGuides />
         <BottomCta />
         <FinalCta />

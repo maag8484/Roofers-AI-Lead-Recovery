@@ -5,8 +5,16 @@
   const tagManagerId = "GTM-WKMDN97L";
   // Verified existing Roof AI GA4 web stream. GTM's published container is empty.
   const measurementId = "G-8PV83SZ3X0";
-  const attributionKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "fbclid"];
+  const attributionKeys = ["ref", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid", "fbclid"];
   const query = new URLSearchParams(window.location.search);
+  // Most recent explicit partner link wins; retain it across the audit/signup journey.
+  let partnerRef = query.get("ref");
+  const validPartnerRef = (value) => typeof value === "string" && /^[A-Za-z0-9_-]{1,64}$/.test(value);
+  try {
+    if (validPartnerRef(partnerRef)) localStorage.setItem("roof_ai_partner_ref", partnerRef);
+    else partnerRef = localStorage.getItem("roof_ai_partner_ref");
+  } catch { /* Current URL still works without storage. */ }
+  if (!validPartnerRef(partnerRef)) partnerRef = null;
   const isInternalTest = query.get("utm_source") === "qa_internal" || query.get("qa") === "1";
   if (isInternalTest) { try { sessionStorage.setItem("roof_ai_qa", "1"); } catch {} }
   const productionAnalytics = ["www.roofaileadrecovery.com", "roofaileadrecovery.com"].includes(window.location.hostname)
@@ -46,7 +54,7 @@
     try { return JSON.parse(localStorage.getItem("roof_ai_first_touch") || "null"); }
     catch { return null; }
   };
-  const currentAttribution = Object.fromEntries(attributionKeys.map((key) => [key, query.get(key) || ""]).filter(([, value]) => value));
+  const currentAttribution = Object.fromEntries(attributionKeys.map((key) => [key, (key === "ref" ? partnerRef : query.get(key)) || ""]).filter(([, value]) => value));
   // Keep the current campaign together when visitors navigate within the hub.
   // A new tagged visit replaces the campaign rather than mixing old UTM fields.
   let sessionAttribution = null;
@@ -67,7 +75,7 @@
     if (!readStoredAttribution()) localStorage.setItem("roof_ai_first_touch", JSON.stringify(firstTouch));
   } catch { /* Attribution still works for this page when storage is unavailable. */ }
 
-  const conversionAttribution = sessionAttribution || firstTouch;
+  const conversionAttribution = { ...(sessionAttribution || firstTouch), ...(partnerRef ? { ref: partnerRef } : {}) };
   const eventAttribution = () => ({
     traffic_source: conversionAttribution.utm_source || "direct",
     traffic_medium: conversionAttribution.utm_medium || "none",
@@ -127,7 +135,7 @@
           <h3>Roof AI</h3>
           <ul class="footer-links">
             <li><a href="https://www.roofaileadrecovery.com/">Main website</a></li>
-            <li><a href="https://www.roofaileadrecovery.com/signup">Start 7-day free trial</a></li>
+            <li><a href="https://www.roofaileadrecovery.com/resources/roofing-missed-call-scorecard/#call-review">Get My Free Missed-Call Audit</a></li>
             <li><a href="#audit-request" data-audit-open>Free missed revenue audit</a></li>
             <li><a href="mailto:cory@roofaileadrecovery.com">cory@roofaileadrecovery.com</a></li>
             <li><a href="https://www.roofaileadrecovery.com/privacy">Privacy</a> · <a href="https://www.roofaileadrecovery.com/terms">Terms</a></li>

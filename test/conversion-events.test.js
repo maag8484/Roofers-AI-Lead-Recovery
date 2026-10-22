@@ -14,6 +14,7 @@ function createPage(fetchImpl, options = {}) {
   });
   if (options.session) dom.window.sessionStorage.setItem("roof_ai_session_touch", JSON.stringify(options.session));
   if (options.firstTouch) dom.window.localStorage.setItem("roof_ai_first_touch", JSON.stringify(options.firstTouch));
+  if (options.partnerRef) dom.window.localStorage.setItem("roof_ai_partner_ref", options.partnerRef);
   dom.window.fetch = fetchImpl;
   dom.window.eval(siteScript);
   return dom;
@@ -228,4 +229,19 @@ test('audit intent and calculator start are forwarded without form details', () 
   assert.ok(sent.some(entry => entry[1] === 'calculator_started'));
   assert.ok(!JSON.stringify(sent).includes('jamie@example.com'));
   dom.window.close();
+});
+
+
+test("partner landing survives a separate audit page and reaches the submission record", async () => {
+ const landing = createPage(async()=>accepted(), {url:"https://www.roofaileadrecovery.com/partners/?ref=PARTNER_DEMO&qa=1"});
+ const ref = landing.window.localStorage.getItem("roof_ai_partner_ref");
+ assert.equal(ref, "PARTNER_DEMO"); landing.window.close();
+ let payload;
+ const audit = createPage(async(_url,options)=>{payload=JSON.parse(options.body);return accepted();}, {url:"https://www.roofaileadrecovery.com/resources/roofing-missed-call-scorecard/?qa=1", partnerRef:ref});
+ const form=openAndFillAudit(audit.window);
+ form.dispatchEvent(new audit.window.Event("submit", {bubbles:true,cancelable:true}));
+ await new Promise(resolve=>setTimeout(resolve,25));
+ assert.equal(payload.attribution.ref,"PARTNER_DEMO");
+ assert.equal(events(audit.window,"audit_submit").length,1);
+ audit.window.close();
 });

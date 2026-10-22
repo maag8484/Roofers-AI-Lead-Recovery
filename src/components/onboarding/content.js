@@ -7,39 +7,13 @@ import {
   BarChart3,
 } from "lucide-react";
 
-// Features the product ACTUALLY delivers (call handling + AI + booking live in
-// n8n; the dashboard shows analytics). Kept honest per product scope.
 export const FEATURES = [
-  {
-    icon: PhoneCall,
-    title: "24/7 Missed-Call Recovery",
-    description: "Every call you can't answer is caught and handled instantly, day or night.",
-  },
-  {
-    icon: Bot,
-    title: "AI Lead Qualification",
-    description: "Your AI receptionist greets callers, answers questions, and qualifies the lead.",
-  },
-  {
-    icon: CalendarCheck,
-    title: "Appointment Booking",
-    description: "Qualified leads get booked straight onto your calendar — no back-and-forth.",
-  },
-  {
-    icon: Phone,
-    title: "Dedicated Business Number",
-    description: "A number that forwards to your AI, so nothing slips through the cracks.",
-  },
-  {
-    icon: MessageSquareText,
-    title: "Warm Transfer & Messages",
-    description: "Route hot callers to your team live, or capture a message and email it over.",
-  },
-  {
-    icon: BarChart3,
-    title: "Real-Time Dashboard",
-    description: "See recovered leads, booked estimates, and response times as they happen.",
-  },
+  { icon: PhoneCall, title: "Overflow call recovery", description: "Missed and after-hours calls, up to 40 recovered calls during the 30-day pilot." },
+  { icon: Bot, title: "Roofing qualification", description: "Collect roofing need, service area and urgency using your approved workflow." },
+  { icon: CalendarCheck, title: "A clear next step", description: "Create a callback or booking request for each qualified caller." },
+  { icon: Phone, title: "Keep your current number", description: "Your team answers first. Forward only approved overflow and after-hours calls." },
+  { icon: MessageSquareText, title: "Team notifications", description: "Route recovered leads to the destination your team confirms during setup." },
+  { icon: BarChart3, title: "Your pilot report", description: "See exactly what the pilot caught before deciding whether to continue." },
 ];
 
 // "What you'll need" before starting the business-setup form.
@@ -48,6 +22,6 @@ export const CHECKLIST = [
   { label: "Business phone number", hint: "The line that forwards to your AI." },
   { label: "Service area", hint: "Counties or ZIP codes you cover." },
   { label: "Services you offer", hint: "e.g. residential & commercial roofing, gutters, repairs." },
-  { label: "Business hours", hint: "When calls should be handled live." },
+  { label: "Business hours", hint: "When your staff answers first and after-hours coverage applies." },
   { label: "Scheduling link (optional)", hint: "Calendly or your booking system, if you use one." },
 ];

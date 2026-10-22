@@ -1,13 +1,12 @@
 import { motion } from "framer-motion";
 
-// "What happens after payment?" — a numbered, honest timeline of the real
-// post-checkout flow (subscribe -> details form -> our team provisions -> live).
+// Guided setup; no payment or automatic subscription is created.
 const STEPS = [
-  { title: "Your AI workspace is created", detail: "We spin up your account the moment you subscribe." },
-  { title: "You tell us about your business", detail: "A quick form: service area, services, call-handling preference." },
-  { title: "Our team configures your AI receptionist", detail: "We provision your number and set up call handling for you." },
-  { title: "Your calendar & routing are connected", detail: "Appointments and warm transfers wired to your preferences." },
-  { title: "Authorized test and activation", detail: "Coverage starts only after the approved routing, qualification and handoff flow is verified." },
+  { title: "Request your free pilot", detail: "Create your account and confirm your email. No card required." },
+  { title: "Tell us about your business", detail: "Share your service area, services and call-handling preferences." },
+  { title: "Free setup with a specialist", detail: "We configure overflow forwarding from your current number. Your staff still answers first." },
+  { title: "Confirm each caller's next step", detail: "Approve the callback, booking-request or transfer destination and exclusions." },
+  { title: "Live test and pilot activation", detail: "After a successful end-to-end test, run the free pilot for 30 days, up to 40 recovered calls. It ends unless you choose to continue." },
 ];
 
 export function NextSteps() {

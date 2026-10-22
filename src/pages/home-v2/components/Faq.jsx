@@ -30,10 +30,10 @@ export function Faq() {
                 <span className="hv2-accent hv2-grad-text">questions</span>
               </h2>
               <p className="mt-5 max-w-sm text-[16.5px] leading-[1.7] text-[var(--text-dim)]">
-                Still deciding? Start the trial — there's no contract and no sales call.
+                Start with a free audit of your own call history.
               </p>
               <div className="mt-8">
-                <CtaButton>Start Free Trial</CtaButton>
+                <CtaButton>Get My Free Missed-Call Audit</CtaButton>
               </div>
             </Reveal>
           </div>
@@ -117,6 +117,7 @@ export function Faq() {
             })}
           </div>
         </div>
+        <p className="mt-8 text-[var(--text-dim)]">Prefer to talk it through first? <a className="underline" href="#inquiry" onClick={() => { const form = document.getElementById("inquiry"); if (form) form.open = true; }}>Request a callback.</a></p>
       </div>
     </section>
   );

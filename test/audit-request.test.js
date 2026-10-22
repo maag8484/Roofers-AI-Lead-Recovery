@@ -62,11 +62,12 @@ test("valid request calls the Supabase RPC and returns its request id", async (t
   t.after(() => { global.fetch = oldFetch; process.env = oldEnv; });
 
   const res = responseDouble();
-  await handler({ method: "POST", body: valid, headers: { "x-forwarded-for": "203.0.113.5" }, socket: {} }, res);
+  await handler({ method: "POST", body: { ...valid, attribution: { ...valid.attribution, ref: "PARTNER_DEMO" } }, headers: { "x-forwarded-for": "203.0.113.5" }, socket: {} }, res);
   assert.equal(res.statusCode, 201);
   assert.deepEqual(res.body, { ok: true, requestId: "request-123", notificationSent: false });
   assert.equal(rpcBody.p_limit, 5);
   assert.equal(rpcBody.p_request.company, "Example Roofing");
+  assert.equal(rpcBody.p_request.attribution.ref, "PARTNER_DEMO");
   assert.match(rpcBody.p_rate_key, /^[a-f0-9]{64}$/);
   assert.match(rpcBody.p_email_key, /^[a-f0-9]{64}$/);
   assert.equal(JSON.stringify(rpcBody).includes("203.0.113.5"), false);

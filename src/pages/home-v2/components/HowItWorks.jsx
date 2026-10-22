@@ -41,7 +41,7 @@ export function HowItWorks() {
           <SectionLabel index="02" eyebrow="How It Works" />
           <h2 className="hv2-display mt-7 text-[clamp(2rem,4.6vw,3.2rem)] text-[var(--text)]">
             <SplitText text="Three steps." />{" "}
-            <span className="hv2-accent hv2-grad-text">One clear next step.</span>
+            <span className="hv2-accent hv2-grad-text">The third one is free for 30 days.</span>
           </h2>
         </div>
 

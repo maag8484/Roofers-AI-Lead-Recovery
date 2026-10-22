@@ -52,20 +52,10 @@ export default function BillingPage() {
     }
   }, []);
 
-  const startCheckout = async () => {
-    setRedirecting(true);
-    try {
-      const res = await invokeFunction("stripe-create-checkout", {
-        success_url: `${window.location.origin}/dashboard?payment=success`,
-        cancel_url: window.location.href,
-      });
-      if (res?.url) window.location.href = res.url;
-      else throw new Error(res?.error ?? "No checkout URL returned.");
-    } catch (err) {
-      console.error(err);
-      toast.error("Could not start checkout. Please try again.");
-      setRedirecting(false);
-    }
+  // Continuation is explicitly confirmed by the team. Do not route new pilots
+  // into the legacy Stripe trial or silently use the standard-price checkout.
+  const startCheckout = () => {
+    window.location.href = 'mailto:cory@roofaileadrecovery.com?subject=Confirm%20my%20Roof%20AI%20continuation%20rate';
   };
 
   const openPortal = async () => {
@@ -215,22 +205,22 @@ export default function BillingPage() {
             <div className="rounded-xl border border-border p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-ink">Roof AI Lead Recovery</span>
-                <span className="font-bold text-ink">$299<span className="text-sm font-normal text-muted-foreground">/month</span></span>
+                <span className="font-bold text-ink">{subscription ? "Existing subscription terms" : "Free pilot — no automatic billing"}</span>
               </div>
               <ul className="space-y-1.5 text-sm text-muted-foreground">
-                <li>✓ Missed call recovery — 24/7</li>
+                <li>✓ Missed-call and after-hours overflow</li>
                 <li>✓ AI-powered lead qualification</li>
-                <li>✓ Auto-book estimates on your calendar</li>
-                <li>✓ Dedicated business phone number</li>
+                <li>✓ Clear callback or booking requests</li>
+                <li>✓ Keep your current number — staff answers first</li>
                 <li>✓ Real-time dashboard</li>
               </ul>
             </div>
 
             {!subscription && (
               <div className="rounded-xl border border-dashed border-border p-4 text-center space-y-3">
-                <p className="text-muted-foreground text-sm">No active subscription found.</p>
+                <p className="text-muted-foreground text-sm">No active paid subscription found. Your pilot does not automatically renew. Contact us to confirm founding-rate availability ($149/month locked for 12 months for the first 10 customers), or the $299/month standard rate, before opting in.</p>
                 <Button className="w-full" onClick={startCheckout} disabled={redirecting}>
-                  {redirecting ? <Spinner className="text-white" /> : <><CreditCard className="h-4 w-4" /> Subscribe Now — $299/month</>}
+                  {redirecting ? <Spinner className="text-white" /> : <><CreditCard className="h-4 w-4" /> Request Paid Continuation</>}
                 </Button>
               </div>
             )}
@@ -343,7 +333,7 @@ export default function BillingPage() {
               <div className="space-y-2">
                 <p className="text-sm text-muted-foreground">Want to come back? Resubscribe and your AI will be back online within minutes.</p>
                 <Button className="w-full" onClick={startCheckout} disabled={redirecting}>
-                  {redirecting ? <Spinner className="text-white" /> : <><CreditCard className="h-4 w-4" /> Resubscribe — $299/month</>}
+                  {redirecting ? <Spinner className="text-white" /> : <><CreditCard className="h-4 w-4" /> Request Resubscription</>}
                 </Button>
               </div>
             </CardContent>
