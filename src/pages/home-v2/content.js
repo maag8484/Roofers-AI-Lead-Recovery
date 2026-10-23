@@ -34,7 +34,7 @@ export const STEPS = [
     "n": 2,
     "icon": "MessageSquare",
     "title": "Book your free setup.",
-    "body": "A specialist configures your roofing workflow with you in about 15 minutes: your service area, what counts as urgent, what to exclude, and exactly where each qualified caller goes — callback request, booking request, or straight to you. Then we run a live test call together so you hear exactly what your customers will hear. You keep your existing number; setup is call forwarding, and your team still answers first."
+    "body": "First, share your setup details. A specialist helps prepare your roofing workflow during onboarding: your service area, what counts as urgent, what to exclude, and exactly where each qualified caller goes — callback request, booking request, or straight to you. We then arrange a separate launch call to set up forwarding and run a live test together so you hear exactly what your customers will hear. You keep your existing number, and your team still answers first. Your pilot starts only after setup and a successful live test."
   },
   {
     "n": 3,
@@ -126,7 +126,7 @@ export const COMPARISON_ROWS = [
 ];
 
 export const FAQS = [
-{"q": "How does the free pilot work?", "a": "After your free setup call, your missed and after-hours calls are answered and qualified on your real business line for 30 days, up to 40 recovered calls. You see every recovered lead in your dashboard, and at the end you receive a report of exactly what the pilot caught. If you do nothing, the pilot simply ends — keeping the service is your choice, at the rate quoted before your pilot started."},
+{"q": "How does the free pilot work?", "a": "After free onboarding, a separate launch call and a successful live test, your missed and after-hours calls are answered and qualified on your real business line for 30 days, up to 40 recovered calls. You see every recovered lead in your dashboard, and at the end you receive a report of exactly what the pilot caught. If you do nothing, the pilot simply ends — keeping the service is your choice, at the rate quoted before your pilot started."},
   {
     q: "How does Roof AI Lead Recovery work?",
     a: "After your team approves the routing and conversation rules, Roof AI can handle eligible unanswered or after-hours inquiries, collect the roofing details you require and create an approved callback or booking next step. Exact channels and destinations are verified during setup.",
@@ -149,7 +149,7 @@ export const FAQS = [
   },
   {
     q: "How long does setup take?",
-    a: "The setup call itself takes about 15 minutes, and we run a live test call on it so you can verify the full flow before your pilot starts. Exact timing can depend on your current number and carrier forwarding, so we confirm everything works end-to-end with you rather than promise a universal setup time.",
+    a: "Setup happens in stages: share your details first, complete onboarding, then arrange a separate launch/forwarding call with a live test. Your pilot starts only once setup and the live test are complete. Timing depends on scheduling and your carrier's forwarding setup; we confirm the full flow works with you before activation.",
   },
   {
     q: "Can I see every conversation?",

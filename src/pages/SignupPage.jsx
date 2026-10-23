@@ -113,7 +113,7 @@ export default function SignupPage() {
         <div>
           <h1 className="text-2xl font-extrabold text-ink">Create your account</h1>
           <p className="mt-1 text-muted-foreground">
-            Start your free 30-day pilot. No card required. Create your account, confirm your email, and book your free setup with a live test call.
+            Start your free 30-day pilot. No card required. Create your account, confirm your email, and book your free onboarding. A separate launch call includes forwarding and a live test before your pilot starts.
           </p>
         </div>
 
@@ -189,7 +189,7 @@ export default function SignupPage() {
         </Button>
 
         <p className="text-center text-xs text-muted-foreground">
-          Next: confirm email → business details → free setup and live test → pilot. No automatic charge.
+          Next: confirm email → business details → free onboarding → separate launch and live test → pilot. No automatic charge.
         </p>
       </form>
     </AuthLayout>

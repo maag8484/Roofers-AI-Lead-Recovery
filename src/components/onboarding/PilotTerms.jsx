@@ -14,7 +14,7 @@ export function PilotTerms() {
 export function SetupFraming() {
   return <div className="space-y-3 text-sm text-slate-700">
     <h2 className="text-xl font-bold text-slate-900">Your setup is free — and we do it with you.</h2>
-    <p>Booking this call isn't homework. A specialist configures your roofing workflow with you in about 15 minutes: service area, urgency rules, exclusions, and where each qualified caller goes next. Before we finish, we place a live test call so you hear exactly what your customers will hear. Then your pilot starts.</p>
-    <p>What you need on the call: your business phone nearby (so we can set up forwarding) and your service area. That's it.</p>
+    <p>Booking your onboarding call isn't homework. First, share your setup details: service area, urgency rules, exclusions, and where each qualified caller goes next. A specialist helps prepare your roofing workflow during onboarding. We then arrange a separate launch call to set up forwarding and run a live test so you hear exactly what your customers will hear. Your pilot starts only after setup and a successful live test.</p>
+    <p>For onboarding, have your service area and routing preferences ready. For the launch call, keep your business phone nearby so we can set up forwarding and test the full flow.</p>
   </div>;
 }
