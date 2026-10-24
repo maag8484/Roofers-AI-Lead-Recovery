@@ -34,7 +34,7 @@ export const STEPS = [
     "n": 2,
     "icon": "MessageSquare",
     "title": "Book your free setup.",
-    "body": "First, share your setup details. A specialist helps prepare your roofing workflow during onboarding: your service area, what counts as urgent, what to exclude, and exactly where each qualified caller goes — callback request, booking request, or straight to you. We then arrange a separate launch call to set up forwarding and run a live test together so you hear exactly what your customers will hear. You keep your existing number, and your team still answers first. Your pilot starts only after setup and a successful live test."
+    "body": "A specialist configures your roofing workflow with you in about 15 minutes: your service area, what counts as urgent, what to exclude, and exactly where each qualified caller goes — callback request, booking request, or straight to you. Then we run a live test call together so you hear exactly what your customers will hear. You keep your existing number; setup is call forwarding, and your team still answers first."
   },
   {
     "n": 3,
@@ -42,13 +42,6 @@ export const STEPS = [
     "title": "Run the free 30-day pilot.",
     "body": "For 30 days, your missed and after-hours calls get answered, qualified, and sent to you as clear next steps in your dashboard. At the end, you get a report of exactly what it caught. Keep it only if the numbers say so."
   }
-];
-
-export const OUTCOME_FLOW = [
-  { icon: "Phone", label: "Lead", tone: "brand" },
-  { icon: "Bot", label: "AI responds", tone: "brand" },
-  { icon: "Calendar", label: "Approved next step", tone: "emerald" },
-  { icon: "ClipboardCheck", label: "Owner notification", tone: "emerald" },
 ];
 
 export const DASH_STATS = [
