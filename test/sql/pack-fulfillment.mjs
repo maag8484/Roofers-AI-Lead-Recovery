@@ -7,7 +7,7 @@ import {transform} from 'esbuild';
 const {PGlite}=await import(pathToFileURL(process.argv[2]).href), db=new PGlite();
 const company='00000000-0000-4000-8000-000000000001', period='00000000-0000-4000-8000-000000000002';
 const prices={20:'price_1UXn65CB5wADtZS19CXdROLL',50:'price_1UXn66CB5wADtZS12VbDpqYh'};
-let handler,event,item,owner='cus_roof';
+let handler,event,item,owner='cus_roof',refunded=0,disputed=false;
 try{
  await db.exec('create role anon;create role authenticated;create role service_role bypassrls;create table roofing_companies(id uuid primary key);');
  await db.exec(await readFile(new URL('../../supabase/migrations/0022_paid_usage_records.up.sql',import.meta.url),'utf8'));
@@ -17,7 +17,7 @@ try{
    select(){assert.equal(table,'roof_paid_periods');const args=[];return {eq(_,v){args.push(v);return this},async single(){return {data:(await db.query('select * from roof_paid_periods where id=$1 and company_id=$2',args)).rows[0]}}};},
    async upsert(row){assert.equal(table,'roof_call_pack_receipts');await db.query('insert into roof_call_pack_receipts(stripe_session_id,payment_intent_id,period_id,price_id,calls,amount_cents,currency) values($1,$2,$3,$4,$5,$6,$7) on conflict(stripe_session_id) do nothing',[row.stripe_session_id,row.payment_intent_id,row.period_id,row.price_id,row.calls,row.amount_cents,row.currency]);return {};}
  };}};
- const stripe={webhooks:{constructEventAsync:async()=>event},checkout:{sessions:{listLineItems:async()=>({data:[item],has_more:false})}},subscriptions:{retrieve:async()=>({customer:owner})}};
+ const stripe={paymentIntents:{retrieve:async(id)=>({latest_charge:{paid:true,captured:true,disputed,amount_refunded:refunded},livemode:true,customer:'cus_roof',currency:'usd',amount_received:id==='pi_20'?5000:10000,status:'succeeded'})},webhooks:{constructEventAsync:async()=>event},checkout:{sessions:{listLineItems:async()=>({data:[item],has_more:false})}},subscriptions:{retrieve:async()=>({customer:owner})}};
  const src=(await readFile(new URL('../../supabase/functions/stripe-webhook/index.ts',import.meta.url),'utf8')).replace(/^import .*?;$/gm,'');
  const js=await transform(src,{loader:'ts',format:'esm'});
  new Function('Deno','serviceClient','stripe','WEBHOOK_SECRET',js.code)({serve:fn=>handler=fn},()=>lookup,stripe,'fixture');
@@ -33,6 +33,8 @@ try{
  assert.equal(await run(20,{},'checkout.session.async_payment_succeeded'),200);assert.equal(await count(),20);
  assert.equal(await run(50,{amount_total:5000}),500);assert.equal(await count(),20);
  owner='cus_other';assert.equal(await run(50),500);assert.equal(await count(),20);
- owner='cus_roof';assert.equal(await run(50),200);assert.equal(await count(),70);
+ owner='cus_roof';refunded=10000;assert.equal(await run(50),500);assert.equal(await count(),20);
+ refunded=0;disputed=true;assert.equal(await run(50),500);assert.equal(await count(),20);
+ disputed=false;assert.equal(await run(50),200);assert.equal(await count(),70);
  console.log('PASS: paid 20/50 packs, actual receipt rows, replay dedupe, unpaid and wrong amount/customer exclusion. Stripe signature and delivery mocked.');
 }finally{await db.close();}
