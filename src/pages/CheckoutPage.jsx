@@ -8,6 +8,7 @@ import { useAuth } from '@/context/AuthContext';
 import { isSubscriptionActive, pickActiveSubscription } from '@/lib/subscription';
 import { hasPilotRequest, pilotMetadata } from '@/lib/pilot';
 import { PilotTerms, SetupFraming } from '@/components/onboarding/PilotTerms';
+import { FoundingDisclosure } from '@/components/onboarding/FoundingDisclosure';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/Logo';
 import { Spinner } from '@/components/ui/spinner';
@@ -46,6 +47,7 @@ function LegacyPilotCheckout() {
     navigate('/onboarding', {replace:true});
   }
   if (loadError) return <main className="mx-auto max-w-lg space-y-4 p-8"><h1 className="text-2xl font-bold">We could not check your account</h1><p>Please retry before continuing. No payment or pilot has been started.</p><Button onClick={()=>window.location.reload()}>Retry account check</Button><a className="block underline" href="/">Back to home</a></main>;
+  if (!checking && user?.user_metadata?.founding_application === 'founding-v4-request') return <main className="mx-auto max-w-2xl space-y-6 px-5 py-12"><Logo /><h1 className="text-3xl font-bold">Founding pilot application received</h1><p>Your email is confirmed. Your pilot has not started. Eligibility and your quoted rate must be confirmed before you can reserve a place.</p><FoundingDisclosure /><a className="underline" href="/#inquiry">Request a callback about setup</a></main>;
   if (checking) return <div className="flex min-h-screen items-center justify-center"><Spinner /></div>;
   return <main className="mx-auto max-w-2xl space-y-6 px-5 py-12"><Logo />
     <h1 className="text-3xl font-bold">Start the Free 14-Day Pilot</h1>
