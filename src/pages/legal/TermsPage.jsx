@@ -31,7 +31,7 @@ export default function TermsPage() {
       </LegalSection>
 
       <LegalSection heading="Subscription">
-        <p>If you explicitly choose to continue with a paid subscription, it is billed monthly at the rate confirmed before you subscribe.</p>
+        <p>Paid service is billed monthly at the rate agreed before you authorize the subscription.</p>
         <p className="mt-3">
           Unless canceled before renewal, your subscription automatically renews each billing cycle.
         </p>
@@ -40,7 +40,7 @@ export default function TermsPage() {
       <LegalSection heading="Free 14-Day Pilot">
         <p>Eligible operating roofing companies with a forwardable business line may use one free 14-day pilot per company, covering up to 40 recovered missed and after-hours overflow calls. Your staff answers first. The pilot begins after setup and a successful live test call.</p>
         <p className="mt-3">
-          No card or payment is required for the pilot. If you do not explicitly choose to continue, the pilot ends. It does not automatically convert to a paid subscription or create an automatic charge.
+          Apply first. A separate card authorization is required to reserve a new founding pilot. Nothing is due at reservation. The 14 days begin after setup and a successful live test. Unless you cancel before those 14 full days elapse, monthly billing begins at the rate you authorized. Without cancellation, the reserved plan renews at the agreed monthly rate. For the first 10 eligible founders, the rate is $199/month for the first 12 paid months, then $299/month, plus applicable tax. The paid plan includes 75 recovered calls per billing month. Optional packs add 20 calls for $50 or 50 for $100 for the current period only. Packs are never purchased automatically.
         </p>
         <p className="mt-3">Previously accepted pilot offers keep their agreed duration, call allowance and quoted rate. Existing subscriptions retain their previously agreed billing and renewal terms.</p>
       </LegalSection>
@@ -60,7 +60,7 @@ export default function TermsPage() {
 
       <LegalSection heading="Refund Policy">
         <p>
-          We offer a <strong>free 14-day pilot</strong>, up to 40 recovered calls, so eligible new customers can evaluate our platform without a charge. A paid subscription begins only if you explicitly choose to continue.
+          We offer a <strong>free 14-day pilot</strong>, up to 40 recovered calls, so eligible new customers can evaluate our platform without a charge. For newly reserved founding pilots, billing starts after the trial only under the separate authorization described above.
         </p>
         <p className="mt-3">After a paid subscription begins:</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
