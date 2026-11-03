@@ -29,7 +29,7 @@ Deno.serve(async req => {
         const {data:u,error:ue}=await db.auth.admin.getUserById(c.user_id);
         if(ue) throw ue;
         if(!u.user.email_confirmed_at || u.user.email?.toLowerCase()!==customer.email.toLowerCase()) return null;
-        const packs=await db.from('roof_call_pack_receipts').select('period_id',{head:true,count:'exact'}).eq('period_id',id);
+        const packs=await db.from('roof_available_packs').select('period_id',{head:true,count:'exact'}).eq('period_id',id);
         const calls=await db.from('roof_recovered_call_receipts').select('provider_event_id,occurred_at').eq('period_id',id).limit(75);
         if(packs.error || calls.error) throw Error('Incomplete usage read');
         const msg=planUsageWarning({companyId:p.company_id,startMs:Date.parse(p.starts_at),endMs:Date.parse(p.ends_at),
