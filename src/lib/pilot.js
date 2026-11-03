@@ -1,13 +1,17 @@
 export const PILOT_PROGRAM = 'roof-ai-pilot-01';
-export const PILOT_TERMS_VERSION = 'pilot-14d-40calls-v2';
+export const PILOT_TERMS_VERSION = 'pilot-14d-40calls-199-v3';
 export const hasPilotRequest = (user) => user?.user_metadata?.pilot_program === PILOT_PROGRAM;
 // Accepted offers are not shortened when the public offer changes.
 export function pilotOffer(user) {
   const version = user?.user_metadata?.pilot_terms_version;
-  const days = version === 'pilot-30d-40calls-v1' ? 30
-    : version === PILOT_TERMS_VERSION || !hasPilotRequest(user) ? 14 : null;
+  const legacy = version === 'pilot-30d-40calls-v1' || version === 'pilot-14d-40calls-v2';
+  const current = version === PILOT_TERMS_VERSION || !hasPilotRequest(user);
+  const days = version === 'pilot-30d-40calls-v1' ? 30 : legacy || current ? 14 : null;
+  const foundingRateUsd = legacy ? 149 : current ? 199 : null;
   return {
     days,
+    foundingRateUsd,
+    foundingRateLabel: foundingRateUsd ? `$${foundingRateUsd}/month` : "your previously quoted founding rate",
     title: days ? `Free ${days}-Day Pilot` : 'Free Pilot',
     duration: days ? `${days} days` : 'your agreed pilot period',
   };

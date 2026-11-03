@@ -13,7 +13,7 @@ test('partner ref persists from landing to audit/signup and latest explicit vali
   const metadata = pilotMetadata(referralCode({search:''}, storage));
   assert.equal(metadata.partner_ref, 'NEXT-2');
   assert.ok(hasPilotRequest({user_metadata:metadata}));
-  assert.equal(metadata.pilot_terms_version, 'pilot-14d-40calls-v2');
+  assert.equal(metadata.pilot_terms_version, 'pilot-14d-40calls-199-v3');
 });
 test('audit validation persists ref into insert payload; invalid codes dropped', () => {
   const input = {fullName:'Test Roofer', email:'qa@example.com',company:'QA Test',serviceArea:'Test',preferredContact:'Email',contactConsent:true};
@@ -41,4 +41,15 @@ test('new pilots get 14 days; accepted 30-day pilots retain their duration', () 
   assert.equal(legacy.user_metadata.pilot_terms_version, 'pilot-30d-40calls-v1');
   assert.equal(pilotOffer({user_metadata:pilotMetadata(null)}).days, 14);
   assert.equal(pilotOffer({user_metadata:{pilot_program:'roof-ai-pilot-01'}}).days, null);
+});
+
+test('accepted founding quotes keep $149; new offers use $199 and unknown quotes are not guessed', () => {
+  const previous = version => ({user_metadata:{pilot_program:'roof-ai-pilot-01',pilot_terms_version:version}});
+  for (const version of ['pilot-30d-40calls-v1','pilot-14d-40calls-v2']) {
+    assert.equal(pilotOffer(previous(version)).foundingRateUsd, 149);
+  }
+  assert.equal(pilotOffer(previous('pilot-14d-40calls-v2')).days, 14);
+  assert.equal(pilotOffer({user_metadata:pilotMetadata(null)}).foundingRateUsd, 199);
+  assert.equal(pilotOffer().foundingRateUsd, 199);
+  assert.equal(pilotOffer(previous('unknown')).foundingRateUsd, null);
 });

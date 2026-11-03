@@ -31,7 +31,7 @@ export function prepareHomepage(html) {
       <h2>How missed-call recovery works</h2>
       <ol><li>Agree which unanswered or after-hours inquiries the workflow may handle.</li><li>Collect the roofing need, service area and urgency using your approved rules.</li><li>Route the request to a person or a verified scheduling workflow and track the outcome.</li></ol>
       <p>Channels, routing and integrations are verified during setup. An appointment request is not a confirmed booking or a paid job.</p>
-      <h2>Pricing</h2><p>Free missed-call audit, then a free 14-day pilot up to 40 recovered calls. Optional $149/month founding rate locked 12 months for the first 10 customers; standard $299/month. No automatic paid conversion.</p>
+      <h2>Pricing</h2><p>Free missed-call audit, then a free 14-day pilot up to 40 recovered calls. Optional $199/month founding rate locked 12 months for the first 10 customers; standard $299/month. No automatic paid conversion.</p>
       <p><a href="/signup">Start the Free 14-Day Pilot</a> or <a href="mailto:cory@roofaileadrecovery.com?subject=Roof%20AI%20callback%20request">request a callback by email</a>. Enable JavaScript to use the on-page callback form.</p>
       <h2>Roofing call recovery guides</h2>
       <ul>${SEARCH_GUIDES.map(({ title, href, description }) => `<li><a href="${href}">${escapeHtml(title)}</a>: ${escapeHtml(description)}</li>`).join("\n")}</ul>
