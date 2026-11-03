@@ -10,7 +10,7 @@ export function PilotTerms({ user }) {
       <li>Missed and after-hours overflow only. Your staff answers first; this is not a full-time receptionist replacement.</li>
       <li>No card or payment is required. If you do nothing, the pilot ends. It does not automatically become a paid subscription.</li>
       <li>At the call cap we contact you, show the count, and discuss optional paid continuation or an agreed extension. We do not silently cut off your business line.</li>
-      <li>If you choose to continue: $149/month locked for 12 months for the first 10 founding customers; otherwise $299/month. Your eligibility and quoted rate are confirmed before your pilot starts.</li>
+      <li>If you choose to continue: {offer.foundingRateLabel} locked for 12 months for the first 10 founding customers; otherwise $299/month. Your eligibility and quoted rate are confirmed before your pilot starts.</li>
     </ul>
   </div>;
 }

@@ -1,3 +1,4 @@
+import { pilotOffer } from "@/lib/pilot";
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { CreditCard, LogOut, ChevronLeft, CheckCircle2, AlertCircle, Clock, Pause, Play, X } from "lucide-react";
@@ -218,7 +219,7 @@ export default function BillingPage() {
 
             {!subscription && (
               <div className="rounded-xl border border-dashed border-border p-4 text-center space-y-3">
-                <p className="text-muted-foreground text-sm">No active paid subscription found. Your pilot does not automatically renew. Contact us to confirm founding-rate availability ($149/month locked for 12 months for the first 10 customers), or the $299/month standard rate, before opting in.</p>
+                <p className="text-muted-foreground text-sm">No active paid subscription found. Your pilot does not automatically renew. Contact us to confirm founding-rate availability ({pilotOffer(user).foundingRateLabel} locked for 12 months for the first 10 customers), or the $299/month standard rate, before opting in.</p>
                 <Button className="w-full" onClick={startCheckout} disabled={redirecting}>
                   {redirecting ? <Spinner className="text-white" /> : <><CreditCard className="h-4 w-4" /> Request Paid Continuation</>}
                 </Button>

@@ -126,7 +126,7 @@ export const FAQS = [
   },
   {
     q: "How much does it cost?",
-    a: "The missed-call audit and the 14-day pilot are both free. If you keep the service after the pilot, the founding rate is $149 per month, locked for 12 months, for the first 10 customers; the standard price is $299 per month. There are no setup fees and no long-term contracts, and you can cancel future renewal from your dashboard.",
+    a: "The missed-call audit and the 14-day pilot are both free. If you keep the service after the pilot, the founding rate is $199 per month, locked for 12 months, for the first 10 customers; the standard price is $299 per month. There are no setup fees and no long-term contracts, and you can cancel future renewal from your dashboard.",
   },
   {
     q: "Is every missed call a lost roofing job?",

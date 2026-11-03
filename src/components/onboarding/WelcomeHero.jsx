@@ -40,7 +40,7 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false, user
           </span>
         </div>
         <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
-          No card required. No automatic paid conversion. Optional founding rate: $149/month locked 12 months for first 10 customers; standard $299/month.
+          No card required. No automatic paid conversion. Optional founding rate: {offer.foundingRateLabel} locked 12 months for first 10 customers; standard $299/month.
           We configure your coverage after you submit your business details; calls begin
           once forwarding is set up and tested.
         </p>

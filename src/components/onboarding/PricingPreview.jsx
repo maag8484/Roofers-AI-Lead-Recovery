@@ -22,7 +22,7 @@ export function PricingPreview({ user }) {
       </div>
       <div className="space-y-2.5 bg-white p-6">
         {included(offer).map(line => <div key={line} className="flex items-start gap-2.5 text-sm text-ink"><Check className="h-5 w-5 shrink-0 text-emerald-600" />{line}</div>)}
-        <p className="pt-3 text-sm text-muted-foreground">One pilot per operating roofing company with a forwardable business line. If you continue: $149/month locked for 12 months for the first 10 customers; standard $299/month. Eligibility and your rate are confirmed before your pilot starts.</p>
+        <p className="pt-3 text-sm text-muted-foreground">One pilot per operating roofing company with a forwardable business line. If you continue: {offer.foundingRateLabel} locked for 12 months for the first 10 customers; standard $299/month. Eligibility and your rate are confirmed before your pilot starts.</p>
         <p className="text-sm text-muted-foreground">No setup fees · No contracts · Cancel anytime from your dashboard</p>
         <p className="flex items-center gap-2 rounded-lg bg-secondary/60 p-3 text-xs text-muted-foreground"><ShieldCheck className="h-4 w-4 shrink-0" />No card required. No automatic paid conversion. Existing subscriptions keep their agreed terms.</p>
       </div>

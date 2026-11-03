@@ -19,7 +19,7 @@ export function Pricing() {
         </article>
         <article className="hv2-frame rounded-3xl bg-[var(--surface)] p-8">
           <h3 className="hv2-display text-xl text-[var(--text)]">Step 3 — Keep It Running</h3>
-          <p className="mt-5 text-2xl font-bold text-[var(--text)]">Founding rate: $149/month — locked for 12 months.</p>
+          <p className="mt-5 text-2xl font-bold text-[var(--text)]">Founding rate: $199/month — locked for 12 months.</p>
           <p className="mt-3 text-[var(--text-dim)]">For the first 10 customers. Standard price is $299/month.</p>
           <ul className="mt-7 space-y-3">{PLAN_FEATURES.map(f => <li key={f} className="flex gap-3 text-sm text-[var(--text-dim)]"><Check aria-hidden="true" className="h-5 w-5 shrink-0 text-[var(--acid)]" />{f}</li>)}</ul>
         </article>
