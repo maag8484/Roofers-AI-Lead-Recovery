@@ -1,8 +1,11 @@
-export function PilotTerms() {
+import { pilotOffer } from "@/lib/pilot";
+
+export function PilotTerms({ user }) {
+  const offer = pilotOffer(user);
   return <div className="rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-slate-700">
-    <h2 className="font-bold text-slate-900">Free 30-day pilot terms</h2>
+    <h2 className="font-bold text-slate-900">{offer.title} terms</h2>
     <ul className="mt-2 list-disc space-y-1 pl-5">
-      <li>Up to 40 recovered calls over 30 days, starting after setup and a successful live test call.</li>
+      <li>Up to 40 recovered calls over {offer.duration}, starting after setup and a successful live test call.</li>
       <li>For an operating roofing company with a forwardable business phone line. One pilot per company.</li>
       <li>Missed and after-hours overflow only. Your staff answers first; this is not a full-time receptionist replacement.</li>
       <li>No card or payment is required. If you do nothing, the pilot ends. It does not automatically become a paid subscription.</li>

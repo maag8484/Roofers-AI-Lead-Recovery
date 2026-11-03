@@ -40,7 +40,7 @@ export default function CheckoutPage() {
   if (loadError) return <main className="mx-auto max-w-lg space-y-4 p-8"><h1 className="text-2xl font-bold">We could not check your account</h1><p>Please retry before continuing. No payment or pilot has been started.</p><Button onClick={()=>window.location.reload()}>Retry account check</Button><a className="block underline" href="/">Back to home</a></main>;
   if (checking) return <div className="flex min-h-screen items-center justify-center"><Spinner /></div>;
   return <main className="mx-auto max-w-2xl space-y-6 px-5 py-12"><Logo />
-    <h1 className="text-3xl font-bold">Start the Free 30-Day Pilot</h1>
+    <h1 className="text-3xl font-bold">Start the Free 14-Day Pilot</h1>
     <SetupFraming /><PilotTerms />
     <form onSubmit={continueSetup} className="space-y-4">
       <label className="flex items-start gap-2 text-sm"><input type="checkbox" required checked={accepted} onChange={e=>setAccepted(e.target.checked)} />I operate a roofing company with a forwardable business line, have not used a pilot before, and accept these terms.</label>

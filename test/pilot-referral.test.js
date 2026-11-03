@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { referralCode, pilotMetadata, hasPilotRequest } from '../src/lib/pilot.js';
+import { referralCode, pilotMetadata, hasPilotRequest, pilotOffer } from '../src/lib/pilot.js';
 import { validateAuditRequest } from '../api/audit-request.js';
 import { readFileSync } from 'node:fs';
 function store() { const items = new Map(); return {getItem:k=>items.get(k),setItem:(k,v)=>items.set(k,v)}; }
@@ -13,7 +13,7 @@ test('partner ref persists from landing to audit/signup and latest explicit vali
   const metadata = pilotMetadata(referralCode({search:''}, storage));
   assert.equal(metadata.partner_ref, 'NEXT-2');
   assert.ok(hasPilotRequest({user_metadata:metadata}));
-  assert.equal(metadata.pilot_terms_version, 'pilot-30d-40calls-v1');
+  assert.equal(metadata.pilot_terms_version, 'pilot-14d-40calls-v2');
 });
 test('audit validation persists ref into insert payload; invalid codes dropped', () => {
   const input = {fullName:'Test Roofer', email:'qa@example.com',company:'QA Test',serviceArea:'Test',preferredContact:'Email',contactConsent:true};
@@ -32,4 +32,13 @@ test('disabled storage cannot crash referral capture or lose the current URL cod
  Object.defineProperty(globalThis, 'localStorage', { configurable:true, get(){throw new Error('storage disabled');} });
  try { assert.equal(referralCode({search:'?ref=PARTNER_DEMO'}), 'PARTNER_DEMO'); assert.equal(referralCode({search:''}), null); }
  finally { if (descriptor) Object.defineProperty(globalThis,'localStorage',descriptor); else delete globalThis.localStorage; }
+});
+
+test('new pilots get 14 days; accepted 30-day pilots retain their duration', () => {
+  assert.equal(pilotOffer().days, 14);
+  const legacy = {user_metadata:{pilot_program:'roof-ai-pilot-01',pilot_terms_version:'pilot-30d-40calls-v1'}};
+  assert.equal(pilotOffer(legacy).days, 30);
+  assert.equal(legacy.user_metadata.pilot_terms_version, 'pilot-30d-40calls-v1');
+  assert.equal(pilotOffer({user_metadata:pilotMetadata(null)}).days, 14);
+  assert.equal(pilotOffer({user_metadata:{pilot_program:'roof-ai-pilot-01'}}).days, null);
 });

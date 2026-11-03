@@ -1,3 +1,4 @@
+import { pilotOffer } from "@/lib/pilot";
 import { motion } from "framer-motion";
 import { Clock, Sparkles, PlayCircle, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,8 @@ import { FeatureCard } from "./FeatureCard";
 import { FEATURES } from "./content";
 
 // Free pilot setup; the product tour is optional.
-export function WelcomeHero({ ownerName, onStart, onTour, starting = false }) {
+export function WelcomeHero({ ownerName, onStart, onTour, starting = false, user }) {
+  const offer = pilotOffer(user);
   return (
     <div className="mx-auto max-w-5xl px-4 py-12 sm:py-16">
       {/* Hero */}
@@ -28,7 +30,7 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false }) {
         <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button size="lg" onClick={onStart} disabled={starting} className="min-w-52">
             <Phone className="h-5 w-5" />
-            {starting ? "Preparing free setup…" : "Start the Free 30-Day Pilot"}
+            {starting ? "Preparing free setup…" : `Start the ${offer.title}`}
           </Button>
           <Button size="lg" variant="secondary" onClick={onTour} disabled={starting}>
             <PlayCircle className="h-5 w-5" /> View product tour
@@ -64,7 +66,7 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false }) {
             { n: 1, t: "Request your free pilot", d: "No card required." },
             { n: 2, t: "Tell us about your business", d: "A quick guided form." },
             { n: 3, t: "Free setup and live test", d: "Verify forwarding and the full workflow." },
-            { n: 4, t: "Run your free pilot", d: "30 days, up to 40 recovered overflow calls." },
+            { n: 4, t: "Run your free pilot", d: `${offer.duration}, up to 40 recovered overflow calls.` },
           ].map((s) => (
             <div key={s.n} className="text-center">
               <span className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-brand-50 text-sm font-bold text-brand-600">
@@ -80,7 +82,7 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false }) {
       <div className="mt-12 text-center">
         <Button size="lg" onClick={onStart} disabled={starting} className="min-w-52">
           <Phone className="h-5 w-5" />
-          {starting ? "Preparing free setup…" : "Start the Free 30-Day Pilot"}
+          {starting ? "Preparing free setup…" : `Start the ${offer.title}`}
         </Button>
       </div>
     </div>

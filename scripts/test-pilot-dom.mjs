@@ -32,7 +32,7 @@ try {
  await act(async()=>{root.render(React.createElement(MemoryRouter,null,React.createElement(AuthProvider,null,React.createElement(SignupPage))));await new Promise(r=>setTimeout(r,50));});
  function change(name,value){const el=document.querySelector(`[name="${name}"]`);assert.ok(el,name);Object.getOwnPropertyDescriptor(dom.window.HTMLInputElement.prototype,'value').set.call(el,value);el.dispatchEvent(new dom.window.Event('input',{bubbles:true}));el.dispatchEvent(new dom.window.Event('change',{bubbles:true}));}
  await act(async()=>{change('full_name','QA Roofer');change('email','qa@example.com');change('password','NotARealAccount!2026');document.querySelector('[name="pilot_terms"]').click();document.querySelector('form').dispatchEvent(new dom.window.Event('submit',{bubbles:true,cancelable:true}));await new Promise(r=>setTimeout(r,100));});
- assert.equal(calls.length,1);assert.equal(metadata.partner_ref,'PARTNER_DEMO');assert.equal(metadata.pilot_program,'roof-ai-pilot-01');assert.match(document.body.textContent,/Confirm your email/);
+ assert.equal(calls.length,1);assert.equal(metadata.partner_ref,'PARTNER_DEMO');assert.equal(metadata.pilot_program,'roof-ai-pilot-01');assert.equal(metadata.pilot_terms_version,'pilot-14d-40calls-v2');assert.match(document.body.textContent,/Confirm your email/);
  console.log('PASS: mounted signup → mocked auth request persists referral/program → confirmation screen; zero real requests, emails, bookings or payments');
  await act(async()=>root.unmount());
  const {supabase}=await server.ssrLoadModule('/src/lib/supabase.js');

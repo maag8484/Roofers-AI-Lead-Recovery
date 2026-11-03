@@ -1,3 +1,4 @@
+import { pilotOffer } from "@/lib/pilot";
 import { useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -30,16 +31,17 @@ const FOCUSABLE =
 //   open        — visibility
 //   step/setStep — current 1..TOTAL
 //   onClose     — X / Escape / "Skip for now"
-//   onFinish    — final CTA ("Start the Free 30-Day Pilot"); parent continues setup
+//   onFinish    — final CTA ("Start the Free 14-Day Pilot"); parent continues setup
 //   finishing   — parent's in-flight state for the CTA spinner
 export function OnboardingModal({
+  user,
   open,
   step,
   setStep,
   onClose,
   onFinish,
   finishing,
-  finishLabel = "Start the Free 30-Day Pilot",
+  finishLabel = `Start the ${pilotOffer(user).title}`,
   finishIcon: FinishIcon = Rocket,
 }) {
   const panelRef = useRef(null);
@@ -151,7 +153,7 @@ export function OnboardingModal({
                   exit={{ opacity: 0, x: -16 }}
                   transition={{ duration: 0.22, ease: "easeOut" }}
                 >
-                  <StepContent step={step} />
+                  <StepContent step={step} user={user} />
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -208,7 +210,8 @@ function StepHeading({ icon: Icon, title, subtitle }) {
   );
 }
 
-function StepContent({ step }) {
+function StepContent({ step, user }) {
+  const offer = pilotOffer(user);
   if (step === 1) {
     return (
       <div>
@@ -219,11 +222,11 @@ function StepContent({ step }) {
         />
         <ul className="space-y-2.5">
           {[
-            "Request your free 30-day pilot",
+            `Request your ${offer.title.toLowerCase()}`,
             "Tell us about your business",
             "We configure your AI receptionist",
             "Verify your approved callback or booking-request route",
-            "Run the 30-day pilot, up to 40 recovered calls",
+            `Run your pilot for ${offer.duration}, up to 40 recovered calls`,
           ].map((line) => (
             <li key={line} className="flex items-center gap-3 text-sm text-ink">
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-brand-50 text-xs font-bold text-brand-600">
@@ -275,7 +278,7 @@ function StepContent({ step }) {
           title="Simple, transparent pricing"
           subtitle="Start free. No card required and no automatic paid conversion."
         />
-        <PricingPreview />
+        <PricingPreview user={user} />
       </div>
     );
   }
@@ -287,7 +290,7 @@ function StepContent({ step }) {
         title="What happens after you start"
         subtitle="Here is the setup process before your free pilot starts."
       />
-      <NextSteps />
+      <NextSteps user={user} />
     </div>
   );
 }

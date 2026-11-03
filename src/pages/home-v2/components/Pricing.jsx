@@ -13,9 +13,9 @@ export function Pricing() {
           <p className="mt-5 leading-relaxed text-[var(--text-dim)]">$0. We review your recent call history and show you how many legitimate opportunities went unanswered. No obligation either way.</p>
         </article>
         <article className="hv2-glass rounded-3xl p-8">
-          <h3 className="hv2-display text-xl text-[var(--text)]">Step 2 — Free 30-Day Pilot</h3>
-          <p className="mt-5 leading-relaxed text-[var(--text-dim)]">$0 for 30 days. Your overflow calls answered and qualified on your real phone line, with a full report at the end of what it caught. Fair use: up to 40 recovered calls during the pilot.</p>
-          <a href="/signup" className="mt-6 inline-block font-bold underline text-[var(--acid)]">Start the free 30-day pilot</a>
+          <h3 className="hv2-display text-xl text-[var(--text)]">Step 2 — Free 14-Day Pilot</h3>
+          <p className="mt-5 leading-relaxed text-[var(--text-dim)]">$0 for 14 days. Your overflow calls answered and qualified on your real phone line, with a full report at the end of what it caught. Fair use: up to 40 recovered calls during the pilot.</p>
+          <a href="/signup" className="mt-6 inline-block font-bold underline text-[var(--acid)]">Start the free 14-day pilot</a>
         </article>
         <article className="hv2-frame rounded-3xl bg-[var(--surface)] p-8">
           <h3 className="hv2-display text-xl text-[var(--text)]">Step 3 — Keep It Running</h3>
@@ -25,7 +25,7 @@ export function Pricing() {
         </article>
       </div>
       <p className="mt-8 text-[var(--text-dim)]">No setup fees · No contracts · Cancel anytime from your dashboard</p>
-      <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-dim)]">Pilot eligibility: operating roofing companies with a forwardable business line; one pilot per company. Missed-call and after-hours overflow only — your team answers first. Up to 40 recovered calls over 30 days. The pilot ends automatically unless you choose to continue; no automatic paid conversion.</p>
+      <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-dim)]">Pilot eligibility: operating roofing companies with a forwardable business line; one pilot per company. Missed-call and after-hours overflow only — your team answers first. Up to 40 recovered calls over 14 days. The pilot ends automatically unless you choose to continue; no automatic paid conversion.</p>
       <div className="mt-8"><CtaButton>Get My Free Missed-Call Audit</CtaButton></div>
     </div>
   </section>;

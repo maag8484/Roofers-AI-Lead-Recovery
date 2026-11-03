@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 export const FEATURES = [
-  { icon: PhoneCall, title: "Overflow call recovery", description: "Missed and after-hours calls, up to 40 recovered calls during the 30-day pilot." },
+  { icon: PhoneCall, title: "Overflow call recovery", description: "Missed and after-hours calls, up to 40 recovered calls during your free pilot." },
   { icon: Bot, title: "Roofing qualification", description: "Collect roofing need, service area and urgency using your approved workflow." },
   { icon: CalendarCheck, title: "A clear next step", description: "Create a callback or booking request for each qualified caller." },
   { icon: Phone, title: "Keep your current number", description: "Your team answers first. Forward only approved overflow and after-hours calls." },

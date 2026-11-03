@@ -161,6 +161,7 @@ export default function DashboardPage() {
       {/* Replayable product tour (Help → Product Tour). Only rendered when it
           hasn't been completed, or when explicitly reopened this session. */}
       <OnboardingModal
+        user={user}
         open={tourOpen}
         step={tourStep}
         setStep={setTourStep}
