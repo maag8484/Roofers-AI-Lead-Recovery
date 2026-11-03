@@ -24,6 +24,26 @@ Deno.serve(async (req) => {
   const db = serviceClient();
 
   try {
+    if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const meta = session.metadata;
+      if (meta?.purpose === "roof_call_pack" && session.livemode && session.payment_status === "paid" && session.mode === "payment") {
+        const packs: Record<string,[string,number]> = {"20":["price_1UXn65CB5wADtZS19CXdROLL",5000],"50":["price_1UXn66CB5wADtZS12VbDpqYh",10000]};
+        const pack = packs[meta.pack_calls];
+        if (!pack || typeof session.payment_intent !== "string") throw Error("Invalid pack");
+        const items = await stripe.checkout.sessions.listLineItems(session.id,{limit:2});
+        const item = items.data[0];
+        if (items.has_more || items.data.length!==1 || item.quantity!==1 || item.price?.id!==pack[0] || session.currency!=="usd" || session.amount_subtotal!==pack[1] || session.amount_total!==pack[1]) throw Error("Pack amount mismatch");
+        const {data:period,error} = await db.from("roof_paid_periods").select("*").eq("id",meta.period_id).eq("company_id",meta.company_id).single();
+        if(error || !period) throw Error("Missing pack period");
+        const sub=await stripe.subscriptions.retrieve(period.subscription_id);
+        if(sub.customer!==session.customer || session.created*1000<Date.parse(period.starts_at) || event.created*1000>=Date.parse(period.ends_at)) throw Error("Pack payment requires reconciliation");
+        const {error:writeError}=await db.from("roof_call_pack_receipts").upsert({
+          stripe_session_id:session.id,payment_intent_id:session.payment_intent,period_id:period.id,price_id:pack[0],calls:Number(meta.pack_calls),amount_cents:pack[1],currency:"usd"
+        },{onConflict:"stripe_session_id",ignoreDuplicates:true});
+        if(writeError) throw Error("Pack receipt write failed");
+      }
+    }
     if (
       event.type === "customer.subscription.created" ||
       event.type === "customer.subscription.updated" ||
