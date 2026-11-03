@@ -64,13 +64,13 @@ export function homeStructuredData(faqs) {
         ],
         offers: {
           "@type": "Offer",
-          price: "149",
+          price: "199",
           priceCurrency: "USD",
           url: `${SITE_URL}/signup`,
           description: "Free 14-day pilot, up to 40 recovered calls. Optional $199/month founding rate locked 12 months for first 10 customers; standard $299/month.",
           priceSpecification: {
             "@type": "UnitPriceSpecification",
-            price: "149",
+            price: "199",
             priceCurrency: "USD",
             unitText: "month",
             billingDuration: "P1M",
