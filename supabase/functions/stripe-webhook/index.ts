@@ -31,6 +31,9 @@ Deno.serve(async (req) => {
         const packs: Record<string,[string,number]> = {"20":["price_1UXn65CB5wADtZS19CXdROLL",5000],"50":["price_1UXn66CB5wADtZS12VbDpqYh",10000]};
         const pack = packs[meta.pack_calls];
         if (!pack || typeof session.payment_intent !== "string") throw Error("Invalid pack");
+        const intent = await stripe.paymentIntents.retrieve(session.payment_intent,{expand:['latest_charge']});
+        const charge = intent.latest_charge;
+        if(intent.status!=='succeeded' || !intent.livemode || intent.customer!==session.customer || intent.currency!=='usd' || intent.amount_received!==pack[1] || !charge || typeof charge==='string' || !charge.paid || !charge.captured || charge.disputed || charge.amount_refunded!==0) throw Error('Pack payment not settled');
         const items = await stripe.checkout.sessions.listLineItems(session.id,{limit:2});
         const item = items.data[0];
         if (items.has_more || items.data.length!==1 || item.quantity!==1 || item.price?.id!==pack[0] || session.currency!=="usd" || session.amount_subtotal!==pack[1] || session.amount_total!==pack[1]) throw Error("Pack amount mismatch");
@@ -81,35 +84,7 @@ Deno.serve(async (req) => {
           .eq("user_id", userId)
           .lt("setup_step", 3);
 
-        // Send new user notification email on first subscription
-        if (event.type === "customer.subscription.created") {
-          const customer = typeof sub.customer === "string"
-            ? await stripe.customers.retrieve(sub.customer) as Stripe.Customer
-            : sub.customer as Stripe.Customer;
 
-          await db.functions.invoke("gmail-send", {
-            body: {
-              to: "zaid.ullah@growwstacks.com",
-              subject: `New User Signed Up — ${customer.email}`,
-              html: `
-                <div style="font-family:sans-serif;max-width:520px;margin:0 auto">
-                  <h2 style="color:#2563eb">New Customer Signed Up 🎉</h2>
-                  <table style="width:100%;font-size:14px;border-collapse:collapse">
-                    <tr><td style="padding:8px 0;color:#64748b;width:35%">Email</td><td style="padding:8px 0;font-weight:600">${customer.email}</td></tr>
-                    <tr><td style="padding:8px 0;color:#64748b">Name</td><td style="padding:8px 0;font-weight:600">${customer.name ?? "—"}</td></tr>
-                    <tr><td style="padding:8px 0;color:#64748b">Stripe Customer</td><td style="padding:8px 0;font-family:monospace;font-size:12px">${customer.id}</td></tr>
-                    <tr><td style="padding:8px 0;color:#64748b">Supabase User</td><td style="padding:8px 0;font-family:monospace;font-size:12px">${userId}</td></tr>
-                    <tr><td style="padding:8px 0;color:#64748b">Plan</td><td style="padding:8px 0;font-weight:600">$299/month</td></tr>
-                    <tr><td style="padding:8px 0;color:#64748b">Signed up at</td><td style="padding:8px 0;font-weight:600">${new Date().toLocaleString("en-US", { timeZone: "America/New_York" })} ET</td></tr>
-                  </table>
-                  <div style="margin-top:20px">
-                    <a href="https://roofaileadrecovery.com/admin/customers" style="background:#2563eb;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;font-size:14px">View in Admin Panel →</a>
-                  </div>
-                </div>
-              `,
-            },
-          }).catch((e: any) => console.error("New user email failed:", e));
-        }
       }
     }
 
