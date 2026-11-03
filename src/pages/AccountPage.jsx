@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import FounderTrialCancellation from '@/components/FounderTrialCancellation';
 import { useAuth } from "@/context/AuthContext";
 import { pickActiveSubscription } from "@/lib/subscription";
 import { Logo } from "@/components/Logo";
@@ -265,6 +266,7 @@ export default function AccountPage() {
       </header>
 
       <main className="container max-w-4xl space-y-6 py-8">
+        <FounderTrialCancellation userId={user?.id} />
         <div>
           <h1 className="text-2xl font-extrabold text-ink">Account Overview</h1>
           <p className="text-muted-foreground">Everything about your account in one place.</p>
