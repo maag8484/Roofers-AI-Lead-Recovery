@@ -9,8 +9,8 @@ import { ConfirmEmailNotice } from "@/components/auth/ConfirmEmailNotice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { PilotTerms } from "@/components/onboarding/PilotTerms";
-import { pilotMetadata } from "@/lib/pilot";
+import { FoundingDisclosure } from "@/components/onboarding/FoundingDisclosure";
+import { referralCode } from "@/lib/pilot";
 import { Spinner } from "@/components/ui/spinner";
 
 // Signup is email + password ONLY. Business details are collected AFTER payment
@@ -45,7 +45,7 @@ export default function SignupPage() {
     // etc. The onboarding form still writes the company row after payment.
     const { data: result, error } = await signUp(values.email, values.password, {
       full_name: values.full_name.trim(),
-      ...pilotMetadata(),
+      founding_application: 'founding-v4-request', partner_ref: referralCode(),
     });
     setSubmitting(false);
 
@@ -113,7 +113,7 @@ export default function SignupPage() {
         <div>
           <h1 className="text-2xl font-extrabold text-ink">Create your account</h1>
           <p className="mt-1 text-muted-foreground">
-            Start your free 14-day pilot. No card required. Create your account, confirm your email, and book your free onboarding. A separate launch call includes forwarding and a live test before your pilot starts.
+            Apply for a founding pilot. Create your account and confirm your email first. We’ll confirm eligibility and your quoted rate before you reserve a place.
           </p>
         </div>
 
@@ -176,8 +176,8 @@ export default function SignupPage() {
           )}
         </div>
 
-        <PilotTerms />
-        <label className="flex items-start gap-2 text-sm"><input type="checkbox" required {...register("pilot_terms", { required: true })} />I confirm I operate a roofing company with a forwardable business line, have not used a pilot before, and agree to the pilot terms above.</label>
+        <FoundingDisclosure />
+        <label className="flex items-start gap-2 text-sm"><input type="checkbox" required {...register("pilot_terms", { required: true })} />I confirm I operate a roofing company with a forwardable business line, have not used a pilot before, and have read the founding offer above. This application is not authorization to bill my card.</label>
         <Button type="submit" className="w-full" disabled={submitting}>
           {submitting ? (
             <Spinner className="text-white" />
@@ -189,7 +189,7 @@ export default function SignupPage() {
         </Button>
 
         <p className="text-center text-xs text-muted-foreground">
-          Next: confirm email → business details → free onboarding → separate launch and live test → pilot. No automatic charge.
+          Next: confirm your email. If eligible, you’ll receive a separate reservation and card authorization step.
         </p>
       </form>
     </AuthLayout>
