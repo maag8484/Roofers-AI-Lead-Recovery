@@ -468,7 +468,7 @@ export default function OnboardingPage() {
       </header>
 
       <main className="container max-w-2xl py-10">
-        {hasPilotRequest(user) && <div className="mb-6 space-y-4"><SetupFraming /><PilotTerms /></div>}
+        {hasPilotRequest(user) && <div className="mb-6 space-y-4"><SetupFraming /><PilotTerms user={user} /></div>}
         {/* Persistent payment-complete banner — reflects the real subscription,
             so it survives reloads (unlike the transient success toast). */}
         {paid && (

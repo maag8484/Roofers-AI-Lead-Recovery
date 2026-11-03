@@ -2,7 +2,7 @@ import { LegalLayout, LegalSection } from "@/components/marketing/LegalLayout";
 
 export default function TermsPage() {
   return (
-    <LegalLayout title="Terms & Conditions" updated="October 22, 2026">
+    <LegalLayout title="Terms & Conditions" updated="November 3, 2026">
       <p>
         These Terms and Conditions govern your use of Roof AI Lead Recovery. By creating an account
         or using our services, you agree to these Terms.
@@ -37,12 +37,12 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection heading="Free 30-Day Pilot">
-        <p>Eligible operating roofing companies with a forwardable business line may use one free 30-day pilot per company, covering up to 40 recovered missed and after-hours overflow calls. Your staff answers first. The pilot begins after setup and a successful live test call.</p>
+      <LegalSection heading="Free 14-Day Pilot">
+        <p>Eligible operating roofing companies with a forwardable business line may use one free 14-day pilot per company, covering up to 40 recovered missed and after-hours overflow calls. Your staff answers first. The pilot begins after setup and a successful live test call.</p>
         <p className="mt-3">
           No card or payment is required for the pilot. If you do not explicitly choose to continue, the pilot ends. It does not automatically convert to a paid subscription or create an automatic charge.
         </p>
-        <p className="mt-3">Existing subscriptions retain their previously agreed billing and renewal terms.</p>
+        <p className="mt-3">Previously accepted pilot offers keep their agreed duration, call allowance and quoted rate. Existing subscriptions retain their previously agreed billing and renewal terms.</p>
       </LegalSection>
 
       <LegalSection heading="Payments">
@@ -60,7 +60,7 @@ export default function TermsPage() {
 
       <LegalSection heading="Refund Policy">
         <p>
-          We offer a <strong>free 30-day pilot</strong>, up to 40 recovered calls, so eligible new customers can evaluate our platform without a charge. A paid subscription begins only if you explicitly choose to continue.
+          We offer a <strong>free 14-day pilot</strong>, up to 40 recovered calls, so eligible new customers can evaluate our platform without a charge. A paid subscription begins only if you explicitly choose to continue.
         </p>
         <p className="mt-3">After a paid subscription begins:</p>
         <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">

@@ -1,18 +1,20 @@
+import { pilotOffer } from "@/lib/pilot";
 import { motion } from "framer-motion";
 
 // Guided setup; no payment or automatic subscription is created.
-const STEPS = [
+const steps = (offer) => [
   { title: "Request your free pilot", detail: "Create your account and confirm your email. No card required." },
   { title: "Tell us about your business", detail: "Share your service area, services and call-handling preferences." },
   { title: "Free setup with a specialist", detail: "We configure overflow forwarding from your current number. Your staff still answers first." },
   { title: "Confirm each caller's next step", detail: "Approve the callback, booking-request or transfer destination and exclusions." },
-  { title: "Live test and pilot activation", detail: "After a successful end-to-end test, run the free pilot for 30 days, up to 40 recovered calls. It ends unless you choose to continue." },
+  { title: "Live test and pilot activation", detail: `After a successful end-to-end test, run the free pilot for ${offer.duration}, up to 40 recovered calls. It ends unless you choose to continue.` },
 ];
 
-export function NextSteps() {
+export function NextSteps({ user }) {
+  const offer = pilotOffer(user);
   return (
     <ol className="space-y-3">
-      {STEPS.map((s, i) => (
+      {steps(offer).map((s, i) => (
         <motion.li
           key={s.title}
           initial={{ opacity: 0, y: 8 }}

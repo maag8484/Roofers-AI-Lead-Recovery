@@ -1,4 +1,4 @@
-import { hasPilotRequest } from "@/lib/pilot";
+import { hasPilotRequest, pilotOffer } from "@/lib/pilot";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -320,7 +320,7 @@ export default function AccountPage() {
 
           {/* Subscription */}
           <Section title="Subscription" icon={CreditCard}>
-            <Row icon={CreditCard} label="Plan" value={pilot ? "Free 30-day pilot requested · up to 40 recovered calls" : subscription ? "Roof AI Lead Recovery · existing subscription terms" : "No paid plan"} />
+            <Row icon={CreditCard} label="Plan" value={pilot ? `${pilotOffer(user).title} requested · up to 40 recovered calls` : subscription ? "Roof AI Lead Recovery · existing subscription terms" : "No paid plan"} />
             <Row
               icon={Activity}
               label="Status"

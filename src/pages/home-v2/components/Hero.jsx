@@ -124,9 +124,9 @@ export function Hero() {
                 >
                   Get My Free Missed-Call Audit
                 </CtaButton>
-                <a href="/signup" className="text-sm font-bold underline text-[var(--text)]">or start the free 30-day pilot</a>
+                <a href="/signup" className="text-sm font-bold underline text-[var(--text)]">or start the free 14-day pilot</a>
               </motion.div>
-              <p className="mt-3 text-sm text-[var(--text-dim)]">For roofing companies. Keep your current number — your staff still answers first. We only catch the overflow.</p><p className="mt-3 text-sm text-[var(--text-dim)]">No setup fee · No contract · Cancel anytime · Free 30-day pilot — see exactly what it catches before you pay a dollar</p>
+              <p className="mt-3 text-sm text-[var(--text-dim)]">For roofing companies. Keep your current number — your staff still answers first. We only catch the overflow.</p><p className="mt-3 text-sm text-[var(--text-dim)]">No setup fee · No contract · Cancel anytime · Free 14-day pilot — see exactly what it catches before you pay a dollar</p>
             </motion.div>
 
             {/* ---------------- Phone ---------------- */}
