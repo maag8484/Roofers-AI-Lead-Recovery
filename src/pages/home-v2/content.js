@@ -40,7 +40,7 @@ export const STEPS = [
     "n": 3,
     "icon": "Calendar",
     "title": "Run the free 14-day pilot.",
-    "body": "For 14 days, your missed and after-hours calls get answered, qualified, and sent to you as clear next steps in your dashboard. At the end, you get a report of exactly what it caught. Keep it only if the numbers say so."
+    "body": "For 14 days, your missed and after-hours calls get answered, qualified, and sent to you as clear next steps in your dashboard. At the end, you get a report of exactly what it caught. Cancel before the 14-day deadline to avoid the first charge."
   }
 ];
 
@@ -119,14 +119,14 @@ export const COMPARISON_ROWS = [
 ];
 
 export const FAQS = [
-{"q": "How does the free pilot work?", "a": "After free onboarding, a separate launch call and a successful live test, your missed and after-hours calls are answered and qualified on your real business line for 14 days, up to 40 recovered calls. You see every recovered lead in your dashboard, and at the end you receive a report of exactly what the pilot caught. If you do nothing, the pilot simply ends — keeping the service is your choice, at the rate quoted before your pilot started."},
+{"q": "How does the free pilot work?", "a": "After free onboarding, a separate launch call and a successful live test, your missed and after-hours calls are answered and qualified on your real business line for 14 days, up to 40 recovered calls. You see every recovered lead in your dashboard, and at the end you receive a report of exactly what the pilot caught. Apply first. A separate card authorization is required to reserve a new founding pilot. Nothing is due at reservation. The 14 days begin after setup and a successful live test. Unless you cancel before those 14 full days elapse, monthly billing begins at the rate you authorized. Earlier agreements keep their terms."},
   {
     q: "How does Roof AI Lead Recovery work?",
     a: "After your team approves the routing and conversation rules, Roof AI can handle eligible unanswered or after-hours inquiries, collect the roofing details you require and create an approved callback or booking next step. Exact channels and destinations are verified during setup.",
   },
   {
     q: "How much does it cost?",
-    a: "The missed-call audit and the 14-day pilot are both free. If you keep the service after the pilot, the founding rate is $199 per month, locked for 12 months, for the first 10 customers; the standard price is $299 per month. There are no setup fees and no long-term contracts, and you can cancel future renewal from your dashboard.",
+    a: "Applying for the free audit does not authorize payment. After a separately authorized reservation, the first 10 eligible founders pay $199/month for 12 paid months, then $299/month plus applicable tax. The paid plan covers 75 calls per billing month.",
   },
   {
     q: "Is every missed call a lost roofing job?",
@@ -158,6 +158,6 @@ export const FAQS = [
   },
   {
     q: "Can I cancel anytime?",
-    a: "Absolutely. There are no contracts and no setup fees — start with the free audit and 14-day pilot, and if you continue to a paid plan you can cancel anytime from your dashboard.",
+    a: "Yes. Cancel before 14 full days have elapsed from activation to avoid the first charge. Earlier agreements retain their cancellation terms.",
   },
 ];
