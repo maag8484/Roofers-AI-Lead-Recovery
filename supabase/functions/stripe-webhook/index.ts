@@ -24,6 +24,17 @@ Deno.serve(async (req) => {
   const db = serviceClient();
 
   try {
+    if (event.livemode && (event.type === 'charge.refunded' || event.type === 'charge.dispute.created')) {
+      const obj = event.data.object;
+      const pi = obj.payment_intent;
+      if(typeof pi==='string') {
+        const sessions=await stripe.checkout.sessions.list({payment_intent:pi,limit:2});
+        if(sessions.data.some(s=>s.livemode && s.mode==='payment' && s.metadata?.purpose==='roof_call_pack')) {
+          const {error}=await db.from('roof_pack_holds').upsert({stripe_event_id:event.id,payment_intent_id:pi,reason:event.type==='charge.refunded'?'refund':'dispute'},{onConflict:'stripe_event_id',ignoreDuplicates:true});
+          if(error) throw Error('Pack reversal requires reconciliation');
+        }
+      }
+    }
     if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
       const session = event.data.object as Stripe.Checkout.Session;
       const meta = session.metadata;
