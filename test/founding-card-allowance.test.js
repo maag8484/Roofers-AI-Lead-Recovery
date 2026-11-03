@@ -16,3 +16,11 @@ test('50-call pack alone and combined with a 20-call pack', () => {
   assert.throws(()=>foundingMonthQuote(0,-1));
   assert.throws(()=>foundingMonthQuote(1,Number.MAX_SAFE_INTEGER));
 });
+
+test('first charge never precedes 14 full days, including subsecond activations', async () => {
+  const {foundingTrialEnd,termsVersion}=await import('../supabase/functions/_shared/founding-card-pilot.mjs');
+  const record={version:termsVersion,consentAt:'2026-11-03T16:00:00Z',liveTestAt:'2026-11-04T16:00:00.931Z',cardSetupVerified:true,setupComplete:true,founderReserved:true,paidAllowanceQuoted:true,cancelled:false};
+  const at=Date.parse(record.liveTestAt);
+  assert.equal(foundingTrialEnd(record,at),Math.ceil(at/1000)+14*86400);
+  assert.throws(()=>foundingTrialEnd({...record,cancelled:true},at));
+});
