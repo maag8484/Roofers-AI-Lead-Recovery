@@ -1,4 +1,4 @@
-import { SetupFraming, PilotTerms } from "@/components/onboarding/PilotTerms";
+import { FoundingDisclosure } from "@/components/onboarding/FoundingDisclosure";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { MailCheck, RefreshCw, ArrowRight } from "lucide-react";
@@ -83,13 +83,12 @@ export function ConfirmEmailNotice({ email, onConfirmed }) {
           </li>
           <li className="flex gap-2.5">
             <span className="font-bold text-brand-600">2.</span>
-            You'll come straight back to book your free pilot setup. No card is required.
+            Confirming your email completes your application. It does not reserve a place, start the pilot, or authorize payment.
           </li>
         </ol>
       </div>
 
-      <SetupFraming />
-      <PilotTerms />
+      <FoundingDisclosure />
 
       <p className="text-center text-sm text-muted-foreground">
         Can't find it? Check your spam or promotions folder — it can take a minute to arrive.
