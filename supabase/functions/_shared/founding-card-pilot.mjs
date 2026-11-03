@@ -9,7 +9,7 @@ export function foundingTrialEnd(record, nowMs) {
       setupComplete !== true || founderReserved !== true || paidAllowanceQuoted !== true ||
       ![nowMs, consent, activation].every(Number.isFinite) || consent > activation ||
       activation > nowMs) throw new Error('Pilot is not eligible for automatic billing');
-  const end = Math.floor(activation / 1000) + 14 * 86400;
+  const end = Math.ceil(activation / 1000) + 14 * 86400;
   if (end <= Math.floor(nowMs / 1000)) throw new Error('Past trial end requires manual review');
   return end;
 }
