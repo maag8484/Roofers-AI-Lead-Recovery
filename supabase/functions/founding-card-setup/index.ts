@@ -26,6 +26,7 @@ Deno.serve(async req=>{
       consent_text:consentCopy,consent_request:input.request_id};
     const session=await stripe.checkout.sessions.create({
       mode:'setup',currency:'usd',customer:ctx.customer,client_reference_id:user.id,metadata,
+      payment_method_types:['card'],billing_address_collection:'required',customer_update:{address:'auto'},
       setup_intent_data:{metadata},custom_text:{submit:{message:consentCopy}},
       success_url:'https://www.roofaileadrecovery.com/checkout?setup_session={CHECKOUT_SESSION_ID}',
       cancel_url:'https://www.roofaileadrecovery.com/checkout'

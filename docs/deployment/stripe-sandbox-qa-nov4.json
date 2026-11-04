@@ -1,0 +1,74 @@
+{
+  "recorded_at": "2026-11-04T18:11:16.850Z",
+  "account": "acct_1TNHaMFvYlWS00qP",
+  "livemode": false,
+  "connection_verified": true,
+  "scope": "Provider API contract tests only. Not app-to-Stripe end-to-end; no production customer, signup, live charge, customer email or live flags changed.",
+  "test_clock": "clock_1UY8buFvYlWS00qPkUO8F7FP",
+  "subscription": {
+    "id": "sub_1UY8caFvYlWS00qPfgBMbjUy",
+    "customer": "cus_VZHAlK7pGl7Ske",
+    "base_price": "price_1UY8c3FvYlWS00qPFTOuqzp5",
+    "base_amount": 29900,
+    "coupon": "Y8XkBCVQ",
+    "promo": "promo_1UY8cLFvYlWS00qPt2BYIrYd",
+    "discount_amount": 10000,
+    "discount_months": 12,
+    "first_time_transaction": true,
+    "currency": "usd",
+    "first_invoice": "in_1UY8caFvYlWS00qPuBcQsgRY",
+    "amount_paid": 19900,
+    "invoice_status": "paid",
+    "charge": "ch_3UY8cbFvYlWS00qP1teiYngo",
+    "charge_status": "succeeded",
+    "refunded": false,
+    "disputed": false,
+    "canceled": true,
+    "cancellation_independently_verified": true
+  },
+  "hosted_setup": {
+    "customer": "cus_VZHBcI0YQ36eI3",
+    "session": "cs_test_c1s8rnxg9b2yunvrbrZRy2FaCtZwlsuxx9qj0PKkYcmGAAEAGIRNt06ckS",
+    "mode": "setup",
+    "status": "open",
+    "billing_address_collection": "required",
+    "completed": false
+  },
+  "packs": [
+    {
+      "calls": 20,
+      "price": "price_1UY8dVFvYlWS00qProLTv1R2",
+      "session": "cs_test_a1BE6STEcf2Qfy9GpdOcdN0MuPFmcsrIumkHX8r8p5zQVNzG1oPY8c998Q",
+      "amount": 5000,
+      "currency": "usd",
+      "status": "open",
+      "payment_status": "unpaid",
+      "expires_at": 1793902213,
+      "fulfilled": false
+    },
+    {
+      "calls": 50,
+      "price": "price_1UY8dWFvYlWS00qPHhRP7Pn5",
+      "session": "cs_test_a1G4UYom4OovPs8N4U7p0ElN6W2KkKx0Yfu3k7nY9y4jS8Nh3JmVVEBB7b",
+      "amount": 10000,
+      "currency": "usd",
+      "status": "open",
+      "payment_status": "unpaid",
+      "expires_at": 1793902215,
+      "fulfilled": false
+    }
+  ],
+  "tax": {
+    "sandbox_active_registrations": 0,
+    "test_automatic_tax": false,
+    "calculation_verified": false,
+    "no_registration_created": true
+  },
+  "limitations": [
+    "Stripe connector search exposes no clock-advance or SetupIntent-confirm/Checkout-expire operation; no guesses or alternate API bypass attempted.",
+    "Local Browser js control unavailable; ambient tabs do not establish control. Hosted setup and pack completion not tested.",
+    "No isolated app backend wired to this sandbox; activation-to-day14 and paid-period fulfillment remain local tests only.",
+    "Thirteenth paid month, actual refunded/disputed provider lifecycle, actual call-feed mapping and intended-owner SendGrid delivery remain unverified."
+  ],
+  "cleanup": "Test subscription canceled and reread. Hosted setup and both unpaid pack sessions left to Stripe's returned expiration; no links sent to customers. QA artifacts excluded from customer/revenue milestones."
+}

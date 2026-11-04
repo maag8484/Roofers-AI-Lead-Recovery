@@ -1,3 +1,4 @@
+import { FoundingDisclosure } from './FoundingDisclosure';
 import { pilotOffer } from "@/lib/pilot";
 import { Check, ShieldCheck } from "lucide-react";
 
@@ -13,6 +14,7 @@ const included = (offer) => [
 
 export function PricingPreview({ user }) {
   const offer = pilotOffer(user);
+  if (offer.cardFirst) return <FoundingDisclosure />;
   return (
     <div className="overflow-hidden rounded-2xl border border-border shadow-sm">
       <div className="bg-gradient-to-br from-brand-600 to-brand-700 p-6 text-white">

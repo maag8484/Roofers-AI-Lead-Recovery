@@ -8,13 +8,13 @@ import { useAuth } from '@/context/AuthContext';
 import { isSubscriptionActive, pickActiveSubscription } from '@/lib/subscription';
 import { hasPilotRequest, pilotMetadata } from '@/lib/pilot';
 import { PilotTerms, SetupFraming } from '@/components/onboarding/PilotTerms';
-import { FoundingDisclosure } from '@/components/onboarding/FoundingDisclosure';
 import { Button } from '@/components/ui/button';
+import { FoundingDisclosure } from '@/components/onboarding/FoundingDisclosure';
 import { Logo } from '@/components/Logo';
 import { Spinner } from '@/components/ui/spinner';
 
 // The historical /checkout confirmation redirect is intentionally retained.
-// New pilots never invoke Stripe or create a subscription.
+// Only a server-reserved, explicitly accepted v4 offer can enter card setup.
 export default function CheckoutPage() {
   const { user } = useAuth();
   const offer = user?.app_metadata?.roof_founding_offer;

@@ -18,6 +18,6 @@ export function planUsageWarning(period, recoveredCalls, nowMs) {
   return {
     key: JSON.stringify(['base-65', companyId, startMs]),
     subject: 'Your Roof AI plan is nearing its 75-call limit',
-    text: `You've used ${used} of your 75 recovered calls this billing month. You have ${75-used} left.\n\nYou can add 20 recovered calls for $50, bringing this month's limit to 95, or add 50 recovered calls for $100, bringing it to 125. Each pack is a one-time purchase for this billing month. Reply to request a secure purchase link. If you do nothing, your limit stays at 75. We won't charge you for extra calls unless you buy a block.`,
+    text: `You've used ${used} of your 75 recovered calls this billing month. You have ${75-used} left.\n\nYou can add 20 recovered calls for $50, bringing this month's limit to 95, or add 50 recovered calls for $100, bringing it to 125. Each pack is a one-time purchase for this billing month. Review an optional pack in your account: https://www.roofaileadrecovery.com/account. If you do nothing, your limit stays at 75. We won't charge you for extra calls unless you buy a block.`,
   };
 }

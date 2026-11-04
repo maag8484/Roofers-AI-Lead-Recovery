@@ -1,3 +1,4 @@
+import { FoundingDisclosure } from './FoundingDisclosure';
 import { pilotOffer } from "@/lib/pilot";
 import { motion } from "framer-motion";
 import { Clock, Sparkles, PlayCircle, Phone } from "lucide-react";
@@ -30,7 +31,7 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false, user
         <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Button size="lg" onClick={onStart} disabled={starting} className="min-w-52">
             <Phone className="h-5 w-5" />
-            {starting ? "Preparing free setup…" : `Start the ${offer.title}`}
+            {starting ? "Preparing setup…" : offer.cardFirst ? "Continue founding setup" : `Start the ${offer.title}`}
           </Button>
           <Button size="lg" variant="secondary" onClick={onTour} disabled={starting}>
             <PlayCircle className="h-5 w-5" /> View product tour
@@ -39,11 +40,11 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false, user
             <Clock className="h-4 w-4" /> Free guided setup and live test
           </span>
         </div>
-        <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
+        {offer.cardFirst ? <div className="mx-auto mt-4 max-w-xl text-left"><FoundingDisclosure /></div> : <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
           No card required. No automatic paid conversion. Optional founding rate: {offer.foundingRateLabel} locked 12 months for first 10 customers; standard $299/month.
           We configure your coverage after you submit your business details; calls begin
           once forwarding is set up and tested.
-        </p>
+        </p>}
       </motion.div>
 
       {/* Benefits */}
@@ -63,7 +64,7 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false, user
         <h2 className="text-center text-lg font-bold text-ink">How setup works</h2>
         <div className="mt-6 grid gap-6 sm:grid-cols-4">
           {[
-            { n: 1, t: "Request your free pilot", d: "No card required." },
+            { n: 1, t: offer.cardFirst ? "Reserve your founding pilot" : "Request your free pilot", d: offer.cardFirst ? "Review and separately authorize card billing." : "No card required." },
             { n: 2, t: "Tell us about your business", d: "A quick guided form." },
             { n: 3, t: "Free setup and live test", d: "Verify forwarding and the full workflow." },
             { n: 4, t: "Run your free pilot", d: `${offer.duration}, up to 40 recovered overflow calls.` },
@@ -82,7 +83,7 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false, user
       <div className="mt-12 text-center">
         <Button size="lg" onClick={onStart} disabled={starting} className="min-w-52">
           <Phone className="h-5 w-5" />
-          {starting ? "Preparing free setup…" : `Start the ${offer.title}`}
+          {starting ? "Preparing setup…" : offer.cardFirst ? "Continue founding setup" : `Start the ${offer.title}`}
         </Button>
       </div>
     </div>

@@ -6,7 +6,7 @@ export function Pricing() {
   return <section id="pricing" className="relative bg-[var(--void)] py-24 sm:py-28">
     <div className="mx-auto max-w-[1280px] px-5 sm:px-8">
       <SectionLabel index="05" eyebrow="Pricing" />
-      <h2 className="hv2-display mt-7 text-[clamp(2rem,4.4vw,3rem)] text-[var(--text)]">Start free. Pay only if it catches work.</h2>
+      <h2 className="hv2-display mt-7 text-[clamp(2rem,4.4vw,3rem)] text-[var(--text)]">Start with a free missed-call audit.</h2>
       <div className="mt-12 grid gap-6 lg:grid-cols-3">
         <article className="hv2-glass rounded-3xl p-8">
           <h3 className="hv2-display text-xl text-[var(--text)]">Step 1 — Free Missed-Call Audit</h3>
@@ -15,17 +15,17 @@ export function Pricing() {
         <article className="hv2-glass rounded-3xl p-8">
           <h3 className="hv2-display text-xl text-[var(--text)]">Step 2 — Free 14-Day Pilot</h3>
           <p className="mt-5 leading-relaxed text-[var(--text-dim)]">$0 for 14 days. Your overflow calls answered and qualified on your real phone line, with a full report at the end of what it caught. Fair use: up to 40 recovered calls during the pilot.</p>
-          <a href="/signup" className="mt-6 inline-block font-bold underline text-[var(--acid)]">Start the free 14-day pilot</a>
+          <a href="/signup" className="mt-6 inline-block font-bold underline text-[var(--acid)]">Apply for the founding pilot</a>
         </article>
         <article className="hv2-frame rounded-3xl bg-[var(--surface)] p-8">
           <h3 className="hv2-display text-xl text-[var(--text)]">Step 3 — Keep It Running</h3>
           <p className="mt-5 text-2xl font-bold text-[var(--text)]">Founding rate: $199/month — locked for 12 months.</p>
-          <p className="mt-3 text-[var(--text-dim)]">For the first 10 customers. Standard price is $299/month.</p>
+          <p className="mt-3 text-[var(--text-dim)]">For the first 10 eligible founders, the rate is $199/month for the first 12 paid months, then $299/month, plus applicable tax. The paid plan includes 75 recovered calls per billing month. Optional packs add 20 calls for $50 or 50 for $100 for the current period only. Packs are never purchased automatically.</p>
           <ul className="mt-7 space-y-3">{PLAN_FEATURES.map(f => <li key={f} className="flex gap-3 text-sm text-[var(--text-dim)]"><Check aria-hidden="true" className="h-5 w-5 shrink-0 text-[var(--acid)]" />{f}</li>)}</ul>
         </article>
       </div>
-      <p className="mt-8 text-[var(--text-dim)]">No setup fees · No contracts · Cancel anytime from your dashboard</p>
-      <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-dim)]">Pilot eligibility: operating roofing companies with a forwardable business line; one pilot per company. Missed-call and after-hours overflow only — your team answers first. Up to 40 recovered calls over 14 days. The pilot ends automatically unless you choose to continue; no automatic paid conversion.</p>
+      <p className="mt-8 text-[var(--text-dim)]">No setup fees · No contracts · Cancel before your first charge</p>
+      <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-dim)]">Pilot eligibility: operating roofing companies with a forwardable business line; one pilot per company. Missed-call and after-hours overflow only — your team answers first. Up to 40 recovered calls over 14 days. Apply first. A separate card authorization is required to reserve a new founding pilot. Nothing is due at reservation. The 14 days begin after setup and a successful live test. Unless you cancel before those 14 full days elapse, monthly billing begins at the rate you authorized. Earlier accepted offers keep their terms.</p>
       <div className="mt-8"><CtaButton>Get My Free Missed-Call Audit</CtaButton></div>
     </div>
   </section>;

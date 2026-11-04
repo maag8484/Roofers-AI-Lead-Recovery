@@ -41,7 +41,7 @@ export function OnboardingModal({
   onClose,
   onFinish,
   finishing,
-  finishLabel = `Start the ${pilotOffer(user).title}`,
+  finishLabel = pilotOffer(user).cardFirst ? "Continue founding setup" : `Start the ${pilotOffer(user).title}`,
   finishIcon: FinishIcon = Rocket,
 }) {
   const panelRef = useRef(null);
@@ -276,7 +276,7 @@ function StepContent({ step, user }) {
         <StepHeading
           icon={CreditCard}
           title="Simple, transparent pricing"
-          subtitle="Start free. No card required and no automatic paid conversion."
+          subtitle={pilotOffer(user).cardFirst ? "Nothing due today. Card authorization and verified activation are separate steps." : "Start free. No card required and no automatic paid conversion."}
         />
         <PricingPreview user={user} />
       </div>
