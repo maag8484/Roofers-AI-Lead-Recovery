@@ -59,14 +59,6 @@
       ]
     },
     {
-      "source": "/(resources/roofing-missed-call-text-back|resources/storm-lead-follow-up|resources/roofing-missed-call-scorecard|resources/winter-roofing-call-handling|how-much-are-missed-calls-costing-your-roofing-company|after-hours-answering-for-roofing-companies|ai-receptionist-for-roofing-companies|roofing-answering-service-vs-ai-lead-recovery)/?",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store, max-age=0, must-revalidate" },
-        { "key": "CDN-Cache-Control", "value": "no-store" },
-        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" }
-      ]
-    },
-    {
       "source": "/robots.txt",
       "headers": [
         {
