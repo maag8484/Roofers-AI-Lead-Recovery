@@ -46,12 +46,20 @@ Deno.serve(async (req) => {
         const packs: Record<string,[string,number]> = {"20":["price_1UXn65CB5wADtZS19CXdROLL",5000],"50":["price_1UXn66CB5wADtZS12VbDpqYh",10000]};
         const pack = packs[meta.pack_calls];
         if (!pack || typeof session.payment_intent !== "string") throw Error("Invalid pack");
+        // These packs have an exact pretax price; only separately stated tax may
+        // increase the settled total. Missing or malformed totals fail closed.
+        const totals = session.total_details;
+        const tax = totals?.amount_tax;
+        if (session.amount_subtotal!==pack[1] || !Number.isSafeInteger(tax) || tax! < 0 ||
+            totals?.amount_discount!==0 || totals?.amount_shipping!==0 ||
+            !Number.isSafeInteger(session.amount_total) || session.amount_total!==pack[1]+tax!)
+          throw Error("Pack amount mismatch");
         const intent = await stripe.paymentIntents.retrieve(session.payment_intent,{expand:['latest_charge']});
         const charge = intent.latest_charge;
-        if(intent.status!=='succeeded' || !intent.livemode || intent.customer!==session.customer || intent.currency!=='usd' || intent.amount_received!==pack[1] || !charge || typeof charge==='string' || !charge.paid || !charge.captured || charge.disputed || charge.amount_refunded!==0) throw Error('Pack payment not settled');
+        if(intent.status!=='succeeded' || !intent.livemode || intent.customer!==session.customer || intent.currency!=='usd' || intent.amount_received!==session.amount_total || !charge || typeof charge==='string' || !charge.paid || !charge.captured || charge.disputed || charge.amount_refunded!==0) throw Error('Pack payment not settled');
         const items = await stripe.checkout.sessions.listLineItems(session.id,{limit:2});
         const item = items.data[0];
-        if (items.has_more || items.data.length!==1 || item.quantity!==1 || item.price?.id!==pack[0] || session.currency!=="usd" || session.amount_subtotal!==pack[1] || session.amount_total!==pack[1]) throw Error("Pack amount mismatch");
+        if (items.has_more || items.data.length!==1 || item.quantity!==1 || item.price?.id!==pack[0] || session.currency!=="usd" || session.amount_subtotal!==pack[1]) throw Error("Pack amount mismatch");
         const {data:period,error} = await db.from("roof_paid_periods").select("*").eq("id",meta.period_id).eq("company_id",meta.company_id).single();
         if(error || !period) throw Error("Missing pack period");
         const sub=await stripe.subscriptions.retrieve(period.subscription_id);
@@ -113,3 +121,4 @@ Deno.serve(async (req) => {
     return new Response("Handler error", { status: 500 });
   }
 });
+

@@ -25,7 +25,7 @@ try{
  const run=async(n,custom={},type='checkout.session.completed')=>{
   const amount=n===20?5000:10000;
   item={quantity:1,price:{id:prices[n]}};
-  event={type,created:1500,data:{object:{id:'cs_'+n,payment_intent:'pi_'+n,customer:'cus_roof',created:1400,metadata:{purpose:'roof_call_pack',pack_calls:String(n),company_id:company,period_id:period},livemode:true,mode:'payment',payment_status:'paid',amount_total:amount,amount_subtotal:amount,currency:'usd',...custom}}};
+  event={type,created:1500,data:{object:{id:'cs_'+n,payment_intent:'pi_'+n,customer:'cus_roof',created:1400,metadata:{purpose:'roof_call_pack',pack_calls:String(n),company_id:company,period_id:period},livemode:true,mode:'payment',payment_status:'paid',amount_total:amount,amount_subtotal:amount,total_details:{amount_tax:0,amount_discount:0,amount_shipping:0},currency:'usd',...custom}}};
   return (await handler(new Request('http://localhost',{method:'POST',body:'fixture',headers:{'stripe-signature':'fixture'}}))).status;
  };
  const count=async()=>Number((await db.query('select coalesce(sum(calls),0) n from roof_available_packs')).rows[0].n);
@@ -45,3 +45,4 @@ try{
  console.log('PASS: post-payment refund, replay, dispute and late paid replay.');
  console.log('PASS: paid 20/50 packs, actual receipt rows, replay dedupe, unpaid and wrong amount/customer exclusion. Stripe signature and delivery mocked.');
 }finally{await db.close();}
+
