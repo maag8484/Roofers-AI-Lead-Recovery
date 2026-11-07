@@ -1,0 +1,9 @@
+# Proposed disclosure for newly reserved founding pilots only
+
+**Not published or enabled.** Retain all previously accepted no-card and legacy quotes. The public offer must match the signed checkout terms before accepting the first v4 customer.
+
+> A card is required to reserve this pilot. Nothing is due today. Your free pilot begins only after setup and a successful live test and covers up to 40 recovered calls. Unless you cancel before 14 full days have elapsed from activation, you authorize $199 per month for your first 12 paid months, then $299 per month, plus applicable tax. Your paid plan includes 75 recovered calls per billing month. The optional 20-call ($50) and 50-call ($100) packs apply to the current paid period only. No extra pack is purchased automatically.
+
+Before storing a card, record an affirmative, unselected-by-default acceptance identifying the version and reservation; provide a working cancellation route. At activation show the precise first charge date and time. Do not start billing from email confirmation, card collection, the 40th pilot call, or an unverified setup label.
+
+Release evidence required: reconcile prior founder commitments and customer binding; validate a non-live card setup, day-14 invoice and cancellation before charging, correct 12 paid months of discount, refund/dispute handling, and a provider receipt tied to the correct company and period. Keep paid fulfillment and email disabled until validated. Do not send customer identifiers or billing details to an unrelated recipient. No production webhook replacement or card collection is approved by this document.

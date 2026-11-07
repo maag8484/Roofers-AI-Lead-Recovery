@@ -1,5 +1,6 @@
+import { FoundingDisclosure } from '@/components/onboarding/FoundingDisclosure';
 import { SetupFraming, PilotTerms } from "@/components/onboarding/PilotTerms";
-import { hasPilotRequest } from "@/lib/pilot";
+import { hasPilotRequest, hasFoundingCardOffer } from "@/lib/pilot";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
@@ -200,7 +201,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     if (searchParams.get("payment") === "success") {
-      toast.success("Payment successful — one quick step to go!");
+      toast.info("Checkout returned. We are checking your subscription status.");
       window.history.replaceState({}, "", "/onboarding");
     }
   }, [searchParams]);
@@ -468,7 +469,7 @@ export default function OnboardingPage() {
       </header>
 
       <main className="container max-w-2xl py-10">
-        {hasPilotRequest(user) && <div className="mb-6 space-y-4"><SetupFraming /><PilotTerms user={user} /></div>}
+        {hasFoundingCardOffer(user) ? <div className="mb-6 space-y-4"><SetupFraming /><FoundingDisclosure /></div> : hasPilotRequest(user) && <div className="mb-6 space-y-4"><SetupFraming /><PilotTerms user={user} /></div>}
         {/* Persistent payment-complete banner — reflects the real subscription,
             so it survives reloads (unlike the transient success toast). */}
         {paid && (
@@ -478,7 +479,7 @@ export default function OnboardingPage() {
             </span>
             <div>
               <p className="font-semibold text-emerald-800">
-                Payment complete — you're subscribed 🎉
+                Subscription status confirmed
               </p>
               <p className="text-sm text-emerald-700">
                 {paymentDetail} Just one last step below and our team takes over.

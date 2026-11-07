@@ -1,3 +1,5 @@
+import FoundingCardSetup from './FoundingCardSetup';
+import {termsVersion} from '../../supabase/functions/_shared/founding-card-pilot.mjs';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -12,8 +14,14 @@ import { Logo } from '@/components/Logo';
 import { Spinner } from '@/components/ui/spinner';
 
 // The historical /checkout confirmation redirect is intentionally retained.
-// New pilots never invoke Stripe or create a subscription.
+// Only a server-reserved, explicitly accepted v4 offer can enter card setup.
 export default function CheckoutPage() {
+  const { user } = useAuth();
+  const offer = user?.app_metadata?.roof_founding_offer;
+  return offer?.version === termsVersion && offer.status === 'reserved' && offer.user_id === user?.id
+    ? <FoundingCardSetup /> : <LegacyPilotCheckout />;
+}
+function LegacyPilotCheckout() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);

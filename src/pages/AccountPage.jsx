@@ -1,4 +1,4 @@
-import { hasPilotRequest, pilotOffer } from "@/lib/pilot";
+import { hasFoundingCardOffer, pilotAccountSummary } from "@/lib/pilot";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import CurrentPeriodPacks from '@/components/CurrentPeriodPacks';
 import FounderTrialCancellation from '@/components/FounderTrialCancellation';
 import { useAuth } from "@/context/AuthContext";
 import { pickActiveSubscription } from "@/lib/subscription";
@@ -226,12 +227,13 @@ export default function AccountPage() {
   const status = profile?.status ?? "new";
   const paid = ["active", "trialing"].includes(subscription?.status);
   const trialing = subscription?.status === "trialing";
-  const pilot = hasPilotRequest(user) && !paid;
+  const pilotSummary = pilotAccountSummary(user, subscription);
+  const pilot = pilotSummary.requested;
 
   // Onboarding progress from the real lifecycle.
   const progressSteps = [
     { label: "Account created", done: true },
-    { label: pilot ? "Free pilot requested — no automatic billing" : "Subscription active", done: paid || pilot },
+    { label: pilotSummary.progress, done: paid || pilot },
     { label: "Business information submitted", done: !!profile?.details_submitted },
     { label: "Configuration in progress", done: status === "live", active: status === "in_progress" },
     { label: "AI activated", done: status === "live" },
@@ -267,6 +269,7 @@ export default function AccountPage() {
 
       <main className="container max-w-4xl space-y-6 py-8">
         <FounderTrialCancellation userId={user?.id} />
+        {subscription?.status==='active' && hasFoundingCardOffer(user) && <CurrentPeriodPacks />}
         <div>
           <h1 className="text-2xl font-extrabold text-ink">Account Overview</h1>
           <p className="text-muted-foreground">Everything about your account in one place.</p>
@@ -322,13 +325,13 @@ export default function AccountPage() {
 
           {/* Subscription */}
           <Section title="Subscription" icon={CreditCard}>
-            <Row icon={CreditCard} label="Plan" value={pilot ? `${pilotOffer(user).title} requested · up to 40 recovered calls` : subscription ? "Roof AI Lead Recovery · existing subscription terms" : "No paid plan"} />
+            <Row icon={CreditCard} label="Plan" value={pilotSummary.plan || (subscription ? "Roof AI Lead Recovery · existing subscription terms" : "No paid plan")} />
             <Row
               icon={Activity}
               label="Status"
               value={
                 <Badge variant={paid ? "success" : "muted"}>
-                  {pilot ? "Pilot requested" : SUB_LABEL[subscription?.status] ?? subscription?.status ?? "No plan"}
+                  {pilotSummary.status || SUB_LABEL[subscription?.status] || subscription?.status || "No plan"}
                 </Badge>
               }
             />
@@ -339,7 +342,7 @@ export default function AccountPage() {
                 value={formatDateTime(subscription?.trial_ends_at)}
               />
             )}
-            <Row icon={Clock} label="Renewal" value={pilot ? "No automatic paid conversion" : renewal} />
+            <Row icon={Clock} label="Renewal" value={pilotSummary.renewal || renewal} />
             <div className="pt-1">
               <Button variant="secondary" size="sm" asChild>
                 <Link to="/billing">
@@ -630,7 +633,7 @@ export default function AccountPage() {
         <Section title="Recent Activity" icon={Activity} full>
           <ul className="space-y-3">
             <ActivityItem label="Account created" when={subscription?.created_at} />
-            {paid && <ActivityItem label="Payment completed" when={subscription?.created_at} />}
+            {paid && <ActivityItem label="Subscription recorded" when={subscription?.created_at} />}
             {profile?.details_submitted && (
               <ActivityItem label="Business information submitted" when={null} />
             )}

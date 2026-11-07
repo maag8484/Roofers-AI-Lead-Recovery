@@ -4,6 +4,7 @@
 import type Stripe from "https://esm.sh/stripe@17?target=deno";
 import { serviceClient } from "../_shared/supabase.ts";
 import { stripe, STRIPE_WEBHOOK_SECRET as WEBHOOK_SECRET } from "../_shared/stripe.ts";
+import { recordPaidPeriod } from "../_shared/paid-period.mjs";
 
 function toIso(unix?: number | null) {
   return unix ? new Date(unix * 1000).toISOString() : null;
@@ -24,6 +25,9 @@ Deno.serve(async (req) => {
   const db = serviceClient();
 
   try {
+    if (event.type === 'invoice.paid' && event.livemode) {
+      await recordPaidPeriod(event.data.object.id, {stripe, db});
+    }
     if (event.livemode && (event.type === 'charge.refunded' || event.type === 'charge.dispute.created')) {
       const obj = event.data.object;
       const pi = obj.payment_intent;
@@ -42,12 +46,20 @@ Deno.serve(async (req) => {
         const packs: Record<string,[string,number]> = {"20":["price_1UXn65CB5wADtZS19CXdROLL",5000],"50":["price_1UXn66CB5wADtZS12VbDpqYh",10000]};
         const pack = packs[meta.pack_calls];
         if (!pack || typeof session.payment_intent !== "string") throw Error("Invalid pack");
+        // These packs have an exact pretax price; only separately stated tax may
+        // increase the settled total. Missing or malformed totals fail closed.
+        const totals = session.total_details;
+        const tax = totals?.amount_tax;
+        if (session.amount_subtotal!==pack[1] || !Number.isSafeInteger(tax) || tax! < 0 ||
+            totals?.amount_discount!==0 || totals?.amount_shipping!==0 ||
+            !Number.isSafeInteger(session.amount_total) || session.amount_total!==pack[1]+tax!)
+          throw Error("Pack amount mismatch");
         const intent = await stripe.paymentIntents.retrieve(session.payment_intent,{expand:['latest_charge']});
         const charge = intent.latest_charge;
-        if(intent.status!=='succeeded' || !intent.livemode || intent.customer!==session.customer || intent.currency!=='usd' || intent.amount_received!==pack[1] || !charge || typeof charge==='string' || !charge.paid || !charge.captured || charge.disputed || charge.amount_refunded!==0) throw Error('Pack payment not settled');
+        if(intent.status!=='succeeded' || !intent.livemode || intent.customer!==session.customer || intent.currency!=='usd' || intent.amount_received!==session.amount_total || !charge || typeof charge==='string' || !charge.paid || !charge.captured || charge.disputed || charge.amount_refunded!==0) throw Error('Pack payment not settled');
         const items = await stripe.checkout.sessions.listLineItems(session.id,{limit:2});
         const item = items.data[0];
-        if (items.has_more || items.data.length!==1 || item.quantity!==1 || item.price?.id!==pack[0] || session.currency!=="usd" || session.amount_subtotal!==pack[1] || session.amount_total!==pack[1]) throw Error("Pack amount mismatch");
+        if (items.has_more || items.data.length!==1 || item.quantity!==1 || item.price?.id!==pack[0] || session.currency!=="usd" || session.amount_subtotal!==pack[1]) throw Error("Pack amount mismatch");
         const {data:period,error} = await db.from("roof_paid_periods").select("*").eq("id",meta.period_id).eq("company_id",meta.company_id).single();
         if(error || !period) throw Error("Missing pack period");
         const sub=await stripe.subscriptions.retrieve(period.subscription_id);
@@ -63,7 +75,9 @@ Deno.serve(async (req) => {
       event.type === "customer.subscription.updated" ||
       event.type === "customer.subscription.deleted"
     ) {
-      const sub = event.data.object as Stripe.Subscription;
+      // Webhook payloads use the endpoint's API version and may arrive out of
+      // order. Retrieve through our pinned client before updating current state.
+      const sub = await stripe.subscriptions.retrieve(event.data.object.id);
       const userId = sub.metadata?.supabase_user_id;
 
       if (userId) {
@@ -72,7 +86,7 @@ Deno.serve(async (req) => {
         const canceledAt = sub.canceled_at ? toIso(sub.canceled_at) : null;
         const cancelAtPeriodEnd = sub.cancel_at_period_end ?? false;
 
-        await db.from("subscriptions").upsert(
+        const {error:subscriptionError} = await db.from("subscriptions").upsert(
           {
             user_id: userId,
             stripe_customer_id: sub.customer as string,
@@ -88,12 +102,14 @@ Deno.serve(async (req) => {
           },
           { onConflict: "stripe_subscription_id" }
         );
+        if (subscriptionError) throw subscriptionError;
 
-        await db
+        const {error:companyError} = await db
           .from("roofing_companies")
           .update({ setup_step: 3 })
           .eq("user_id", userId)
           .lt("setup_step", 3);
+        if (companyError) throw companyError;
 
 
       }
@@ -105,3 +121,4 @@ Deno.serve(async (req) => {
     return new Response("Handler error", { status: 500 });
   }
 });
+
