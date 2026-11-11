@@ -20,7 +20,7 @@
       "dest": "/resources/$1/index.html"
     },
     {
-      "src": "/(home-v1|privacy|terms|reset-password|login|signup|checkout|onboarding|dashboard|account|billing)/?",
+      "src": "/(home-v1|privacy|terms|reset-password|login|signup|checkout/success|checkout|onboarding|dashboard|account|billing)/?",
       "dest": "/app.html",
       "headers": {
         "X-Robots-Tag": "noindex, follow"
