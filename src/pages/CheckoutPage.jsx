@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
@@ -18,6 +18,8 @@ const FOUNDING_TERMS = 'pilot-14d-40calls-199-card-v4';
 export default function CheckoutPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const [verifiedCard, setVerifiedCard] = useState(false);
   const [checking, setChecking] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -36,9 +38,14 @@ export default function CheckoutPage() {
         } else setChecking(false);
       });
   }, [user, navigate, eligible]);
+  useEffect(() => {
+    if (!user || !eligible) return;
+    supabase.functions.invoke('founding-card-setup', { body: { action: 'status' } })
+      .then(({data}) => { if (data?.verified) setVerifiedCard(true); });
+  }, [user?.id, eligible]);
   async function authorizeFoundingCard(event) {
     event.preventDefault();
-    if (!eligible || !accepted || cardBusy) return;
+    if (!eligible || !accepted || cardBusy || verifiedCard) return;
     setCardBusy(true);
     setCardError('');
     try {
@@ -61,13 +68,14 @@ export default function CheckoutPage() {
     if (error) { toast.error(error.message); setSaving(false); return; }
     navigate('/onboarding', {replace:true});
   }
+  if (eligible && verifiedCard) return <main className="mx-auto max-w-2xl space-y-6 px-5 py-12"><Logo /><h1 className="text-3xl font-bold">Card authorized successfully — $0 due today.</h1><p>Your card is securely saved. No subscription or pilot has been started.</p></main>;
   if (eligible) return <main className="mx-auto max-w-2xl space-y-6 px-5 py-12"><Logo />
     <h1 className="text-3xl font-bold">Reserve Your Founding Pilot</h1>
     <FoundingDisclosure />
     <form onSubmit={authorizeFoundingCard} className="space-y-4">
       <label className="flex items-start gap-2 text-sm"><input type="checkbox" required checked={accepted} onChange={e=>setAccepted(e.target.checked)} />I authorize Roof AI to securely save my card. Nothing is due at reservation. After setup and a successful live test, my 14-day pilot begins (up to 40 recovered calls). Unless I cancel before the 14 full days end, I authorize $199/month for 12 paid months, then $299/month, plus applicable tax. The paid plan includes 75 recovered calls per month. Extra call packs are optional.</label>
       {cardError && <p role="alert" className="text-red-600">{cardError}</p>}
-      <Button type="submit" disabled={!accepted || cardBusy}>{cardBusy ? 'Opening secure authorization…' : 'Authorize Card — $0 Due Today'}</Button>
+      <Button type="submit" disabled={!accepted || cardBusy || verifiedCard}>{cardBusy ? 'Opening secure authorization…' : 'Authorize Card — $0 Due Today'}</Button>
     </form>
   </main>;
   if (loadError) return <main className="mx-auto max-w-lg space-y-4 p-8"><h1 className="text-2xl font-bold">We could not check your account</h1><p>Please retry before continuing. No payment or pilot has been started.</p><Button onClick={()=>window.location.reload()}>Retry account check</Button><a className="block underline" href="/">Back to home</a></main>;
