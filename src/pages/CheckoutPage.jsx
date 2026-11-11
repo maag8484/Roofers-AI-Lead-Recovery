@@ -20,6 +20,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const [verifiedCard, setVerifiedCard] = useState(false);
+  const [checkingCard, setCheckingCard] = useState(true);
   const [checking, setChecking] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -39,13 +40,13 @@ export default function CheckoutPage() {
       });
   }, [user, navigate, eligible]);
   useEffect(() => {
-    if (!user || !eligible) return;
+    if (!user || !eligible) { setCheckingCard(false); return; }
     supabase.functions.invoke('founding-card-setup', { body: { action: 'status' } })
-      .then(({data}) => { if (data?.verified) setVerifiedCard(true); });
+      .then(({data}) => { if (data?.verified) setVerifiedCard(true); }).finally(() => setCheckingCard(false));
   }, [user?.id, eligible]);
   async function authorizeFoundingCard(event) {
     event.preventDefault();
-    if (!eligible || !accepted || cardBusy || verifiedCard) return;
+    if (!eligible || !accepted || cardBusy || verifiedCard || checkingCard) return;
     setCardBusy(true);
     setCardError('');
     try {
@@ -75,7 +76,7 @@ export default function CheckoutPage() {
     <form onSubmit={authorizeFoundingCard} className="space-y-4">
       <label className="flex items-start gap-2 text-sm"><input type="checkbox" required checked={accepted} onChange={e=>setAccepted(e.target.checked)} />I authorize Roof AI to securely save my card. Nothing is due at reservation. After setup and a successful live test, my 14-day pilot begins (up to 40 recovered calls). Unless I cancel before the 14 full days end, I authorize $199/month for 12 paid months, then $299/month, plus applicable tax. The paid plan includes 75 recovered calls per month. Extra call packs are optional.</label>
       {cardError && <p role="alert" className="text-red-600">{cardError}</p>}
-      <Button type="submit" disabled={!accepted || cardBusy || verifiedCard}>{cardBusy ? 'Opening secure authorization…' : 'Authorize Card — $0 Due Today'}</Button>
+      <Button type="submit" disabled={!accepted || cardBusy || verifiedCard || checkingCard}>{cardBusy ? 'Opening secure authorization…' : 'Authorize Card — $0 Due Today'}</Button>
     </form>
   </main>;
   if (loadError) return <main className="mx-auto max-w-lg space-y-4 p-8"><h1 className="text-2xl font-bold">We could not check your account</h1><p>Please retry before continuing. No payment or pilot has been started.</p><Button onClick={()=>window.location.reload()}>Retry account check</Button><a className="block underline" href="/">Back to home</a></main>;
