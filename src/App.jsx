@@ -7,6 +7,7 @@ import HomeV2Page from "@/pages/home-v2/HomeV2Page";
 const LoginPage = lazy(() => import("@/pages/LoginPage"));
 const SignupPage = lazy(() => import("@/pages/SignupPage"));
 const CheckoutPage = lazy(() => import("@/pages/CheckoutPage"));
+const CheckoutSuccessPage = lazy(() => import("@/pages/CheckoutSuccessPage"));
 const OnboardingPage = lazy(() => import("@/pages/OnboardingPage"));
 const ResetPasswordPage = lazy(() => import("@/pages/ResetPasswordPage"));
 const DashboardPage = lazy(() => import("@/pages/DashboardPage"));
@@ -86,6 +87,8 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route path="/checkout/success" element={<ProtectedRoute><CheckoutSuccessPage /></ProtectedRoute>} />
 
       {/* Post-payment business details form (auth required) — step 3 */}
       <Route
