@@ -105,13 +105,13 @@ export function Hero() {
                 </span>
               </motion.div>
 
-              <h1 className="hv2-display hv2-hero-title hv2-hero-gap text-[var(--text)]">The call you miss is the job that goes to whoever answers.</h1>
+              <h1 className="hv2-display hv2-hero-title hv2-hero-gap text-[var(--text)]">Your crew answers first. We catch the roofing calls you miss.</h1>
 
               <motion.p
                 {...rise(1.05)}
                 className="hv2-hero-sub hv2-hero-gap max-w-xl leading-[1.65] text-[var(--text-dim)]"
               >
-                A homeowner with a leaking roof doesn't leave a voicemail and wait. They call the next roofer on the list. Roof AI Lead Recovery answers the calls your team can't get to — missed calls and after-hours calls — qualifies the caller, and hands your team a clear next step, so the leads you already paid for stop slipping away.
+                Keep your current number. Roof AI handles approved missed and after-hours calls, collects the homeowner's address, roofing need and urgency, and sends your team a callback or booking request. Your team confirms the appointment.
               </motion.p>
 
               <motion.div
@@ -124,7 +124,7 @@ export function Hero() {
                 >
                   Get My Free Missed-Call Audit
                 </CtaButton>
-                <a href="/signup" className="text-sm font-bold underline text-[var(--text)]">or start the free 14-day pilot</a>
+                <a href="#workflow-demo" className="text-sm font-bold underline text-[var(--text)]">See the example handoff</a>
               </motion.div>
               <p className="mt-3 text-sm text-[var(--text-dim)]">For roofing companies. Keep your current number — your staff still answers first. We only catch the overflow.</p><p className="mt-3 text-sm text-[var(--text-dim)]">No setup fee · No contract · Cancel anytime · Free 14-day pilot — see exactly what it catches before you pay a dollar</p>
             </motion.div>
@@ -171,3 +171,4 @@ export function Hero() {
     </section>
   );
 }
+
