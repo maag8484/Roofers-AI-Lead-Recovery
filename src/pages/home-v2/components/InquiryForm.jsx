@@ -38,7 +38,7 @@ export function InquiryForm() {
     <div className="mx-auto grid max-w-6xl gap-10 lg:max-w-2xl">
 
       <form data-callback-form onSubmit={submit} className="rounded-3xl border border-[var(--line-2)] bg-[var(--void)] p-6 sm:p-8" aria-label="Request a human callback">
-        <h3 className="mb-5 text-xl font-bold text-[var(--text)]">Request a callback</h3>
+        <h3 id="inquiry-title" className="mb-3 text-xl font-bold text-[var(--text)]">Review my phone setup</h3><p className="mb-5 text-sm leading-relaxed text-[var(--text-dim)]">Request a human callback to review your service area, current phone setup and approved handoff. No account, card or subscription is needed to have this conversation.</p>
         <fieldset disabled={!ready || state === "pending" || state === "success"} className="space-y-4 disabled:opacity-70">
           {[
             ["fullName", "Name", "text", "name", 100, "Your full name"],
@@ -58,3 +58,4 @@ export function InquiryForm() {
     </div>
   </details>;
 }
+
