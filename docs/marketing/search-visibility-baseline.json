@@ -1,8 +1,8 @@
 {
   "site": "https://www.roofaileadrecovery.com/",
-  "baseline_date": "2026-10-30",
-  "prepared_at": "2026-10-30T12:35:00Z",
-  "baseline_stage": "First scheduled search-visibility review recorded on the non-production review branch.",
+  "baseline_date": "2026-11-13",
+  "prepared_at": "2026-11-13T13:50:00Z",
+  "baseline_stage": "Second scheduled review; public technical observations only.",
   "sitemap_urls": 25,
   "buyer_targets": [
     {
@@ -23,18 +23,18 @@
     }
   ],
   "previous_baseline": {
-    "date": "2026-10-14",
-    "sitemap_urls": 24,
-    "homepage_mobile_lab": {
+    "date": "2026-10-30",
+    "sitemap_urls": 25,
+    "technical_summary": "25/25 HTTP 200; no missing metadata, canonical conflicts or broken internal destinations",
+    "historical_mobile_lab": {
       "performance": 65,
       "lcp_seconds": 6.2,
       "field_data_available": false
-    },
-    "note": "Historical lab observation retained for comparison; performance was not re-run on October 30."
+    }
   },
   "production_technical_check": {
-    "checked_at": "2026-10-30T12:25:00Z",
-    "target": "https://www.roofaileadrecovery.com",
+    "checked_at": "2026-11-13T13:45:00Z",
+    "target": "https://www.roofaileadrecovery.com/",
     "sitemap_urls": 25,
     "status_200_urls": 25,
     "unexpected_redirects": [],
@@ -45,16 +45,18 @@
     "h1_count_not_one": [],
     "unique_internal_links_checked": 30,
     "broken_internal_links": [],
-    "robots_txt": "reachable and points to the live sitemap",
+    "robots_txt": "# robots.txt — roofaileadrecovery.com\n# Allow all search engines to crawl the public marketing pages.\n\nUser-agent: *\nAllow: /\n\n# Private / authenticated app routes — no search value, keep them out of the index.\nDisallow: /admin\nDisallow: /admin/\nDisallow: /dashboard\nDisallow: /account\nDisallow: /billing\nDisallow: /checkout\nDisallow: /onboarding\nDisallow: /login\nDisallow: /reset-password\n\n# Legacy marketing route may be crawled so its noindex response can be read.\n\n# Sitemap location\nSitemap: https://www.roofaileadrecovery.com/sitemap.xml\n",
+    "robots_status": 200,
     "indexing_confirmed": null,
-    "note": "Technical accessibility does not prove indexing or ranking. Private webmaster metrics are intentionally omitted.",
+    "unknown_route_status": 404,
+    "canonical_apex_redirect": "https://roofaileadrecovery.com/ resolves to https://www.roofaileadrecovery.com/ with final HTTP 200",
     "pages": [
       {
         "url": "https://www.roofaileadrecovery.com/",
         "status": 200,
         "final_url": "https://www.roofaileadrecovery.com/",
         "title": "Missed Call Recovery for Roofers | Roof AI Lead Recovery",
-        "description": "Recover missed and after-hours roofing calls with configured AI follow-up, qualification and callback or booking workflows. Keep your business number. Free missed-call audit and 30-day pilot.",
+        "description": "Recover missed and after-hours roofing calls with configured AI follow-up, qualification and callback or booking workflows. Keep your business number. Free missed-call audit and 14-day pilot.",
         "canonical": "https://www.roofaileadrecovery.com/",
         "meta_robots": "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
         "x_robots": null,
@@ -75,8 +77,8 @@
         "url": "https://www.roofaileadrecovery.com/how-much-are-missed-calls-costing-your-roofing-company/",
         "status": 200,
         "final_url": "https://www.roofaileadrecovery.com/how-much-are-missed-calls-costing-your-roofing-company/",
-        "title": "Roofing Missed Call Revenue Calculator | Roof AI",
-        "description": "Estimate revenue at risk from missed roofing calls using your call volume, opportunity rate, close rate and average job value. Get a free audit.",
+        "title": "How Much Are Missed Calls Costing Your Roofing Company? | Roof AI Lead Recovery",
+        "description": "How much are missed calls costing your roofing company? Work the math with your own numbers — missed calls, legitimate opportunities, and close rate — plus a free missed-call audit. Scenarios, not guaranteed revenue.",
         "canonical": "https://www.roofaileadrecovery.com/how-much-are-missed-calls-costing-your-roofing-company/",
         "meta_robots": "index, follow, max-image-preview:large",
         "x_robots": null,
@@ -86,8 +88,8 @@
         "url": "https://www.roofaileadrecovery.com/ai-receptionist-for-roofing-companies/",
         "status": 200,
         "final_url": "https://www.roofaileadrecovery.com/ai-receptionist-for-roofing-companies/",
-        "title": "AI Receptionist for Roofing Companies | Roof AI",
-        "description": "Compare AI receptionist coverage for roofing companies, qualification, scheduling and human handoff. Review Roof AI's free audit and free 30-day pilot and request a callback.",
+        "title": "AI Receptionist for Roofing Companies | Roof AI Lead Recovery",
+        "description": "AI receptionist for roofing companies: what to ask, what it should and should not promise, and how to test it before you forward your phones. Free audit + 14-day trial.",
         "canonical": "https://www.roofaileadrecovery.com/ai-receptionist-for-roofing-companies/",
         "meta_robots": "index, follow, max-image-preview:large",
         "x_robots": null,
@@ -97,8 +99,8 @@
         "url": "https://www.roofaileadrecovery.com/roofing-answering-service-vs-ai-lead-recovery/",
         "status": 200,
         "final_url": "https://www.roofaileadrecovery.com/roofing-answering-service-vs-ai-lead-recovery/",
-        "title": "Roofing Answering Service vs AI Lead Recovery | Roof AI",
-        "description": "Compare roofing answering services with AI missed-call recovery: coverage, qualification, handoffs and total cost. Review Roof AI's free audit and free 30-day pilot.",
+        "title": "Roofing Answering Service vs AI Lead Recovery | Roof AI Lead Recovery",
+        "description": "Answering service vs AI lead recovery for roofers: what each one actually does, what it costs per booked estimate, and how the two can work as layers instead of rivals.",
         "canonical": "https://www.roofaileadrecovery.com/roofing-answering-service-vs-ai-lead-recovery/",
         "meta_robots": "index, follow, max-image-preview:large",
         "x_robots": null,
@@ -119,8 +121,8 @@
         "url": "https://www.roofaileadrecovery.com/after-hours-answering-for-roofing-companies/",
         "status": 200,
         "final_url": "https://www.roofaileadrecovery.com/after-hours-answering-for-roofing-companies/",
-        "title": "After-Hours Answering Service for Roofers | Roof AI",
-        "description": "Explore after-hours answering for roofers: evening and weekend coverage, caller qualification and callback handoffs. Review Roof AI's free audit and free 30-day pilot.",
+        "title": "After Hours Answering Service for Roofing Companies | Roof AI Lead Recovery",
+        "description": "After-hours answering for roofing companies: acknowledge the call, qualify it, and hand the office a morning callback list in order — without promising a crew or a time you have not confirmed.",
         "canonical": "https://www.roofaileadrecovery.com/after-hours-answering-for-roofing-companies/",
         "meta_robots": "index, follow, max-image-preview:large",
         "x_robots": null,
@@ -152,8 +154,8 @@
         "url": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-text-back/",
         "status": 200,
         "final_url": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-text-back/",
-        "title": "Missed Call Text Back for Roofers | Roof AI",
-        "description": "Missed-call text-back for roofing companies: sample messages, qualification and callback workflows. Review Roof AI's free audit and free 30-day pilot and request a callback.",
+        "title": "Missed Call Text Back for Roofers | Roof AI Lead Recovery",
+        "description": "What is missed-call text-back for roofers? A follow-up text after an eligible unanswered call. Free audit; free 14-day pilot (up to 40 calls). Founding $199/mo for first 10, locked 12 months; then $299/mo. No setup fee or contract.",
         "canonical": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-text-back/",
         "meta_robots": "index, follow, max-image-preview:large",
         "x_robots": null,
@@ -185,8 +187,8 @@
         "url": "https://www.roofaileadrecovery.com/resources/storm-lead-follow-up/",
         "status": 200,
         "final_url": "https://www.roofaileadrecovery.com/resources/storm-lead-follow-up/",
-        "title": "Storm Lead Follow-Up for Roofing Companies | Roof AI",
-        "description": "Use a practical storm lead follow-up workflow to acknowledge callers, triage roofing needs, protect capacity and record outcomes.",
+        "title": "Storm Lead Follow-Up for Roofing Companies | Roof AI Lead Recovery",
+        "description": "Storm lead follow-up for roofing companies: a dated cadence, copy-ready follow-up messages, an insurance-waiting lane, and a one-record-per-address queue — without overpromising coverage, dispatch, or arrival times.",
         "canonical": "https://www.roofaileadrecovery.com/resources/storm-lead-follow-up/",
         "meta_robots": "index, follow, max-image-preview:large",
         "x_robots": null,
@@ -229,8 +231,8 @@
         "url": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-scorecard/",
         "status": 200,
         "final_url": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-scorecard/",
-        "title": "Free Roofing Missed-Call Review & Scorecard | Roof AI",
-        "description": "Review your roofing missed calls with a free interactive scorecard. Find opportunities without a next step, print your review, and request an optional callback.",
+        "title": "Free Roofing Missed-Call Audit & Scorecard | Roof AI Lead Recovery",
+        "description": "Free roofing missed-call audit and scorecard: count your missed callers, find the follow-up gap, and see which calls still have no next step — no email required.",
         "canonical": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-scorecard/",
         "meta_robots": "index, follow, max-image-preview:large",
         "x_robots": null,
@@ -251,8 +253,8 @@
         "url": "https://www.roofaileadrecovery.com/resources/winter-roofing-call-handling/",
         "status": 200,
         "final_url": "https://www.roofaileadrecovery.com/resources/winter-roofing-call-handling/",
-        "title": "Winter Roofing Call Handling: Keep Every Inquiry Owned | Roof AI",
-        "description": "A winter call-handling plan for roofing companies managing leaks, wind damage, ice concerns and slower seasonal schedules.",
+        "title": "Winter After-Hours Roofing Calls: Sorting Leaks, Ice Concerns & Holiday Calls | Roof AI Lead Recovery",
+        "description": "Winter after-hours roofing calls need sorting, not panic: which calls are urgent, what to say on a holiday week, and how to keep every inquiry owned until your team can follow up. No dispatch or response-time promises — your rules decide.",
         "canonical": "https://www.roofaileadrecovery.com/resources/winter-roofing-call-handling/",
         "meta_robots": "index, follow, max-image-preview:large",
         "x_robots": null,
@@ -324,119 +326,133 @@
         "x_robots": null,
         "h1_count": 1
       }
+    ],
+    "note": "Raw HTTP and HTML checks; not browser interaction, Google rendering, ranking or comprehensive indexing verification."
+  },
+  "key_conversion_destinations": {
+    "callback_anchor": "/#inquiry present in raw homepage HTML; no request submitted",
+    "scorecard": "/resources/roofing-missed-call-scorecard/#call-review present; HTTP 200",
+    "demo": "/roofing-missed-call-demo/ and linked MP4 HTTP 200; example labelled illustrative",
+    "signup": "/signup HTTP 200; no account created or payment submitted",
+    "other_destinations": [
+      {
+        "url": "https://www.roofaileadrecovery.com/login",
+        "status": 200,
+        "final_url": "https://www.roofaileadrecovery.com/login",
+        "title": "Missed Call Recovery for Roofers | Roof AI Lead Recovery",
+        "description": "Recover missed and after-hours roofing calls with configured AI follow-up, qualification and callback or booking workflows. Keep your business number. Free missed-call audit and 14-day pilot.",
+        "canonical": "https://www.roofaileadrecovery.com/",
+        "meta_robots": "noindex, follow",
+        "x_robots": "noindex, follow",
+        "h1_count": 1
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/media/roof-ai-demo-20261014-polished.mp4",
+        "status": 200,
+        "final_url": "https://www.roofaileadrecovery.com/media/roof-ai-demo-20261014-polished.mp4",
+        "title": "",
+        "description": "",
+        "canonical": null,
+        "meta_robots": "",
+        "x_robots": null,
+        "h1_count": 0
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/privacy",
+        "status": 200,
+        "final_url": "https://www.roofaileadrecovery.com/privacy",
+        "title": "Missed Call Recovery for Roofers | Roof AI Lead Recovery",
+        "description": "Recover missed and after-hours roofing calls with configured AI follow-up, qualification and callback or booking workflows. Keep your business number. Free missed-call audit and 14-day pilot.",
+        "canonical": "https://www.roofaileadrecovery.com/",
+        "meta_robots": "noindex, follow",
+        "x_robots": "noindex, follow",
+        "h1_count": 1
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/signup",
+        "status": 200,
+        "final_url": "https://www.roofaileadrecovery.com/signup",
+        "title": "Missed Call Recovery for Roofers | Roof AI Lead Recovery",
+        "description": "Recover missed and after-hours roofing calls with configured AI follow-up, qualification and callback or booking workflows. Keep your business number. Free missed-call audit and 14-day pilot.",
+        "canonical": "https://www.roofaileadrecovery.com/",
+        "meta_robots": "noindex, follow",
+        "x_robots": "noindex, follow",
+        "h1_count": 1
+      },
+      {
+        "url": "https://www.roofaileadrecovery.com/terms",
+        "status": 200,
+        "final_url": "https://www.roofaileadrecovery.com/terms",
+        "title": "Missed Call Recovery for Roofers | Roof AI Lead Recovery",
+        "description": "Recover missed and after-hours roofing calls with configured AI follow-up, qualification and callback or booking workflows. Keep your business number. Free missed-call audit and 14-day pilot.",
+        "canonical": "https://www.roofaileadrecovery.com/",
+        "meta_robots": "noindex, follow",
+        "x_robots": "noindex, follow",
+        "h1_count": 1
+      }
     ]
   },
-  "key_conversion_destinations": [
-    {
-      "url": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-scorecard/",
-      "status": 200,
-      "final_url": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-scorecard/",
-      "redirected": false,
-      "error": null
-    },
-    {
-      "url": "https://www.roofaileadrecovery.com/roofing-missed-call-demo/",
-      "status": 200,
-      "final_url": "https://www.roofaileadrecovery.com/roofing-missed-call-demo/",
-      "redirected": false,
-      "error": null
-    },
-    {
-      "url": "https://www.roofaileadrecovery.com/#inquiry",
-      "status": 200,
-      "final_url": "https://www.roofaileadrecovery.com/#inquiry",
-      "redirected": false,
-      "error": null
-    },
-    {
-      "url": "https://www.roofaileadrecovery.com/signup",
-      "status": 200,
-      "final_url": "https://www.roofaileadrecovery.com/signup",
-      "redirected": false,
-      "error": null
-    },
-    {
-      "url": "https://www.roofaileadrecovery.com/partners",
-      "status": 200,
-      "final_url": "https://www.roofaileadrecovery.com/partners",
-      "redirected": false,
-      "error": null
-    }
-  ],
   "public_search_observations": {
-    "date": "2026-10-30",
+    "date": "2026-11-13",
+    "queries": [
+      "Roof AI Lead Recovery",
+      "missed call text back for roofers",
+      "AI receptionist for roofing companies",
+      "after hours answering service for roofers",
+      "roofing answering service vs AI lead recovery"
+    ],
     "google": {
-      "status": "direct public result request rate-limited",
-      "exact_position": null,
-      "indexing_confirmed": null
+      "source": "Direct Google public search HTTP",
+      "status": "HTTP 200 redirect shell; usable results unavailable",
+      "exact_position": null
     },
     "bing": {
-      "source": "public Bing RSS result set",
-      "roof_ai_observed_for_brand_or_four_buyer_phrases": false,
-      "note": "No Roof AI URL appeared in the returned result sets. This is not a complete index inventory."
+      "source": "Direct Bing public HTML and RSS",
+      "status": "No Roof AI URLs in returned sets; largely off-topic HTML results and empty RSS sets make this inconclusive",
+      "exact_position": null
     },
     "duckduckgo": {
-      "source": "public DuckDuckGo HTML result set",
-      "observed": [
-        {
-          "query": "Roof AI Lead Recovery",
-          "url": "https://www.roofaileadrecovery.com/resources/",
-          "result_ordinal": 1
-        },
-        {
-          "query": "Roof AI Lead Recovery",
-          "url": "https://www.roofaileadrecovery.com/roofing-revenue-recovery/",
-          "result_ordinal": 2
-        },
-        {
-          "query": "missed call text back for roofers",
-          "url": "https://www.roofaileadrecovery.com/resources/roofing-missed-call-text-back/",
-          "result_ordinal": 5
-        },
-        {
-          "query": "roofing answering service vs AI lead recovery",
-          "url": "https://www.roofaileadrecovery.com/roofing-answering-service-vs-ai-lead-recovery/",
-          "result_ordinal": 1
-        }
+      "source": "Direct DuckDuckGo HTML",
+      "status": "HTTP 202 human challenge on all five queries; comparison unavailable"
+    },
+    "search_service": {
+      "source": "Search-service web results, not exact Google/Bing/DDG rankings",
+      "observed_urls": [
+        "https://www.roofaileadrecovery.com/",
+        "https://www.roofaileadrecovery.com/ai-receptionist-for-roofing-companies/",
+        "https://www.roofaileadrecovery.com/roofing-answering-service-vs-ai-lead-recovery/"
       ],
-      "not_observed": [
-        "AI receptionist for roofing companies",
-        "after hours answering service for roofers"
-      ],
-      "note": "One public result set from one location and time; not a stable ranking or complete indexing inventory."
+      "note": "Observed in brand and comparison searches; buyer-query appearance is not consistently established."
     }
   },
   "public_youtube_observation": {
-    "date": "2026-10-30",
-    "url": "https://www.youtube.com/watch?v=Zu-E06YqS0E",
-    "title": "Missed Call Recovery for Roofing Companies | Roof AI Demo",
-    "public_state": "available",
-    "displayed_views": "No views",
-    "channel_displayed_subscribers": "1 subscriber",
-    "note": "Public page labels only; private channel analytics are omitted."
+    "public_url": "https://www.youtube.com/watch?v=Zu-E06YqS0E",
+    "note": "Previously published URL retained; current public watch-page verification not repeated. No private channel analytics stored."
   },
   "indexing_and_submission": {
-    "google_sitemap_submission": "unverified",
-    "google_url_inspection": "unverified",
-    "bing_webmaster_metrics": "unverified",
-    "indexnow_last_recorded_receipt": "2026-10-14 HTTP 202 for 24 URLs; receipt did not confirm indexing"
+    "technical_crawlability": "All 25 sitemap pages accessible and publicly allowed by robots rules",
+    "comprehensive_indexing": null,
+    "google_url_inspection": null,
+    "sitemap_submission_acceptance": "No new submission made; current acceptance unverified",
+    "note": "Technical accessibility and public search observations do not prove comprehensive indexing."
   },
   "customer_case_study": {
-    "status": "awaiting verified records and publication permission",
-    "published_new_case_study": false
+    "published_new_case_study": false,
+    "note": "No new customer-result claims published by this review."
   },
   "review": {
     "previous_seo_review_date": "2026-10-30",
-    "next_due_date": "2026-11-13",
+    "completed_date": "2026-11-13",
+    "next_due_date": "2026-11-27",
     "timezone": "America/New_York",
     "records_branch": "seo/review-records",
-    "report_path": "docs/marketing/search-visibility-review-2026-10-30.md",
-    "public_record_scope": "Public technical observations and publication metadata only; no private analytics, leads, customer data or revenue."
+    "report_path": "docs/marketing/search-visibility-review-2026-11-13.md",
+    "public_record_scope": "Public technical observations and publication metadata only."
   },
   "next_checks": [
-    "Restore authorized Search Console reporting before the next due review",
-    "Run Google URL Inspection for representative pages when access is available",
-    "Repeat public engine observations without treating them as complete indexing inventories",
-    "Publish no customer-result claim without verified records and permission"
+    "Review one concrete voicemail / AI SMS / human callback example for the existing receptionist buyer guide, linking the existing demo and scorecard; verify supported features before publication.",
+    "Repeat public-engine checks when usable results are accessible.",
+    "Keep current offer and billing language consistent with actual signup terms.",
+    "No deployment or customer-result publication from review-only work."
   ]
 }
