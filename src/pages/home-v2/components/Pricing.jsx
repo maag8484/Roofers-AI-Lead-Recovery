@@ -15,7 +15,7 @@ export function Pricing() {
         <article className="hv2-glass rounded-3xl p-8">
           <h3 className="hv2-display text-xl text-[var(--text)]">Step 2 — Free 14-Day Pilot</h3>
           <p className="mt-5 leading-relaxed text-[var(--text-dim)]">$0 for 14 days. Your overflow calls answered and qualified on your real phone line, with a full report at the end of what it caught. Fair use: up to 40 recovered calls during the pilot.</p>
-          <a href="/signup" className="mt-6 inline-block font-bold underline text-[var(--acid)]">Apply for the founding pilot</a>
+          <a href="#inquiry" className="mt-6 inline-block font-bold underline text-[var(--acid)]">Review my setup before applying</a><p className="mt-3 text-sm text-[var(--text-dim)]">No account or card needed to request a callback. Ready to apply? <a href="/signup" className="underline">Create your pilot account</a>.</p>
         </article>
         <article className="hv2-frame rounded-3xl bg-[var(--surface)] p-8">
           <h3 className="hv2-display text-xl text-[var(--text)]">Step 3 — Keep It Running</h3>
@@ -24,9 +24,11 @@ export function Pricing() {
           <ul className="mt-7 space-y-3">{PLAN_FEATURES.map(f => <li key={f} className="flex gap-3 text-sm text-[var(--text-dim)]"><Check aria-hidden="true" className="h-5 w-5 shrink-0 text-[var(--acid)]" />{f}</li>)}</ul>
         </article>
       </div>
+      <p className="mt-6 max-w-3xl text-sm leading-relaxed text-[var(--text-dim)]">A booking request is not a confirmed inspection. Calendar, CRM, escalation and notification destinations are confirmed with you during setup. Ask us to document which calls count toward your allowance and how coverage behaves at the limit before you authorize activation.</p>
       <p className="mt-8 text-[var(--text-dim)]">No setup fees · No contracts · Cancel before your first charge</p>
       <p className="mt-4 max-w-3xl text-sm leading-relaxed text-[var(--text-dim)]">Pilot eligibility: operating roofing companies with a forwardable business line; one pilot per company. Missed-call and after-hours overflow only — your team answers first. Up to 40 recovered calls over 14 days. Apply first. A separate card authorization is required to reserve a new founding pilot. Nothing is due at reservation. The 14 days begin after setup and a successful live test. Unless you cancel before those 14 full days elapse, monthly billing begins at the rate you authorized. Earlier accepted offers keep their terms.</p>
       <div className="mt-8"><CtaButton>Get My Free Missed-Call Audit</CtaButton></div>
     </div>
   </section>;
 }
+

@@ -59,7 +59,7 @@ export function WhoItsFor() {
           </h2>
           <Reveal delay={0.15}>
             <p className="mx-auto mt-5 max-w-lg text-[17px] leading-[1.65] text-[var(--text-dim)]">
-              If any of these sound like you, Roof AI will pay for itself fast.
+              If these sound familiar, review your call history to see whether overflow coverage fits.
             </p>
           </Reveal>
         </div>

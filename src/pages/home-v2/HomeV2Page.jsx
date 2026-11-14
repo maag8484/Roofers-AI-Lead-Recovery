@@ -1,6 +1,7 @@
 import { InquiryForm } from "./components/InquiryForm";
 import { AnimatePresence } from "framer-motion";
 import { Nav } from "./components/Nav";
+import { WorkflowDemo } from "./components/WorkflowDemo";
 import { Hero } from "./components/Hero";
 import { Problem } from "./components/Problem";
 import { HowItWorks } from "./components/HowItWorks";
@@ -55,6 +56,7 @@ export default function HomeV2Page() {
       <Nav />
       <main className="flex-1">
         <Hero />
+        <WorkflowDemo />
         <Problem />
         <HowItWorks />
         <WhoItsFor />
@@ -74,3 +76,4 @@ export default function HomeV2Page() {
     </AnimatePresence>
   );
 }
+
