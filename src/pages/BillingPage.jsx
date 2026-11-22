@@ -206,7 +206,7 @@ export default function BillingPage() {
             <div className="rounded-xl border border-border p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-semibold text-ink">Roof AI Lead Recovery</span>
-                <span className="font-bold text-ink">{subscription ? "Existing subscription terms" : "Free pilot — no automatic billing"}</span>
+                <span className="font-bold text-ink">{subscription ? "Existing subscription terms" : "Pilot / reservation status"}</span>
               </div>
               <ul className="space-y-1.5 text-sm text-muted-foreground">
                 <li>✓ Missed-call and after-hours overflow</li>
@@ -219,7 +219,7 @@ export default function BillingPage() {
 
             {!subscription && (
               <div className="rounded-xl border border-dashed border-border p-4 text-center space-y-3">
-                <p className="text-muted-foreground text-sm">No active paid subscription found. Your pilot does not automatically renew. Contact us to confirm founding-rate availability ({pilotOffer(user).foundingRateLabel} locked for 12 months for the first 10 customers), or the $299/month standard rate, before opting in.</p>
+                <p className="text-muted-foreground text-sm">No active paid subscription found. A reserved pilot bills at the authorized rate unless canceled before 14 full days from activation, after setup and a successful live test. Nothing is due at reservation. Contact us to confirm your reservation, activation date and authorized rate. The founding rate is {pilotOffer(user).foundingRateLabel} locked for 12 months for the first 10 customers; standard $299/month. Earlier accepted agreements keep their terms.</p>
                 <Button className="w-full" onClick={startCheckout} disabled={redirecting}>
                   {redirecting ? <Spinner className="text-white" /> : <><CreditCard className="h-4 w-4" /> Request Paid Continuation</>}
                 </Button>

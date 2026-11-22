@@ -231,7 +231,7 @@ export default function AccountPage() {
   // Onboarding progress from the real lifecycle.
   const progressSteps = [
     { label: "Account created", done: true },
-    { label: pilot ? "Free pilot requested — no automatic billing" : "Subscription active", done: paid || pilot },
+    { label: pilot ? "Free pilot requested — review reservation terms" : "Subscription active", done: paid || pilot },
     { label: "Business information submitted", done: !!profile?.details_submitted },
     { label: "Configuration in progress", done: status === "live", active: status === "in_progress" },
     { label: "AI activated", done: status === "live" },
@@ -339,7 +339,7 @@ export default function AccountPage() {
                 value={formatDateTime(subscription?.trial_ends_at)}
               />
             )}
-            <Row icon={Clock} label="Renewal" value={pilot ? "No automatic paid conversion" : renewal} />
+            <Row icon={Clock} label="Renewal" value={pilot ? "Reserved pilots bill after 14 full days from activation unless canceled; see authorized terms" : renewal} />
             <div className="pt-1">
               <Button variant="secondary" size="sm" asChild>
                 <Link to="/billing">

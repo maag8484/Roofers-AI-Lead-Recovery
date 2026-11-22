@@ -313,7 +313,7 @@ function OnboardingChecklist({ status, currentStatus, subscription, pilot }) {
 
   const steps = [
     { label: "Account created", state: "done" },
-    { label: pilot && !paid ? "Free pilot requested — no automatic billing" : "Subscription active", state: paid || pilot ? "done" : "todo" },
+    { label: pilot && !paid ? "Free pilot requested — review reservation terms" : "Subscription active", state: paid || pilot ? "done" : "todo" },
     { label: "Business information submitted", state: detailsDone ? "done" : "todo" },
     {
       label: "Our team is configuring your AI receptionist and will be in touch to schedule a quick onboarding call",

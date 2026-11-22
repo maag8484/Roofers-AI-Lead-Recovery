@@ -8,9 +8,9 @@ export function PilotTerms({ user }) {
       <li>Up to 40 recovered calls over {offer.duration}, starting after setup and a successful live test call.</li>
       <li>For an operating roofing company with a forwardable business phone line. One pilot per company.</li>
       <li>Missed and after-hours overflow only. Your staff answers first; this is not a full-time receptionist replacement.</li>
-      <li>No card or payment is required. If you do nothing, the pilot ends. It does not automatically become a paid subscription.</li>
-      <li>At the call cap we contact you, show the count, and discuss optional paid continuation or an agreed extension. We do not silently cut off your business line.</li>
-      <li>If you choose to continue: {offer.foundingRateLabel} locked for 12 months for the first 10 founding customers; otherwise $299/month. Your eligibility and quoted rate are confirmed before your pilot starts.</li>
+      <li>A card authorization reserves the pilot; nothing is due at reservation. Unless you cancel before 14 full days from activation, monthly billing begins at the rate you authorized.</li>
+      <li>At the call cap we contact you, show the count and agree on the next step. Reaching the call cap does not shorten the 14-full-day cancellation window or authorize an earlier charge.</li>
+      <li>The founding rate is {offer.foundingRateLabel} locked for 12 months for the first 10 founding customers; otherwise $299/month. Your eligibility and authorized rate are confirmed before your pilot starts. No setup fee, no contract, cancel anytime. Earlier accepted agreements keep their terms.</li>
     </ul>
   </div>;
 }

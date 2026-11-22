@@ -1,13 +1,13 @@
 import { pilotOffer } from "@/lib/pilot";
 import { motion } from "framer-motion";
 
-// Guided setup; no payment or automatic subscription is created.
+// Applying is separate from card authorization and activation.
 const steps = (offer) => [
-  { title: "Request your free pilot", detail: "Create your account and confirm your email. No card required." },
+  { title: "Request your free pilot", detail: "Create your account and confirm your email. A card authorization reserves an eligible pilot; nothing is due at reservation." },
   { title: "Tell us about your business", detail: "Share your service area, services and call-handling preferences." },
   { title: "Free setup with a specialist", detail: "We configure overflow forwarding from your current number. Your staff still answers first." },
   { title: "Confirm each caller's next step", detail: "Approve the callback, booking-request or transfer destination and exclusions." },
-  { title: "Live test and pilot activation", detail: `After a successful end-to-end test, run the free pilot for ${offer.duration}, up to 40 recovered calls. It ends unless you choose to continue.` },
+  { title: "Live test and pilot activation", detail: `After setup and a successful live test, run the free pilot for ${offer.duration}, up to 40 recovered calls. Unless you cancel before 14 full days from activation, monthly billing begins at the rate you authorized. Earlier accepted agreements keep their terms.` },
 ];
 
 export function NextSteps({ user }) {

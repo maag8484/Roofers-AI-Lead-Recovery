@@ -40,7 +40,7 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false, user
           </span>
         </div>
         <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground">
-          No card required. No automatic paid conversion. Optional founding rate: {offer.foundingRateLabel} locked 12 months for first 10 customers; standard $299/month.
+          A card authorization reserves the pilot; nothing is due at reservation. Unless you cancel before 14 full days from activation, monthly billing begins at the rate you authorized. Founding rate: {offer.foundingRateLabel} locked 12 months for first 10 customers; standard $299/month. Earlier accepted agreements keep their terms.
           We configure your coverage after you submit your business details; calls begin
           once forwarding is set up and tested.
         </p>
@@ -63,7 +63,7 @@ export function WelcomeHero({ ownerName, onStart, onTour, starting = false, user
         <h2 className="text-center text-lg font-bold text-ink">How setup works</h2>
         <div className="mt-6 grid gap-6 sm:grid-cols-4">
           {[
-            { n: 1, t: "Request your free pilot", d: "No card required." },
+            { n: 1, t: "Request your free pilot", d: "Card authorization reserves an eligible pilot; nothing is due at reservation." },
             { n: 2, t: "Tell us about your business", d: "A quick guided form." },
             { n: 3, t: "Free setup and live test", d: "Verify forwarding and the full workflow." },
             { n: 4, t: "Run your free pilot", d: `${offer.duration}, up to 40 recovered overflow calls.` },

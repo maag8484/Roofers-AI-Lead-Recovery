@@ -276,7 +276,7 @@ function StepContent({ step, user }) {
         <StepHeading
           icon={CreditCard}
           title="Simple, transparent pricing"
-          subtitle="Start free. No card required and no automatic paid conversion."
+          subtitle="Nothing is due at reservation. Billing begins at the authorized rate unless you cancel before 14 full days from activation."
         />
         <PricingPreview user={user} />
       </div>
